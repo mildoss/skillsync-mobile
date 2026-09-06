@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
 import { ArrowLeft } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-
+import { VacancyDetailsSkeleton } from "@/components/vacancies/VacancyDetailsSkeleton";
 
 
 export default function VacancyDetailsScreen() {
@@ -44,11 +44,7 @@ export default function VacancyDetailsScreen() {
   };
 
   if (isLoading) {
-    return (
-      <View className="flex-1 bg-background justify-center items-center">
-        <ActivityIndicator size="large" color={isDark ? "#ffffff" : "#4f46e5"} />
-      </View>
-    );
+    return <VacancyDetailsSkeleton />;
   }
 
   if (error || !vacancy) {
