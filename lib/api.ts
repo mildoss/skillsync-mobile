@@ -5,11 +5,11 @@ import { CompaniesResponse, CompanyDetail } from "@/types/companies";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
 const fetchJson = async <T>(url: string, retries = 2): Promise<T> => {
   try {
-    const res = await fetch(url, {
-      next: { revalidate: 30 },
-    });
+    const res = await fetch(url);
 
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
@@ -33,29 +33,29 @@ const fetchJson = async <T>(url: string, retries = 2): Promise<T> => {
 };
 
 export const getUsers = async (queryParams: URLSearchParams) =>
-  fetchJson<UsersResponse>(`${process.env.BACKEND_URL}/users?${queryParams}`);
+  fetchJson<UsersResponse>(`${API_URL}/users?${queryParams}`);
 
 export const getUser = async (id: string) =>
-  fetchJson<User>(`${process.env.BACKEND_URL}/users/${id}`);
+  fetchJson<User>(`${API_URL}/users/${id}`);
 
 export const getVacancies = async (queryParams: URLSearchParams) =>
-  fetchJson<VacanciesResponse>(`${process.env.BACKEND_URL}/vacancies?${queryParams}`);
+  fetchJson<VacanciesResponse>(`${API_URL}/vacancies?${queryParams}`);
 
 export const getVacancy = async (id: string) =>
-  fetchJson<Vacancy>(`${process.env.BACKEND_URL}/vacancies/${id}`);
+  fetchJson<Vacancy>(`${API_URL}/vacancies/${id}`);
 
 export const getCompanies = async (queryParams: URLSearchParams) =>
-  fetchJson<CompaniesResponse>(`${process.env.BACKEND_URL}/companies?${queryParams}`);
+  fetchJson<CompaniesResponse>(`${API_URL}/companies?${queryParams}`);
 
 export const getCompany = async (idOrSlug: string) =>
-  fetchJson<CompanyDetail>(`${process.env.BACKEND_URL}/companies/${idOrSlug}`);
+  fetchJson<CompanyDetail>(`${API_URL}/companies/${idOrSlug}`);
 
 export const getCategories = async () =>
-  fetchJson<Dictionaries[]>(`${process.env.BACKEND_URL}/dictionaries/categories`);
+  fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/categories`);
 export const getSkills = async () =>
-  fetchJson<Dictionaries[]>(`${process.env.BACKEND_URL}/dictionaries/skills`);
+  fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/skills`);
 export const getLanguages = async () =>
-  fetchJson<Dictionaries[]>(`${process.env.BACKEND_URL}/dictionaries/languages`);
+  fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/languages`);
 export const getDomains = async () =>
-  fetchJson<Dictionaries[]>(`${process.env.BACKEND_URL}/dictionaries/domains`);
+  fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/domains`);
 

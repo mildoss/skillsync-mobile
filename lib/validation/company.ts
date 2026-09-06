@@ -15,7 +15,8 @@ export const createCompanySchema = z.object({
   logoUrl: nullableUrlField,
   websiteUrl: nullableUrlField,
   companyType: z.enum(["PRODUCT", "OUTSOURCE", "OUTSTAFF", "STARTUP", "AGENCY"], {
-    error: "Please select a company type",
+    required_error: "Please select a company type",
+    invalid_type_error: "Please select a company type",
   }),
 });
 
