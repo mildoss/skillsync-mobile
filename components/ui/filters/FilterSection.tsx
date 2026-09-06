@@ -9,10 +9,10 @@ export interface FilterSectionProps {
 export function FilterSection({ title, children }: FilterSectionProps) {
   return (
     <View className="mb-6">
-      <Text className="text-sm font-semibold text-foreground mb-3 uppercase tracking-wider">{title}</Text>
-      <View className="bg-card border border-border/50 rounded-xl p-4 shadow-sm">
-        {children}
-      </View>
+      <Text className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
+        {title}
+      </Text>
+      <View className="rounded-xl border border-border/50 bg-card p-4 shadow-sm">{children}</View>
     </View>
   );
 }

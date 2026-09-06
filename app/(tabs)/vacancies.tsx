@@ -1,5 +1,13 @@
 import React from "react";
-import { View, Text, FlatList, ActivityIndicator, RefreshControl, ScrollView, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useVacancies } from "@/hooks/useVacancies";
@@ -10,32 +18,29 @@ import { useColorScheme } from "nativewind";
 
 export default function VacanciesScreen() {
   const params = useLocalSearchParams();
-  const { vacancies, isLoading, isFetchingNextPage, error, fetchNextPage, refresh, hasNextPage } = useVacancies(params);
+  const { vacancies, isLoading, isFetchingNextPage, error, fetchNextPage, refresh, hasNextPage } =
+    useVacancies(params);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const router = useRouter();
-  
+
   const filterCount = Object.keys(params).length;
 
   if (isLoading && vacancies.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-        <View className="px-4 py-4 border-b border-border flex-row justify-between items-center">
+        <View className="flex-row items-center justify-between border-b border-border px-4 py-4">
           <View>
-            <Text className="text-3xl font-bold tracking-tight text-foreground">
-              Vacancies
-            </Text>
-            <Text className="text-muted-foreground my-1">
-              Find your dream job
-            </Text>
+            <Text className="text-3xl font-bold tracking-tight text-foreground">Vacancies</Text>
+            <Text className="my-1 text-muted-foreground">Find your dream job</Text>
           </View>
-          <Pressable 
+          <Pressable
             onPress={() => router.push({ pathname: "/vacancies/filters", params })}
-            className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center relative"
+            className="relative h-10 w-10 items-center justify-center rounded-full bg-primary/10"
           >
             <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
             {filterCount > 0 && (
-              <View className="absolute -top-1 -right-1 bg-destructive h-5 w-5 rounded-full items-center justify-center border-2 border-background">
+              <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-destructive">
                 <Text className="text-[10px] font-bold text-destructive-foreground">
                   {filterCount}
                 </Text>
@@ -54,31 +59,27 @@ export default function VacanciesScreen() {
 
   if (error) {
     return (
-      <SafeAreaView className="flex-1 bg-background justify-center items-center p-4">
-        <Text className="text-destructive font-semibold mb-2">Something went wrong</Text>
-        <Text className="text-muted-foreground text-center">{error.message}</Text>
+      <SafeAreaView className="flex-1 items-center justify-center bg-background p-4">
+        <Text className="mb-2 font-semibold text-destructive">Something went wrong</Text>
+        <Text className="text-center text-muted-foreground">{error.message}</Text>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-      <View className="px-4 py-4 border-b border-border flex-row justify-between items-center">
+      <View className="flex-row items-center justify-between border-b border-border px-4 py-4">
         <View>
-          <Text className="text-3xl font-bold tracking-tight text-foreground">
-            Vacancies
-          </Text>
-          <Text className="text-muted-foreground my-1">
-            Find your dream job
-          </Text>
+          <Text className="text-3xl font-bold tracking-tight text-foreground">Vacancies</Text>
+          <Text className="my-1 text-muted-foreground">Find your dream job</Text>
         </View>
-        <Pressable 
+        <Pressable
           onPress={() => router.push({ pathname: "/vacancies/filters", params })}
-          className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center relative"
+          className="relative h-10 w-10 items-center justify-center rounded-full bg-primary/10"
         >
           <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
           {filterCount > 0 ? (
-            <View className="absolute -top-1 -right-1 bg-destructive h-5 w-5 rounded-full items-center justify-center border-2 border-background">
+            <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-destructive">
               <Text className="text-[10px] font-bold text-destructive-foreground">
                 {filterCount}
               </Text>
@@ -86,7 +87,7 @@ export default function VacanciesScreen() {
           ) : null}
         </Pressable>
       </View>
-      
+
       <FlatList
         data={vacancies}
         keyExtractor={(item) => item.id}
@@ -107,9 +108,11 @@ export default function VacanciesScreen() {
         }
         ListEmptyComponent={
           !isLoading ? (
-            <View className="bg-card rounded-lg border border-border py-12 items-center">
+            <View className="items-center rounded-lg border border-border bg-card py-12">
               <Text className="text-lg font-medium text-foreground">No vacancies found</Text>
-              <Text className="text-muted-foreground mt-1 text-sm">Try checking your internet connection</Text>
+              <Text className="mt-1 text-sm text-muted-foreground">
+                Try checking your internet connection
+              </Text>
             </View>
           ) : null
         }

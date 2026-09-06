@@ -27,54 +27,46 @@ export const VacancyCard = ({ vacancy }: VacancyCardProps) => {
   return (
     <Pressable
       onPress={handlePress}
-      className="mb-4 bg-card rounded-lg border border-border p-4 shadow-sm"
+      className="mb-4 rounded-lg border border-border bg-card p-4 shadow-sm"
     >
       <View className="mb-4 flex-row justify-between">
-        <View className="flex-row flex-1 gap-3">
+        <View className="flex-1 flex-row gap-3">
           <CustomAvatar
             imageUrl={vacancy.company.logoUrl}
             fallbackText={vacancy.company.name}
             size="sm"
           />
           <View className="flex-1 justify-center">
-            <Text className="text-primary text-lg font-semibold" numberOfLines={2}>
+            <Text className="text-lg font-semibold text-primary" numberOfLines={2}>
               {vacancy.title}
             </Text>
-            <View className="mt-1 flex-row items-center flex-wrap">
-              <Text className="text-muted-foreground text-sm font-medium">
+            <View className="mt-1 flex-row flex-wrap items-center">
+              <Text className="text-sm font-medium text-muted-foreground">
                 {vacancy.company.name}
               </Text>
-              <Text className="text-muted-foreground text-xs mx-2">•</Text>
-              <Text className="text-muted-foreground text-xs">
-                {formatDate(vacancy.createdAt)}
-              </Text>
+              <Text className="mx-2 text-xs text-muted-foreground">•</Text>
+              <Text className="text-xs text-muted-foreground">{formatDate(vacancy.createdAt)}</Text>
             </View>
           </View>
         </View>
 
         <View className="items-end pl-2">
-          <Text className="text-success text-base font-bold">
+          <Text className="text-base font-bold text-success">
             {formatSalary(vacancy.salaryMin, vacancy.salaryMax, vacancy.currency)}
           </Text>
         </View>
       </View>
 
       <View className="mb-4 flex-row flex-wrap gap-x-2 gap-y-1">
-        <Text className="text-foreground text-sm font-semibold">
-          {formatEnum(vacancy.type)}
-        </Text>
+        <Text className="text-sm font-semibold text-foreground">{formatEnum(vacancy.type)}</Text>
         {vacancy.location && (
-          <Text className="text-muted-foreground text-sm">
-            · {formatEnum(vacancy.location)}
-          </Text>
+          <Text className="text-sm text-muted-foreground">· {formatEnum(vacancy.location)}</Text>
         )}
-        <Text className="text-muted-foreground text-sm">
+        <Text className="text-sm text-muted-foreground">
           · {formatExperience(vacancy.experience)}
         </Text>
         {vacancy.category && (
-          <Text className="text-muted-foreground text-sm">
-            · {vacancy.category.name}
-          </Text>
+          <Text className="text-sm text-muted-foreground">· {vacancy.category.name}</Text>
         )}
       </View>
 
@@ -86,7 +78,7 @@ export const VacancyCard = ({ vacancy }: VacancyCardProps) => {
         ))}
       </View>
 
-      <Text className="text-foreground text-sm" numberOfLines={3}>
+      <Text className="text-sm text-foreground" numberOfLines={3}>
         {vacancy.description}
       </Text>
     </Pressable>

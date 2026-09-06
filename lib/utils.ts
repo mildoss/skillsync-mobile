@@ -49,7 +49,7 @@ export function formatDate(dateString?: string | null) {
 
 export function formatEnum(value: string | null | undefined): string {
   if (!value) return "";
-  const text = value.replace(/_/g, ' ');
+  const text = value.replace(/_/g, " ");
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
@@ -97,7 +97,7 @@ export const COMPANY_TYPES = enumToOptions(CompanyType);
 export const EMPLOYMENT_TYPES = enumToOptions(EmploymentType);
 export const LOCATION_OPTIONS = Object.keys(LocationType).map((key) => ({
   label: LocationType[key as keyof typeof LocationType],
-  value: key, 
+  value: key,
 }));
 
 export const EXPERIENCE_OPTIONS = [

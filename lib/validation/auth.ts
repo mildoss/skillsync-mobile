@@ -9,12 +9,13 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password required"),
 });
 
-export const registerSchema = z.object({
-  role: z.enum(["APPLICANT", "EMPLOYER"]),
-  email: emailSchema,
-  password: z.string().min(6, "The password must be at least 6 characters long."),
-  confirmPassword: z.string().min(6, "Confirm your password"),
-})
+export const registerSchema = z
+  .object({
+    role: z.enum(["APPLICANT", "EMPLOYER"]),
+    email: emailSchema,
+    password: z.string().min(6, "The password must be at least 6 characters long."),
+    confirmPassword: z.string().min(6, "Confirm your password"),
+  })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],

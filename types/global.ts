@@ -3,4 +3,4 @@ export type PaginationMeta = {
   page: number;
   total: number;
   totalPages: number;
-}
+};

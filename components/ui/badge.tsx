@@ -19,30 +19,25 @@ const badgeVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
-const badgeTextVariants = cva(
-  "text-xs font-semibold",
-  {
-    variants: {
-      variant: {
-        default: "text-primary-foreground",
-        secondary: "text-secondary-foreground",
-        destructive: "text-destructive",
-        outline: "text-foreground",
-        ghost: "text-muted-foreground",
-      },
+const badgeTextVariants = cva("text-xs font-semibold", {
+  variants: {
+    variant: {
+      default: "text-primary-foreground",
+      secondary: "text-secondary-foreground",
+      destructive: "text-destructive",
+      outline: "text-foreground",
+      ghost: "text-muted-foreground",
     },
-    defaultVariants: {
-      variant: "default",
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
-export interface BadgeProps
-  extends ViewProps,
-    VariantProps<typeof badgeVariants> {
+export interface BadgeProps extends ViewProps, VariantProps<typeof badgeVariants> {
   children?: React.ReactNode;
   textClass?: string;
 }
@@ -51,9 +46,7 @@ function Badge({ children, className, variant, textClass, ...props }: BadgeProps
   return (
     <View className={cn(badgeVariants({ variant }), className)} {...props}>
       {typeof children === "string" ? (
-        <Text className={cn(badgeTextVariants({ variant }), textClass)}>
-          {children}
-        </Text>
+        <Text className={cn(badgeTextVariants({ variant }), textClass)}>{children}</Text>
       ) : (
         children
       )}

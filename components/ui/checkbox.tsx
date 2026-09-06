@@ -18,11 +18,9 @@ export function Checkbox({ checked, onCheckedChange, className }: CheckboxProps)
     <Pressable
       onPress={() => onCheckedChange(!checked)}
       className={cn(
-        "h-5 w-5 rounded-sm border items-center justify-center",
-        checked
-          ? "bg-primary border-primary"
-          : "bg-transparent border-input",
-        className
+        "h-5 w-5 items-center justify-center rounded-sm border",
+        checked ? "border-primary bg-primary" : "border-input bg-transparent",
+        className,
       )}
     >
       {checked && <Check size={14} color={isDark ? "#09090b" : "#ffffff"} />}

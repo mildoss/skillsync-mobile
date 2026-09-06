@@ -27,38 +27,33 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  }
+  },
 );
 
-const buttonTextVariants = cva(
-  "text-sm font-medium",
-  {
-    variants: {
-      variant: {
-        default: "text-primary-foreground",
-        outline: "text-foreground",
-        secondary: "text-secondary-foreground",
-        ghost: "text-foreground",
-        destructive: "text-destructive",
-        link: "text-primary underline",
-      },
-      size: {
-        default: "text-sm",
-        sm: "text-xs",
-        lg: "text-base",
-        icon: "",
-      },
+const buttonTextVariants = cva("text-sm font-medium", {
+  variants: {
+    variant: {
+      default: "text-primary-foreground",
+      outline: "text-foreground",
+      secondary: "text-secondary-foreground",
+      ghost: "text-foreground",
+      destructive: "text-destructive",
+      link: "text-primary underline",
     },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
+    size: {
+      default: "text-sm",
+      sm: "text-xs",
+      lg: "text-base",
+      icon: "",
     },
-  }
-);
+  },
+  defaultVariants: {
+    variant: "default",
+    size: "default",
+  },
+});
 
-export interface ButtonProps
-  extends PressableProps,
-    VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends PressableProps, VariantProps<typeof buttonVariants> {
   children?: React.ReactNode;
   textClass?: string;
   className?: string;
@@ -67,11 +62,7 @@ export interface ButtonProps
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
   ({ className, textClass, variant, size, children, ...props }, ref) => {
     return (
-      <Pressable
-        ref={ref}
-        className={cn(buttonVariants({ variant, size, className }))}
-        {...props}
-      >
+      <Pressable ref={ref} className={cn(buttonVariants({ variant, size, className }))} {...props}>
         {typeof children === "string" ? (
           <Text className={cn(buttonTextVariants({ variant, size, className: textClass }))}>
             {children}
@@ -81,7 +72,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
         )}
       </Pressable>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 

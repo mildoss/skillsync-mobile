@@ -27,19 +27,15 @@ export const CandidateCard = ({ candidate }: CandidateCardProps) => {
   return (
     <Pressable
       onPress={handlePress}
-      className="mb-4 bg-card rounded-lg border border-border p-4 shadow-sm active:opacity-80"
+      className="mb-4 rounded-lg border border-border bg-card p-4 shadow-sm active:opacity-80"
     >
       <View className="mb-4 flex-row items-start gap-4">
-        <CustomAvatar
-          imageUrl={candidate.avatarUrl}
-          fallbackText={candidate.name}
-          size="sm"
-        />
+        <CustomAvatar imageUrl={candidate.avatarUrl} fallbackText={candidate.name} size="sm" />
         <View className="flex-1">
-          <Text className="text-primary text-lg font-semibold leading-tight">
+          <Text className="text-lg font-semibold leading-tight text-primary">
             {candidate.position || "Position not specified"}
           </Text>
-          <Text className="text-muted-foreground text-sm font-medium mt-1">
+          <Text className="mt-1 text-sm font-medium text-muted-foreground">
             {candidate.name} {candidate.surname}
           </Text>
         </View>
@@ -59,19 +55,15 @@ export const CandidateCard = ({ candidate }: CandidateCardProps) => {
         )}
 
         {candidate.location && (
-          <Text className="text-sm text-muted-foreground">
-            · {formatEnum(candidate.location)}
-          </Text>
+          <Text className="text-sm text-muted-foreground">· {formatEnum(candidate.location)}</Text>
         )}
-        
+
         <Text className="text-sm text-muted-foreground">
           · {formatExperience(candidate.experience?.toString() || null)}
         </Text>
-        
+
         {candidate.category && (
-          <Text className="text-sm text-muted-foreground">
-            · {candidate.category.name}
-          </Text>
+          <Text className="text-sm text-muted-foreground">· {candidate.category.name}</Text>
         )}
       </View>
 
@@ -84,10 +76,7 @@ export const CandidateCard = ({ candidate }: CandidateCardProps) => {
       </View>
 
       {candidate.about && (
-        <Text 
-          className="text-sm text-foreground leading-relaxed" 
-          numberOfLines={3}
-        >
+        <Text className="text-sm leading-relaxed text-foreground" numberOfLines={3}>
           {candidate.about}
         </Text>
       )}

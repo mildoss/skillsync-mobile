@@ -12,6 +12,6 @@ export type AiDraftResponse = {
   data?: {
     score: number;
     reason: string;
-  }; 
+  };
   createdAt: string;
 };

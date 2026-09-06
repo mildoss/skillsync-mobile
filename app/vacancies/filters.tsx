@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { FilterSection } from "@/components/ui/filters/FilterSection";
 import { FilterCheckboxGroup } from "@/components/ui/filters/FilterCheckboxGroup";
 import { getCategories, getSkills, getDomains, getLanguages } from "@/lib/api";
-import { WORK_FORMATS, EXPERIENCE_OPTIONS, COMPANY_TYPES, LOCATION_OPTIONS, mapToOptions } from "@/lib/utils";
+import {
+  WORK_FORMATS,
+  EXPERIENCE_OPTIONS,
+  COMPANY_TYPES,
+  LOCATION_OPTIONS,
+  mapToOptions,
+} from "@/lib/utils";
 import { X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 
@@ -23,25 +29,30 @@ export default function FiltersModal() {
   const [domains, setDomains] = useState<any[]>([]);
   const [languages, setLanguages] = useState<any[]>([]);
 
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedExperience, setSelectedExperience] = useState<string[]>([]);
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
-  const [selectedCompanyTypes, setSelectedCompanyTypes] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (params.skills) setSelectedSkills((params.skills as string).split(","));
-    if (params.categoryId) setSelectedCategories((params.categoryId as string).split(","));
-    if (params.domain) setSelectedDomains((params.domain as string).split(","));
-    if (params.languages) setSelectedLanguages((params.languages as string).split(","));
-    if (params.type) setSelectedTypes((params.type as string).split(","));
-    if (params.experience) setSelectedExperience((params.experience as string).split(","));
-    if (params.location) setSelectedLocations((params.location as string).split(","));
-    if (params.companyType) setSelectedCompanyTypes((params.companyType as string).split(","));
-  }, []);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(() =>
+    params.skills ? (params.skills as string).split(",") : [],
+  );
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(() =>
+    params.categoryId ? (params.categoryId as string).split(",") : [],
+  );
+  const [selectedDomains, setSelectedDomains] = useState<string[]>(() =>
+    params.domain ? (params.domain as string).split(",") : [],
+  );
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>(() =>
+    params.languages ? (params.languages as string).split(",") : [],
+  );
+  const [selectedTypes, setSelectedTypes] = useState<string[]>(() =>
+    params.type ? (params.type as string).split(",") : [],
+  );
+  const [selectedExperience, setSelectedExperience] = useState<string[]>(() =>
+    params.experience ? (params.experience as string).split(",") : [],
+  );
+  const [selectedLocations, setSelectedLocations] = useState<string[]>(() =>
+    params.location ? (params.location as string).split(",") : [],
+  );
+  const [selectedCompanyTypes, setSelectedCompanyTypes] = useState<string[]>(() =>
+    params.companyType ? (params.companyType as string).split(",") : [],
+  );
 
   useEffect(() => {
     const fetchDictionaries = async () => {
@@ -99,9 +110,12 @@ export default function FiltersModal() {
         <Text className="text-xl font-bold text-foreground">Filters</Text>
         <View className="flex-row items-center">
           <Pressable onPress={handleClear} className="mr-4">
-            <Text className="text-primary font-medium text-sm">Clear all</Text>
+            <Text className="text-sm font-medium text-primary">Clear all</Text>
           </Pressable>
-          <Pressable onPress={() => router.back()} className="p-2 -mr-2 rounded-full active:bg-muted">
+          <Pressable
+            onPress={() => router.back()}
+            className="-mr-2 rounded-full p-2 active:bg-muted"
+          >
             <X size={24} color={isDark ? "#ffffff" : "#09090b"} />
           </Pressable>
         </View>
@@ -190,7 +204,7 @@ export default function FiltersModal() {
 
       <View
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
-        className="px-6 pt-4 bg-background border-t border-border"
+        className="border-t border-border bg-background px-6 pt-4"
       >
         <Button size="lg" onPress={handleApply} className="w-full">
           Show Results

@@ -43,9 +43,9 @@ export const CustomAvatar = ({
   return (
     <View
       className={cn(
-        "bg-muted-foreground flex items-center justify-center rounded-xl shadow-sm",
+        "flex items-center justify-center rounded-xl bg-muted-foreground shadow-sm",
         currentSizeClass,
-        className
+        className,
       )}
     >
       <Text className={cn("font-bold text-white", currentTextClass)}>

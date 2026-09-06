@@ -35,14 +35,12 @@ const fetchJson = async <T>(url: string, retries = 2): Promise<T> => {
 export const getUsers = async (queryParams: URLSearchParams) =>
   fetchJson<UsersResponse>(`${API_URL}/users?${queryParams}`);
 
-export const getUser = async (id: string) =>
-  fetchJson<User>(`${API_URL}/users/${id}`);
+export const getUser = async (id: string) => fetchJson<User>(`${API_URL}/users/${id}`);
 
 export const getVacancies = async (queryParams: URLSearchParams) =>
   fetchJson<VacanciesResponse>(`${API_URL}/vacancies?${queryParams}`);
 
-export const getVacancy = async (id: string) =>
-  fetchJson<Vacancy>(`${API_URL}/vacancies/${id}`);
+export const getVacancy = async (id: string) => fetchJson<Vacancy>(`${API_URL}/vacancies/${id}`);
 
 export const getCompanies = async (queryParams: URLSearchParams) =>
   fetchJson<CompaniesResponse>(`${API_URL}/companies?${queryParams}`);
@@ -52,10 +50,7 @@ export const getCompany = async (idOrSlug: string) =>
 
 export const getCategories = async () =>
   fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/categories`);
-export const getSkills = async () =>
-  fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/skills`);
+export const getSkills = async () => fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/skills`);
 export const getLanguages = async () =>
   fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/languages`);
-export const getDomains = async () =>
-  fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/domains`);
-
+export const getDomains = async () => fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/domains`);

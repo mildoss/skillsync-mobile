@@ -10,7 +10,7 @@ export type Message = {
   isSystem?: boolean;
   createdAt: string;
   sender: Pick<User, "id" | "name" | "surname" | "avatarUrl" | "position">;
-}
+};
 
 export type ChatRoom = {
   id: string;
@@ -36,4 +36,4 @@ export type ChatRoom = {
   _count: {
     messages: number;
   };
-}
+};

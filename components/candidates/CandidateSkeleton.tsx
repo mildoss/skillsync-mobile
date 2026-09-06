@@ -4,11 +4,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export const CandidateSkeleton = () => {
   return (
-    <View className="mb-4 bg-card rounded-lg border border-border p-4 shadow-sm">
+    <View className="mb-4 rounded-lg border border-border bg-card p-4 shadow-sm">
       <View className="mb-4 flex-row items-start gap-4">
         <Skeleton className="h-10 w-10 rounded-full" />
         <View className="flex-1 justify-center py-1">
-          <Skeleton className="h-5 w-2/3 mb-2" />
+          <Skeleton className="mb-2 h-5 w-2/3" />
           <Skeleton className="h-4 w-1/2" />
         </View>
       </View>

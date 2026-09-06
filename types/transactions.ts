@@ -5,4 +5,4 @@ export type Transaction = {
   creditsAdded: number;
   status: "PENDING" | "COMPLETED" | "FAILED";
   createdAt: string;
-}
+};
