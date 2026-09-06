@@ -20,6 +20,8 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="vacancies/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="vacancies/filters" options={{ presentation: 'modal', headerShown: false }} />
+        <Stack.Screen name="candidates/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="candidates/filters" options={{ presentation: 'modal', headerShown: false }} />
       </Stack>
     </QueryClientProvider>
   );

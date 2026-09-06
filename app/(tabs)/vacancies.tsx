@@ -30,7 +30,7 @@ export default function VacanciesScreen() {
             </Text>
           </View>
           <Pressable 
-            onPress={() => router.push("/vacancies/filters")}
+            onPress={() => router.push({ pathname: "/vacancies/filters", params })}
             className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center relative"
           >
             <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
@@ -73,7 +73,7 @@ export default function VacanciesScreen() {
           </Text>
         </View>
         <Pressable 
-          onPress={() => router.push("/vacancies/filters")}
+          onPress={() => router.push({ pathname: "/vacancies/filters", params })}
           className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center relative"
         >
           <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
