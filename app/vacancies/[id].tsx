@@ -11,29 +11,32 @@ import { CustomAvatar } from "@/components/shared/CustomAvatar";
 import { ArrowLeft } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 
+
+
 export default function VacancyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
-  const [vacancy, setVacancy] = useState<Vacancy | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
 
+  const [vacancy, setVacancy] = useState<Vacancy | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const loadVacancy = async () => {
+    const fetchVacancy = async () => {
       try {
         setIsLoading(true);
         const data = await getVacancy(id);
         setVacancy(data);
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to load vacancy"));
+        setError(err instanceof Error ? err.message : "Failed to load vacancy");
       } finally {
         setIsLoading(false);
       }
     };
-    if (id) loadVacancy();
+    if (id) fetchVacancy();
   }, [id]);
 
   const handleApply = () => {
@@ -61,8 +64,7 @@ export default function VacancyDetailsScreen() {
 
   return (
     <View className="flex-1 bg-background">
-      {/* Header */}
-      <View 
+      <View
         style={{ paddingTop: Math.max(insets.top, 16) }}
         className="px-4 pb-3 border-b border-border flex-row items-center"
       >
@@ -75,7 +77,6 @@ export default function VacancyDetailsScreen() {
       </View>
 
       <ScrollView className="flex-1 px-4 py-6" contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* Company Info */}
         <View className="flex-row items-center mb-6">
           <CustomAvatar
             imageUrl={vacancy.company.logoUrl}
@@ -85,7 +86,7 @@ export default function VacancyDetailsScreen() {
           <View className="ml-4 flex-1">
             <Text className="text-lg font-semibold text-foreground">{vacancy.company.name}</Text>
             {vacancy.company.websiteUrl && (
-              <Text 
+              <Text
                 className="text-primary text-sm mt-1"
                 onPress={() => Linking.openURL(vacancy.company.websiteUrl!)}
               >
@@ -95,13 +96,11 @@ export default function VacancyDetailsScreen() {
           </View>
         </View>
 
-        {/* Title and Salary */}
         <Text className="text-2xl font-bold text-foreground mb-2">{vacancy.title}</Text>
         <Text className="text-success text-xl font-bold mb-4">
           {formatSalary(vacancy.salaryMin, vacancy.salaryMax, vacancy.currency)}
         </Text>
 
-        {/* Badges / Details */}
         <View className="mb-6 flex-row flex-wrap gap-2 border-b border-border pb-6">
           <Badge variant="outline">{formatEnum(vacancy.type)}</Badge>
           <Badge variant="outline">{formatExperience(vacancy.experience)}</Badge>
@@ -109,15 +108,13 @@ export default function VacancyDetailsScreen() {
           {vacancy.category && <Badge variant="outline">{vacancy.category.name}</Badge>}
         </View>
 
-        {/* Description */}
         <Text className="text-lg font-bold text-foreground mb-2">Description</Text>
         <Text className="text-foreground text-base leading-relaxed mb-6">
           {vacancy.description}
         </Text>
 
-        {/* Requirements */}
         <Text className="text-xl font-bold text-foreground mb-4">Requirements</Text>
-        
+
         {vacancy.skills && vacancy.skills.length > 0 && (
           <View className="mb-4">
             <Text className="text-base font-semibold text-foreground mb-2">Skills</Text>
@@ -143,15 +140,14 @@ export default function VacancyDetailsScreen() {
             </View>
           </View>
         )}
-        
+
         <Text className="text-muted-foreground text-sm text-center mb-8">
           Posted on {formatDate(vacancy.createdAt)}
         </Text>
       </ScrollView>
 
-      {/* Floating Apply Button */}
-      <View 
-        style={{ paddingBottom: Math.max(insets.bottom, 16) }} 
+      <View
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         className="px-6 pt-4 bg-background border-t border-border"
       >
         <Button size="lg" onPress={handleApply} className="w-full">

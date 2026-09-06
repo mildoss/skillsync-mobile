@@ -23,7 +23,6 @@ export default function FiltersModal() {
   const [domains, setDomains] = useState<any[]>([]);
   const [languages, setLanguages] = useState<any[]>([]);
 
-  // Local state for selected filters
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
@@ -33,7 +32,6 @@ export default function FiltersModal() {
   const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
   const [selectedCompanyTypes, setSelectedCompanyTypes] = useState<string[]>([]);
 
-  // Parse existing params on mount
   useEffect(() => {
     if (params.skills) setSelectedSkills((params.skills as string).split(","));
     if (params.categoryId) setSelectedCategories((params.categoryId as string).split(","));
@@ -97,7 +95,6 @@ export default function FiltersModal() {
 
   return (
     <View className="flex-1 bg-background">
-      {/* Header */}
       <View className="flex-row items-center justify-between border-b border-border px-4 py-4">
         <Text className="text-xl font-bold text-foreground">Filters</Text>
         <View className="flex-row items-center">
@@ -191,9 +188,8 @@ export default function FiltersModal() {
         )}
       </ScrollView>
 
-      {/* Footer */}
-      <View 
-        style={{ paddingBottom: Math.max(insets.bottom, 16) }} 
+      <View
+        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         className="px-6 pt-4 bg-background border-t border-border"
       >
         <Button size="lg" onPress={handleApply} className="w-full">

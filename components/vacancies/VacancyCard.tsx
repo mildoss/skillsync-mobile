@@ -19,7 +19,7 @@ export const VacancyCard = ({ vacancy }: VacancyCardProps) => {
 
   const handleSkillPress = (skillId: string) => {
     router.push({
-      pathname: "/(tabs)/",
+      pathname: "/(tabs)/vacancies",
       params: { skills: skillId },
     });
   };

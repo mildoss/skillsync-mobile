@@ -1,62 +1,38 @@
-import { useState, useEffect, useCallback } from "react";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { getVacancies } from "@/lib/api";
-import { Vacancy } from "@/types/vacancies";
 
-export function useVacancies() {
-  const [vacancies, setVacancies] = useState<Vacancy[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
-
-  const fetchVacancies = useCallback(
-    async (pageNumber: number, isInitial = false) => {
-      try {
-        if (isInitial) {
-          setIsLoading(true);
-        } else {
-          setIsFetchingNextPage(true);
+export function useVacancies(params: Record<string, string | string[]> = {}) {
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["vacancies", params],
+    queryFn: async ({ pageParam = 1 }) => {
+      const queryParams = new URLSearchParams();
+      queryParams.append("page", pageParam.toString());
+      
+      Object.entries(params).forEach(([key, value]) => {
+        if (value) {
+          queryParams.append(key, Array.isArray(value) ? value.join(",") : value);
         }
-        setError(null);
+      });
 
-        const queryParams = new URLSearchParams();
-        queryParams.append("page", pageNumber.toString());
-
-        const response = await getVacancies(queryParams);
-
-        if (isInitial) {
-          setVacancies(response.data);
-        } else {
-          setVacancies((prev) => [...prev, ...response.data]);
-        }
-        setTotalPages(response.meta.totalPages);
-      } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to fetch vacancies"));
-      } finally {
-        setIsLoading(false);
-        setIsFetchingNextPage(false);
-      }
+      const response = await getVacancies(queryParams);
+      return response;
     },
-    []
-  );
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) => {
+      const nextPage = allPages.length + 1;
+      return nextPage <= lastPage.meta.totalPages ? nextPage : undefined;
+    },
+  });
 
-  useEffect(() => {
-    fetchVacancies(1, true);
-  }, [fetchVacancies]);
-
-  const fetchNextPage = () => {
-    if (!isFetchingNextPage && !isLoading && page < totalPages) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchVacancies(nextPage, false);
-    }
-  };
-
-  const refresh = () => {
-    setPage(1);
-    fetchVacancies(1, true);
-  };
+  const vacancies = data?.pages.flatMap((page) => page.data) ?? [];
 
   return {
     vacancies,
@@ -64,7 +40,7 @@ export function useVacancies() {
     isFetchingNextPage,
     error,
     fetchNextPage,
-    refresh,
-    hasNextPage: page < totalPages,
+    refresh: refetch,
+    hasNextPage,
   };
 }

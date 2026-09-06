@@ -1,27 +1,61 @@
 import React from "react";
-import { View, Text, FlatList, ActivityIndicator, RefreshControl } from "react-native";
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useVacancies } from "@/hooks/useVacancies";
 import { VacancyCard } from "@/components/vacancies/VacancyCard";
+import { VacancySkeleton } from "@/components/vacancies/VacancySkeleton";
+import { Filter } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 
 export default function VacanciesScreen() {
-  const { vacancies, isLoading, isFetchingNextPage, error, fetchNextPage, refresh } = useVacancies();
+  const params = useLocalSearchParams();
+  const { vacancies, isLoading, isFetchingNextPage, error, fetchNextPage, refresh, hasNextPage } = useVacancies(params);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  const router = useRouter();
+  
+  const filterCount = Object.keys(params).length;
 
   if (isLoading && vacancies.length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-background justify-center items-center">
-        <ActivityIndicator size="large" color={isDark ? "#ffffff" : "#4f46e5"} />
+      <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
+        <View className="px-4 py-4 border-b border-border flex-row justify-between items-center">
+          <View>
+            <Text className="text-3xl font-bold tracking-tight text-foreground">
+              Vacancies
+            </Text>
+            <Text className="text-muted-foreground my-1">
+              Find your dream job
+            </Text>
+          </View>
+          <Pressable 
+            onPress={() => router.push("/vacancies/filters")}
+            className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center relative"
+          >
+            <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
+            {filterCount > 0 && (
+              <View className="absolute -top-1 -right-1 bg-destructive h-5 w-5 rounded-full items-center justify-center border-2 border-background">
+                <Text className="text-[10px] font-bold text-destructive-foreground">
+                  {filterCount}
+                </Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
+        <ScrollView contentContainerStyle={{ padding: 16 }}>
+          {Array.from({ length: 5 }).map((_, i) => (
+            <VacancySkeleton key={i} />
+          ))}
+        </ScrollView>
       </SafeAreaView>
     );
   }
 
-  if (error && vacancies.length === 0) {
+  if (error) {
     return (
       <SafeAreaView className="flex-1 bg-background justify-center items-center p-4">
-        <Text className="text-destructive text-lg text-center mb-2">Error loading vacancies</Text>
+        <Text className="text-destructive font-semibold mb-2">Something went wrong</Text>
         <Text className="text-muted-foreground text-center">{error.message}</Text>
       </SafeAreaView>
     );
@@ -29,13 +63,28 @@ export default function VacanciesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-      <View className="px-4 py-4 border-b border-border">
-        <Text className="text-3xl font-bold tracking-tight text-foreground">
-          Search for vacancies
-        </Text>
-        <Text className="text-muted-foreground my-1">
-          Find your dream job among hundreds of offers
-        </Text>
+      <View className="px-4 py-4 border-b border-border flex-row justify-between items-center">
+        <View>
+          <Text className="text-3xl font-bold tracking-tight text-foreground">
+            Vacancies
+          </Text>
+          <Text className="text-muted-foreground my-1">
+            Find your dream job
+          </Text>
+        </View>
+        <Pressable 
+          onPress={() => router.push("/vacancies/filters")}
+          className="h-10 w-10 bg-primary/10 rounded-full items-center justify-center relative"
+        >
+          <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
+          {filterCount > 0 ? (
+            <View className="absolute -top-1 -right-1 bg-destructive h-5 w-5 rounded-full items-center justify-center border-2 border-background">
+              <Text className="text-[10px] font-bold text-destructive-foreground">
+                {filterCount}
+              </Text>
+            </View>
+          ) : null}
+        </Pressable>
       </View>
       
       <FlatList
@@ -43,7 +92,11 @@ export default function VacanciesScreen() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <VacancyCard vacancy={item} />}
         contentContainerStyle={{ padding: 16 }}
-        onEndReached={fetchNextPage}
+        onEndReached={() => {
+          if (hasNextPage) {
+            fetchNextPage();
+          }
+        }}
         onEndReachedThreshold={0.5}
         refreshControl={
           <RefreshControl
