@@ -24,6 +24,7 @@ export type Vacancy = {
     name: string;
     logoUrl: string | null;
     companyType: string;
+    websiteUrl?: string | null;
   };
   currency: string;
   salaryMin: number | null;
