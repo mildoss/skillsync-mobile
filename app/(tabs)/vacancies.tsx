@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -105,7 +105,6 @@ export default function VacanciesScreen() {
         </View>
       </View>
 
-      {/* Content Area */}
       {isLoading && vacancies.length === 0 ? (
         <ScrollView contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
           {Array.from({ length: 5 }).map((_, i) => (

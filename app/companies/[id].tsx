@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -180,7 +180,6 @@ export default function CompanyDetailsScreen() {
               </Text>
             </View>
           )}
-
         </View>
       </ScrollView>
 

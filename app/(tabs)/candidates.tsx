@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   View,
   Text,
@@ -60,7 +60,6 @@ export default function CandidatesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-      {/* Header with Title, Filter Button, and Search Bar */}
       <View className="border-b border-border/40 px-4 pb-3 pt-2">
         <View className="flex-row items-center justify-between">
           <View>
@@ -105,7 +104,6 @@ export default function CandidatesScreen() {
         </View>
       </View>
 
-      {/* Content Area */}
       {isLoading && candidates.length === 0 ? (
         <ScrollView contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
           {Array.from({ length: 5 }).map((_, i) => (

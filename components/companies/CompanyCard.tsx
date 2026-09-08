@@ -23,34 +23,30 @@ export const CompanyCard = ({ company }: CompanyCardProps) => {
   return (
     <Pressable
       onPress={handlePress}
-      className="mb-4 bg-card rounded-lg border border-border p-4 shadow-sm active:opacity-80"
+      className="mb-4 rounded-lg border border-border bg-card p-4 shadow-sm active:opacity-80"
     >
       <View className="mb-4 flex-row items-start gap-4">
-        <CustomAvatar
-          imageUrl={company.logoUrl}
-          fallbackText={company.name}
-          size="md"
-        />
+        <CustomAvatar imageUrl={company.logoUrl} fallbackText={company.name} size="md" />
         <View className="flex-1">
-          <Text className="text-primary text-lg font-bold leading-tight" numberOfLines={1}>
+          <Text className="text-lg font-bold leading-tight text-primary" numberOfLines={1}>
             {company.name}
           </Text>
           <View className="mt-2 self-start">
-            <Badge variant="secondary">
-              {company.companyType}
-            </Badge>
+            <Badge variant="secondary">{company.companyType}</Badge>
           </View>
         </View>
       </View>
 
-      <Text className="text-muted-foreground text-sm leading-relaxed mb-4" numberOfLines={2}>
+      <Text className="mb-4 text-sm leading-relaxed text-muted-foreground" numberOfLines={2}>
         {company.description || "No description provided."}
       </Text>
 
       <View className="flex-row items-center gap-4 border-t border-border pt-4">
         <View className="flex-row items-center gap-1.5">
           <Briefcase size={16} color={isDark ? "#a1a1aa" : "#71717a"} />
-          <Text className={`text-sm font-medium ${company._count.vacancies > 0 ? 'text-success' : 'text-muted-foreground'}`}>
+          <Text
+            className={`text-sm font-medium ${company._count.vacancies > 0 ? "text-success" : "text-muted-foreground"}`}
+          >
             {company._count.vacancies} vacancies
           </Text>
         </View>
