@@ -21,6 +21,7 @@ export default function RootLayout() {
           name="vacancies/filters"
           options={{ presentation: "modal", headerShown: false }}
         />
+        <Stack.Screen name="companies/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="candidates/[id]" options={{ headerShown: false }} />
         <Stack.Screen
           name="candidates/filters"
