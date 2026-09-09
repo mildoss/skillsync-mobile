@@ -57,8 +57,8 @@ export default function CandidateFiltersModal() {
         setCategories(c);
         setSkills(s);
         setLanguages(l);
-      } catch (e) {
-        console.error(e);
+      } catch {
+        // Silently handle dictionary fetch failure
       } finally {
         setIsLoading(false);
       }

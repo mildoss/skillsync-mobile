@@ -67,8 +67,8 @@ export default function FiltersModal() {
         setSkills(s);
         setDomains(d);
         setLanguages(l);
-      } catch (e) {
-        console.error(e);
+      } catch {
+        // Silently handle dictionary fetch failure
       } finally {
         setIsLoading(false);
       }
