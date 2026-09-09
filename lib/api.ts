@@ -2,40 +2,25 @@ import { VacanciesResponse, Vacancy } from "@/types/vacancies";
 import { Dictionaries } from "@/types/dictionaries";
 import { User, UsersResponse } from "@/types/users";
 import { CompaniesResponse, CompanyDetail } from "@/types/companies";
-
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
-
-const fetchJson = async <T>(url: string, retries = 2): Promise<T> => {
-  try {
-    const res = await fetch(url);
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status} ${res.statusText} for ${url}`);
-    }
-
-    const data: unknown = await res.json();
-
-    return data as T;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unknown error";
-
-    if (retries > 0) {
-      console.warn(`⚠️ Request failed: ${message}. Retrying in 500ms...`);
-      await delay(500);
-      return fetchJson<T>(url, retries - 1);
-    }
-
-    console.error(`❌ Final fetch error for ${url}:`, message);
-    throw new Error(`Failed after retries: ${message}`);
-  }
-};
+import { LoginInput, RegisterInput } from "@/lib/validation/auth";
+import { AuthResponse } from "@/types/auth";
+import { API_URL, fetchJson } from "@/lib/utils";
 
 export const getUsers = async (queryParams: URLSearchParams) =>
   fetchJson<UsersResponse>(`${API_URL}/users?${queryParams}`);
 
 export const getUser = async (id: string) => fetchJson<User>(`${API_URL}/users/${id}`);
+
+export const getMe = async (explicitToken?: string): Promise<User | null> => {
+  try {
+    const options: RequestInit = explicitToken
+      ? { headers: { Authorization: `Bearer ${explicitToken}` } }
+      : {};
+    return await fetchJson<User>(`${API_URL}/users/me`, options);
+  } catch {
+    return null;
+  }
+};
 
 export const getVacancies = async (queryParams: URLSearchParams) =>
   fetchJson<VacanciesResponse>(`${API_URL}/vacancies?${queryParams}`);
@@ -54,3 +39,17 @@ export const getSkills = async () => fetchJson<Dictionaries[]>(`${API_URL}/dicti
 export const getLanguages = async () =>
   fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/languages`);
 export const getDomains = async () => fetchJson<Dictionaries[]>(`${API_URL}/dictionaries/domains`);
+
+export const loginApi = async (data: LoginInput) =>
+  fetchJson<AuthResponse>(`${API_URL}/auth/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+export const registerApi = async (data: RegisterInput) =>
+  fetchJson<AuthResponse>(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });

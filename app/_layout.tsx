@@ -2,14 +2,29 @@ import "../global.css";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
-
+import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
+import { useAuthStore } from "@/store/useAuthStore";
+import { getMe } from "@/lib/api";
 export { ErrorBoundary } from "expo-router";
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
+  const { hydrate, isHydrated, setUser, accessToken } = useAuthStore();
+
+  useEffect(() => {
+    hydrate();
+  }, [hydrate]);
+
+  useEffect(() => {
+    if (isHydrated && accessToken) {
+      getMe().then((user) => {
+        if (user) setUser(user);
+      });
+    }
+  }, [isHydrated, accessToken, setUser]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="light" />

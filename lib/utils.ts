@@ -108,3 +108,129 @@ export const EXPERIENCE_OPTIONS = [
   { label: "4 years", value: "4" },
   { label: "5+ years", value: "5" },
 ];
+
+import { useAuthStore } from "@/store/useAuthStore";
+
+export const API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+const onRefreshed = (token: string) => {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+};
+
+const addRefreshSubscriber = (callback: (token: string) => void) => {
+  refreshSubscribers.push(callback);
+};
+
+export const fetchJson = async <T>(
+  url: string,
+  options: RequestInit = {},
+  retries = 2,
+): Promise<T> => {
+  try {
+    const { accessToken } = useAuthStore.getState();
+    const existingHeaders = (options.headers || {}) as Record<string, string>;
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+      ...existingHeaders,
+    };
+
+    if (accessToken && !headers["Authorization"] && !headers["authorization"]) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    }
+
+    const res = await fetch(url, { ...options, headers });
+
+    if (res.status === 401) {
+      const { refreshToken, logout, updateTokens } = useAuthStore.getState();
+
+      if (!refreshToken) {
+        logout();
+        throw new Error("Unauthorized");
+      }
+
+      let newToken = accessToken;
+
+      if (!isRefreshing) {
+        isRefreshing = true;
+        try {
+          const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Cookie: `refresh-token=${refreshToken}`,
+            },
+          });
+
+          if (!refreshRes.ok) throw new Error("Refresh failed");
+
+          const newTokens = await refreshRes.json();
+          const newAccess = newTokens["access-token"];
+          const newRefresh = newTokens["refresh-token"];
+
+          await updateTokens(newAccess, newRefresh);
+          isRefreshing = false;
+          newToken = newAccess;
+          onRefreshed(newAccess);
+        } catch (e) {
+          isRefreshing = false;
+          refreshSubscribers = [];
+          logout();
+          throw new Error("Session expired. Please login again.");
+        }
+      } else {
+        newToken = await new Promise<string>((resolve) => {
+          addRefreshSubscriber(resolve);
+        });
+      }
+
+      const retryHeaders: Record<string, string> = {
+        ...headers,
+        Authorization: `Bearer ${newToken}`,
+      };
+
+      const retryRes = await fetch(url, { ...options, headers: retryHeaders });
+
+      if (!retryRes.ok) {
+        throw new Error(`HTTP ${retryRes.status} ${retryRes.statusText} for ${url}`);
+      }
+      return (await retryRes.json()) as T;
+    }
+
+    if (!res.ok) {
+      const errorData = (await res.json().catch(() => null)) as {
+        error?: string;
+        message?: string;
+      } | null;
+      const errorMsg =
+        errorData?.error || errorData?.message || `HTTP ${res.status} ${res.statusText}`;
+      const err = new Error(errorMsg);
+      (err as any).status = res.status;
+      throw err;
+    }
+
+    const data: unknown = await res.json();
+    return data as T;
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    const status = (error as any)?.status;
+    const isClientError = status && status >= 400 && status < 500;
+
+    if (
+      retries > 0 &&
+      !isClientError &&
+      message !== "Unauthorized" &&
+      !message.includes("Session expired")
+    ) {
+      await delay(500);
+      return fetchJson<T>(url, options, retries - 1);
+    }
+
+    throw new Error(message);
+  }
+};
