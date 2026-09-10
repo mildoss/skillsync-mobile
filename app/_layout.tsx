@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import { getMe } from "@/lib/api";
+import { ToastContainer } from "@/components/ui/toast";
 export { ErrorBoundary } from "expo-router";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <StatusBar style="light" />
+      <ToastContainer />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
