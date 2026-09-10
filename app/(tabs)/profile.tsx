@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { LogOut } from "lucide-react-native";
 import { cssInterop } from "nativewind";
-import { getMe } from "@/lib/api";
+import { getMe, getCategories, getSkills, getLanguages } from "@/lib/api";
+import { EmployerProfileForm } from "@/components/profile/EmployerProfileForm";
+import { ApplicantProfileForm } from "@/components/profile/ApplicantProfileForm";
+import { Dictionaries } from "@/types/dictionaries";
 
 cssInterop(LogOut, {
   className: {
@@ -20,6 +23,10 @@ cssInterop(LogOut, {
 export default function ProfileScreen() {
   const { isAuthenticated, user, logout, setUser } = useAuthStore();
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [categories, setCategories] = useState<Dictionaries[]>([]);
+  const [skills, setSkills] = useState<Dictionaries[]>([]);
+  const [languages, setLanguages] = useState<Dictionaries[]>([]);
+  const [isFetchingDictionaries, setIsFetchingDictionaries] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated && !user) {
@@ -28,6 +35,30 @@ export default function ProfileScreen() {
       });
     }
   }, [isAuthenticated, user, setUser]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (user?.role === "APPLICANT") {
+      Promise.resolve().then(() => {
+        if (isMounted) setIsFetchingDictionaries(true);
+      });
+      Promise.all([getCategories(), getSkills(), getLanguages()])
+        .then(([c, s, l]) => {
+          if (isMounted) {
+            setCategories(c);
+            setSkills(s);
+            setLanguages(l);
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          if (isMounted) setIsFetchingDictionaries(false);
+        });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.role]);
 
   if (!isAuthenticated) {
     return (
@@ -43,40 +74,46 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background">
-      <View className="flex-row items-center justify-between border-b border-border px-4 py-6">
-        <Text className="text-2xl font-bold text-foreground">Profile</Text>
-        <TouchableOpacity onPress={logout} className="p-2">
-          <LogOut className="text-red-500" size={24} />
+      <View className="flex-row items-center justify-between border-b border-border px-4 py-4">
+        <View className="mr-3 flex-1">
+          <Text className="text-2xl font-bold tracking-tight text-foreground">My Profile</Text>
+          <Text className="text-sm text-muted-foreground">
+            {user?.role === "EMPLOYER"
+              ? "Update your personal details. Candidates will see this when you interact with them."
+              : "Fill out your resume to apply for top jobs and get noticed by recruiters."}
+          </Text>
+        </View>
+        <TouchableOpacity
+          onPress={logout}
+          className="shrink-0 rounded-xl bg-destructive/10 p-2.5"
+          accessibilityLabel="Logout"
+        >
+          <LogOut className="text-destructive" size={22} />
         </TouchableOpacity>
       </View>
 
-      <View className="p-4">
-        <View className="items-center rounded-2xl border border-border bg-card p-6">
-          <View className="mb-4 h-20 w-20 items-center justify-center rounded-full bg-primary/20">
-            <Text className="text-2xl font-bold text-primary">
-              {user?.email ? user.email.charAt(0).toUpperCase() : "?"}
-            </Text>
+      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+        {!user ? (
+          <View className="items-center justify-center py-10">
+            <ActivityIndicator size="large" className="text-primary" />
           </View>
-          <Text className="mb-1 text-xl font-bold text-foreground">
-            {user?.name || (user?.email ? user.email.split("@")[0] : "Loading...")}
-          </Text>
-          <Text className="text-muted-foreground">{user?.email || "Fetching profile..."}</Text>
-
-          {user?.role && (
-            <View className="mt-4 rounded-full bg-primary/10 px-3 py-1">
-              <Text className="font-medium text-primary">{user.role}</Text>
+        ) : user.role === "EMPLOYER" ? (
+          <EmployerProfileForm user={user} />
+        ) : user.role === "APPLICANT" ? (
+          isFetchingDictionaries ? (
+            <View className="items-center justify-center py-10">
+              <ActivityIndicator size="large" className="text-primary" />
             </View>
-          )}
-        </View>
-
-        <View className="mt-8">
-          <Text className="mb-4 text-lg font-bold text-foreground">Settings</Text>
-          <TouchableOpacity className="flex-row items-center justify-between rounded-xl border border-border bg-card p-4">
-            <Text className="font-medium text-foreground">Theme</Text>
-            <Text className="text-muted-foreground">System</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          ) : (
+            <ApplicantProfileForm
+              user={user}
+              categories={categories}
+              skills={skills}
+              languages={languages}
+            />
+          )
+        ) : null}
+      </ScrollView>
     </SafeAreaView>
   );
 }

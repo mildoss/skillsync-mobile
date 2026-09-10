@@ -5,6 +5,8 @@ import { CompaniesResponse, CompanyDetail } from "@/types/companies";
 import { LoginInput, RegisterInput } from "@/lib/validation/auth";
 import { AuthResponse } from "@/types/auth";
 import { API_URL, fetchJson } from "@/lib/utils";
+import { useAuthStore } from "@/store/useAuthStore";
+import * as FileSystem from "expo-file-system/legacy";
 
 export const getUsers = async (queryParams: URLSearchParams) =>
   fetchJson<UsersResponse>(`${API_URL}/users?${queryParams}`);
@@ -53,3 +55,53 @@ export const registerApi = async (data: RegisterInput) =>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
   });
+
+export const updateUser = async (data: Record<string, any>) => {
+  return fetchJson<{ success: boolean; user?: User }>(`${API_URL}/users/me`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+};
+
+export const uploadAvatar = async (
+  fileUri: string,
+  mimeType: string,
+  fileName: string,
+): Promise<{ url: string }> => {
+  const { accessToken } = useAuthStore.getState();
+
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+  };
+
+  if (accessToken) {
+    headers["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  const res = await FileSystem.uploadAsync(`${API_URL}/media/upload-avatar`, fileUri, {
+    fieldName: "file",
+    httpMethod: "POST",
+    uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+    headers,
+    mimeType,
+  });
+
+  if (res.status >= 200 && res.status < 300) {
+    try {
+      const data = JSON.parse(res.body);
+      return data;
+    } catch {
+      return { url: "" };
+    }
+  } else {
+    let errorMsg = `Upload failed (status ${res.status})`;
+    try {
+      const errData = JSON.parse(res.body);
+      errorMsg = errData?.message || errData?.error || errorMsg;
+    } catch {
+      // ignore
+    }
+    throw new Error(errorMsg);
+  }
+};

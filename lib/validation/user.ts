@@ -45,14 +45,26 @@ export const updateApplicantProfileSchema = z.object({
   about: aboutSchema,
   skills: z.array(z.string()).default([]),
   languages: z.array(z.string()).default([]),
-  workFormats: z.array(z.nativeEnum(VacancyType)).default([]),
-  employmentTypes: z.array(z.nativeEnum(EmploymentType)).default([]),
+  workFormats: z
+    .array(z.enum([VacancyType.REMOTE, VacancyType.OFFICE, VacancyType.HYBRID]))
+    .default([]),
+  employmentTypes: z
+    .array(
+      z.enum([
+        EmploymentType.FULL_TIME,
+        EmploymentType.PART_TIME,
+        EmploymentType.FREELANCE,
+        EmploymentType.CONTRACT,
+      ]),
+    )
+    .default([]),
   avatarUrl: nullableUrlField,
   cvUrl: nullableUrlField,
   isActive: z.boolean().default(true),
 });
 
 export type UpdateEmployerProfileInput = z.infer<typeof updateEmployerProfileSchema>;
+export type EmployerProfileFormValues = z.input<typeof updateEmployerProfileSchema>;
 export type UpdateApplicantProfileInput = z.infer<typeof updateApplicantProfileSchema>;
 export type ApplicantProfileFormValues = z.input<typeof updateApplicantProfileSchema>;
 export type ApplicantProfileData = z.output<typeof updateApplicantProfileSchema>;

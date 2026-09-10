@@ -205,10 +205,16 @@ export const fetchJson = async <T>(
     if (!res.ok) {
       const errorData = (await res.json().catch(() => null)) as {
         error?: string;
-        message?: string;
+        message?: string | string[];
       } | null;
-      const errorMsg =
-        errorData?.error || errorData?.message || `HTTP ${res.status} ${res.statusText}`;
+      let errorMsg = `HTTP ${res.status} ${res.statusText}`;
+      if (errorData?.message) {
+        errorMsg = Array.isArray(errorData.message)
+          ? errorData.message.join(", ")
+          : errorData.message;
+      } else if (errorData?.error) {
+        errorMsg = errorData.error;
+      }
       const err = new Error(errorMsg);
       (err as any).status = res.status;
       throw err;
