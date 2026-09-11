@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TouchableOpacity, Modal, FlatList, Pressable } from "react-native";
 import { ChevronDown, X } from "lucide-react-native";
-import Animated, { SlideInDown } from "react-native-reanimated";
+import Animated, { SlideInDown, FadeIn } from "react-native-reanimated";
 
 export interface SelectOption {
   label: string;
@@ -13,9 +13,10 @@ interface SelectProps {
   value: string | undefined;
   onValueChange: (value: string) => void;
   placeholder?: string;
+  disabled?: boolean;
 }
 
-export function Select({ options, value, onValueChange, placeholder = "Select..." }: SelectProps) {
+export function Select({ options, value, onValueChange, placeholder = "Select...", disabled = false }: SelectProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const selectedOption = options.find((o) => o.value === value);
@@ -23,8 +24,11 @@ export function Select({ options, value, onValueChange, placeholder = "Select...
   return (
     <>
       <TouchableOpacity
-        onPress={() => setModalVisible(true)}
-        className="h-10 flex-row items-center justify-between rounded-lg border border-input bg-transparent px-3"
+        onPress={() => !disabled && setModalVisible(true)}
+        disabled={disabled}
+        className={`h-10 flex-row items-center justify-between rounded-lg border border-input bg-transparent px-3 ${
+          disabled ? "opacity-50" : ""
+        }`}
       >
         <Text className={selectedOption ? "text-foreground" : "text-muted-foreground"}>
           {selectedOption ? selectedOption.label : placeholder}
@@ -35,10 +39,10 @@ export function Select({ options, value, onValueChange, placeholder = "Select...
       <Modal
         visible={modalVisible}
         transparent
-        animationType="fade"
+        animationType="none"
         onRequestClose={() => setModalVisible(false)}
       >
-        <View className="flex-1 justify-end bg-black/60">
+        <Animated.View entering={FadeIn.duration(250)} className="flex-1 justify-end bg-black/60">
           <Pressable className="flex-1" onPress={() => setModalVisible(false)} />
           <Animated.View
             entering={SlideInDown.duration(250)}
@@ -71,7 +75,7 @@ export function Select({ options, value, onValueChange, placeholder = "Select...
               )}
             />
           </Animated.View>
-        </View>
+        </Animated.View>
       </Modal>
     </>
   );
