@@ -34,11 +34,13 @@ export const LoginForm = ({ onSwitchToRegister }: LoginFormProps) => {
       const refreshToken = responseData["refresh-token"];
 
       if (accessToken) {
-        await login(accessToken, refreshToken, null);
-        const user = await getMe(accessToken);
-        if (user) {
-          useAuthStore.getState().setUser(user);
+        let user = null;
+        try {
+          user = await getMe(accessToken);
+        } catch {
+          // fallback if getMe fails immediately
         }
+        await login(accessToken, refreshToken, user);
       }
     } catch (e: any) {
       setError(e.message || "Something went wrong. Please try again.");

@@ -47,11 +47,13 @@ export const RegisterForm = ({ onSwitchToLogin }: RegisterFormProps) => {
       const refreshToken = responseData["refresh-token"];
 
       if (accessToken) {
-        await login(accessToken, refreshToken, null);
-        const user = await getMe(accessToken);
-        if (user) {
-          useAuthStore.getState().setUser(user);
+        let user = null;
+        try {
+          user = await getMe(accessToken);
+        } catch {
+          // fallback if getMe fails immediately
         }
+        await login(accessToken, refreshToken, user);
       } else {
         onSwitchToLogin();
       }
