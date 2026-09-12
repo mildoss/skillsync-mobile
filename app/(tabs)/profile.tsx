@@ -6,9 +6,15 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 import { LogOut } from "lucide-react-native";
 import { cssInterop } from "nativewind";
-import { getMe, getCategories, getSkills, getLanguages } from "@/lib/api";
 import { EmployerProfileForm } from "@/components/profile/EmployerProfileForm";
 import { ApplicantProfileForm } from "@/components/profile/ApplicantProfileForm";
+import { getMe, getCategories, getSkills, getLanguages } from "@/lib/api";
+import { ProfileTabs, TabKey } from "@/components/profile/ProfileTabs";
+import { BillingTab } from "@/components/profile/BillingTab";
+import { RequireCompany } from "@/components/companies/RequireCompany";
+import { MyCompanyTab } from "@/components/companies/MyCompanyTab";
+import { MyVacanciesTab } from "@/components/companies/MyVacanciesTab";
+import { MyTeamTab } from "@/components/companies/MyTeamTab";
 import { Dictionaries } from "@/types/dictionaries";
 
 cssInterop(LogOut, {
@@ -27,6 +33,7 @@ export default function ProfileScreen() {
   const [skills, setSkills] = useState<Dictionaries[]>([]);
   const [languages, setLanguages] = useState<Dictionaries[]>([]);
   const [isFetchingDictionaries, setIsFetchingDictionaries] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabKey>("profile");
 
   useEffect(() => {
     if (isAuthenticated && !user) {
@@ -72,16 +79,19 @@ export default function ProfileScreen() {
     );
   }
 
+  if (!user || !user.role) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" className="text-primary" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-background">
       <View className="flex-row items-center justify-between border-b border-border px-4 py-4">
         <View className="mr-3 flex-1">
           <Text className="text-2xl font-bold tracking-tight text-foreground">My Profile</Text>
-          <Text className="text-sm text-muted-foreground">
-            {user?.role === "EMPLOYER"
-              ? "Update your personal details. Candidates will see this when you interact with them."
-              : "Fill out your resume to apply for top jobs and get noticed by recruiters."}
-          </Text>
         </View>
         <TouchableOpacity
           onPress={logout}
@@ -92,27 +102,43 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
+      {user && <ProfileTabs user={user} activeTab={activeTab} onChangeTab={setActiveTab} />}
+
       <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
         {!user ? (
           <View className="items-center justify-center py-10">
             <ActivityIndicator size="large" className="text-primary" />
           </View>
-        ) : user.role === "EMPLOYER" ? (
-          <EmployerProfileForm user={user} />
-        ) : user.role === "APPLICANT" ? (
-          isFetchingDictionaries ? (
-            <View className="items-center justify-center py-10">
-              <ActivityIndicator size="large" className="text-primary" />
-            </View>
-          ) : (
-            <ApplicantProfileForm
-              user={user}
-              categories={categories}
-              skills={skills}
-              languages={languages}
-            />
-          )
-        ) : null}
+        ) : activeTab === "billing" ? (
+          <BillingTab />
+        ) : activeTab === "company" || activeTab === "vacancies" || activeTab === "team" ? (
+          <RequireCompany user={user}>
+            {activeTab === "company" && <MyCompanyTab user={user} />}
+            {activeTab === "vacancies" && <MyVacanciesTab user={user} />}
+            {activeTab === "team" && <MyTeamTab user={user} />}
+          </RequireCompany>
+        ) : activeTab === "profile" ? (
+          user.role === "EMPLOYER" ? (
+            <EmployerProfileForm user={user} />
+          ) : user.role === "APPLICANT" ? (
+            isFetchingDictionaries ? (
+              <View className="items-center justify-center py-10">
+                <ActivityIndicator size="large" className="text-primary" />
+              </View>
+            ) : (
+              <ApplicantProfileForm
+                user={user}
+                categories={categories}
+                skills={skills}
+                languages={languages}
+              />
+            )
+          ) : null
+        ) : (
+          <View className="items-center justify-center py-10">
+            <Text className="text-muted-foreground">This tab is under construction.</Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
