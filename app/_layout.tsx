@@ -3,11 +3,17 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 import { useEffect } from "react";
+import { LogBox } from "react-native";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/useAuthStore";
 import { getMe } from "@/lib/api";
 import { ToastContainer } from "@/components/ui/toast";
 export { ErrorBoundary } from "expo-router";
+
+LogBox.ignoreLogs([
+  "[Reanimated]",
+  "Cannot connect to Expo CLI",
+]);
 
 const queryClient = new QueryClient();
 
