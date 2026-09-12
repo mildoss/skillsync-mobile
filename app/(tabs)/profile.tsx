@@ -138,7 +138,7 @@ export default function ProfileScreen() {
             <ActivityIndicator size="large" className="text-primary" />
           </View>
         ) : activeTab === "billing" ? (
-          <BillingTab />
+          <BillingTab user={user} />
         ) : activeTab === "company" || activeTab === "vacancies" || activeTab === "team" ? (
           <RequireCompany user={user}>
             {activeTab === "company" && <MyCompanyTab user={user} />}
