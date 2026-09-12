@@ -121,7 +121,7 @@ export const updateCompany = async (id: string, data: any) =>
   });
 
 export const getCompanyRequests = async (companyId: string) =>
-  fetchJson<{ data: any[] }>(`${API_URL}/companies/${companyId}/requests`);
+  fetchJson<any[]>(`${API_URL}/companies/${companyId}/requests`);
 
 export const handleJoinRequest = async (
   companyId: string,
@@ -151,7 +151,10 @@ export const joinCompany = async (companyId: string) => {
 };
 
 export const getMyRequests = async () =>
-  fetchJson<{ data: any[] }>(`${API_URL}/companies/requests/me`);
+  fetchJson<any[]>(`${API_URL}/companies/requests/me`);
+
+export const getMyVacancies = async () =>
+  fetchJson<Vacancy[]>(`${API_URL}/vacancies/my`);
 
 export const cancelJoinRequest = async (requestId: string) =>
   fetchJson<{ success: boolean }>(`${API_URL}/companies/requests/${requestId}`, {

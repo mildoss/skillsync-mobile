@@ -19,6 +19,8 @@ interface MyCompanyTabProps {
 }
 
 export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
+  if (!user) return null;
+
   const { setUser } = useAuthStore();
   const [company, setCompany] = useState<CompanyDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -71,6 +73,14 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
         }
       } catch (error) {
         console.error("Failed to fetch company", error);
+        try {
+          const freshUser = await getMe();
+          if (freshUser && isMounted) {
+            setUser(freshUser);
+          }
+        } catch {
+          // ignore
+        }
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -79,7 +89,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
     return () => {
       isMounted = false;
     };
-  }, [user.companyId, reset]);
+  }, [user.companyId, reset, setUser]);
 
   const name = watch("name");
   const logoUrl = watch("logoUrl");

@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
+import { useState, useEffect, useCallback } from "react";
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useFocusEffect } from "expo-router";
 import { useAuthStore } from "@/store/useAuthStore";
 import { LoginForm } from "@/components/auth/LoginForm";
 import { RegisterForm } from "@/components/auth/RegisterForm";
@@ -34,14 +35,35 @@ export default function ProfileScreen() {
   const [languages, setLanguages] = useState<Dictionaries[]>([]);
   const [isFetchingDictionaries, setIsFetchingDictionaries] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("profile");
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && !user) {
-      getMe().then((data) => {
-        if (data) setUser(data);
-      });
+  const fetchUserProfile = useCallback(async () => {
+    if (!isAuthenticated) return;
+    try {
+      const data = await getMe();
+      if (data) setUser(data);
+    } catch {
+      // ignore
     }
-  }, [isAuthenticated, user, setUser]);
+  }, [isAuthenticated, setUser]);
+
+  // Refresh user whenever screen gains focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserProfile();
+    }, [fetchUserProfile])
+  );
+
+  // Refresh user when changing tabs (e.g. going to My Company / My Team)
+  useEffect(() => {
+    fetchUserProfile();
+  }, [activeTab, fetchUserProfile]);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchUserProfile();
+    setRefreshing(false);
+  }, [fetchUserProfile]);
 
   useEffect(() => {
     let isMounted = true;
@@ -104,7 +126,13 @@ export default function ProfileScreen() {
 
       {user && <ProfileTabs user={user} activeTab={activeTab} onChangeTab={setActiveTab} />}
 
-      <ScrollView className="flex-1 p-4" showsVerticalScrollIndicator={false}>
+      <ScrollView
+        className="flex-1 p-4"
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />
+        }
+      >
         {!user ? (
           <View className="items-center justify-center py-10">
             <ActivityIndicator size="large" className="text-primary" />
