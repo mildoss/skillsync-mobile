@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, Switch } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createVacancy, getCategories, getSkills, getLanguages } from "@/lib/api";
+import { createVacancy, updateVacancy, getCategories, getSkills, getLanguages } from "@/lib/api";
 import { Dictionaries } from "@/types/dictionaries";
+import { Vacancy } from "@/types/vacancies";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -22,7 +23,8 @@ import {
   VacancyInput,
 } from "@/lib/validation/vacancy";
 
-interface CreateVacancyFormProps {
+interface VacancyFormProps {
+  initialData?: Vacancy;
   onBack: () => void;
   onSuccess: () => void;
 }
@@ -69,7 +71,12 @@ const MultiSelectGrid = ({
   );
 };
 
-export const CreateVacancyForm = ({ onBack, onSuccess }: CreateVacancyFormProps) => {
+export const VacancyForm = ({
+  initialData,
+  onBack,
+  onSuccess,
+}: VacancyFormProps) => {
+  const isEditing = !!initialData;
   const [categories, setCategories] = useState<Dictionaries[]>([]);
   const [skills, setSkills] = useState<Dictionaries[]>([]);
   const [languages, setLanguages] = useState<Dictionaries[]>([]);
@@ -106,20 +113,39 @@ export const CreateVacancyForm = ({ onBack, onSuccess }: CreateVacancyFormProps)
   } = useForm<VacancyFormValues, any, VacancyInput>({
     resolver: zodResolver(vacancySchema),
     defaultValues: {
-      title: "",
-      description: "",
-      categoryId: "",
-      domainId: undefined,
-      type: "OFFICE",
-      experience: undefined,
-      location: undefined,
-      salaryMin: undefined,
-      salaryMax: undefined,
-      skills: [],
-      languages: [],
-      isActive: true,
+      title: initialData?.title || "",
+      description: initialData?.description || "",
+      categoryId: initialData?.category?.id || "",
+      domainId: initialData?.domain || undefined,
+      type: (initialData?.type as "REMOTE" | "OFFICE" | "HYBRID") || "OFFICE",
+      experience: initialData?.experience != null ? Number(initialData.experience) : undefined,
+      location: initialData?.location || undefined,
+      salaryMin: initialData?.salaryMin != null ? Number(initialData.salaryMin) : undefined,
+      salaryMax: initialData?.salaryMax != null ? Number(initialData.salaryMax) : undefined,
+      skills: initialData?.skills ? initialData.skills.map((s: any) => (typeof s === "string" ? s : s.id)) : [],
+      languages: initialData?.languages ? initialData.languages.map((l: any) => (typeof l === "string" ? l : l.id)) : [],
+      isActive: initialData?.isActive ?? true,
     },
   });
+
+  useEffect(() => {
+    if (initialData) {
+      reset({
+        title: initialData.title || "",
+        description: initialData.description || "",
+        categoryId: initialData.category?.id || "",
+        domainId: initialData.domain || undefined,
+        type: (initialData.type as "REMOTE" | "OFFICE" | "HYBRID") || "OFFICE",
+        experience: initialData.experience != null ? Number(initialData.experience) : undefined,
+        location: initialData.location || undefined,
+        salaryMin: initialData.salaryMin != null ? Number(initialData.salaryMin) : undefined,
+        salaryMax: initialData.salaryMax != null ? Number(initialData.salaryMax) : undefined,
+        skills: initialData.skills ? initialData.skills.map((s: any) => (typeof s === "string" ? s : s.id)) : [],
+        languages: initialData.languages ? initialData.languages.map((l: any) => (typeof l === "string" ? l : l.id)) : [],
+        isActive: initialData.isActive ?? true,
+      });
+    }
+  }, [initialData, reset]);
 
   const onInvalid = (formErrors: any) => {
     const errorKeys = Object.keys(formErrors);
@@ -140,14 +166,20 @@ export const CreateVacancyForm = ({ onBack, onSuccess }: CreateVacancyFormProps)
         salaryMax: data.salaryMax != null ? Number(data.salaryMax) : undefined,
       };
 
-      const res = await createVacancy(payload);
-      if (res.success || res.data || res) {
+      if (isEditing && initialData?.id) {
+        await updateVacancy(initialData.id, payload);
+        toast.success("Vacancy updated successfully!");
+      } else {
+        await createVacancy(payload);
         toast.success("Vacancy published successfully!");
-        reset();
-        onSuccess();
       }
+      reset();
+      onSuccess();
     } catch (error: any) {
-      toast.error("Failed to create vacancy", error.message || "An error occurred");
+      toast.error(
+        isEditing ? "Failed to update vacancy" : "Failed to create vacancy",
+        error.message || "An error occurred"
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -162,10 +194,12 @@ export const CreateVacancyForm = ({ onBack, onSuccess }: CreateVacancyFormProps)
 
       <View className="rounded-3xl border border-border bg-card p-6 shadow-sm">
         <Text className="mb-1 text-2xl font-bold tracking-tight text-foreground">
-          Post a Vacancy
+          {isEditing ? "Edit Vacancy" : "Post a Vacancy"}
         </Text>
         <Text className="mb-6 text-sm text-muted-foreground">
-          Fill in the details below to publish an open role for your company.
+          {isEditing
+            ? "Update the details below for this role."
+            : "Fill in the details below to publish an open role for your company."}
         </Text>
 
         {isLoadingDicts ? (
@@ -370,9 +404,13 @@ export const CreateVacancyForm = ({ onBack, onSuccess }: CreateVacancyFormProps)
 
             <View className="flex-row items-center justify-between rounded-2xl border border-border bg-muted/30 p-4">
               <View className="flex-1 pr-3">
-                <Text className="font-semibold text-foreground">Publish Immediately</Text>
+                <Text className="font-semibold text-foreground">
+                  {isEditing ? "Active Listing" : "Publish Immediately"}
+                </Text>
                 <Text className="text-xs text-muted-foreground">
-                  Job posting will be immediately visible in search.
+                  {isEditing
+                    ? "Whether this job posting is active and visible in search."
+                    : "Job posting will be immediately visible in search."}
                 </Text>
               </View>
               <Controller
@@ -401,7 +439,9 @@ export const CreateVacancyForm = ({ onBack, onSuccess }: CreateVacancyFormProps)
                 {isSubmitting ? (
                   <ActivityIndicator size="small" className="text-primary-foreground" />
                 ) : (
-                  <Text className="font-semibold text-primary-foreground">Publish</Text>
+                  <Text className="font-semibold text-primary-foreground">
+                    {isEditing ? "Save Changes" : "Publish"}
+                  </Text>
                 )}
               </Button>
             </View>

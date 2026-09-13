@@ -15,7 +15,7 @@ import { VacancySkeleton } from "@/components/vacancies/VacancySkeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/store/useToastStore";
 import { Plus, Briefcase, MoreHorizontal } from "lucide-react-native";
-import { CreateVacancyForm } from "./CreateVacancyForm";
+import { VacancyForm } from "./VacancyForm";
 
 interface MyVacanciesTabProps {
   user: User;
@@ -25,6 +25,7 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
@@ -56,12 +57,17 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
 
   if (!user) return null;
 
-  if (isCreating) {
+  if (isCreating || editingVacancy) {
     return (
-      <CreateVacancyForm
-        onBack={() => setIsCreating(false)}
+      <VacancyForm
+        initialData={editingVacancy || undefined}
+        onBack={() => {
+          setIsCreating(false);
+          setEditingVacancy(null);
+        }}
         onSuccess={() => {
           setIsCreating(false);
+          setEditingVacancy(null);
           fetchVacancies();
         }}
       />
@@ -113,7 +119,7 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
 
     setTimeout(() => {
       if (action === "edit") {
-        toast.success("Coming Soon", "Editing vacancies is not fully implemented on mobile yet.");
+        setEditingVacancy(vacancy);
       } else if (action === "applicants") {
         toast.success("Coming Soon", "Viewing applicants is not fully implemented on mobile yet.");
       } else if (action === "delete") {
