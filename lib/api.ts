@@ -156,6 +156,28 @@ export const getMyRequests = async () =>
 export const getMyVacancies = async () =>
   fetchJson<Vacancy[]>(`${API_URL}/vacancies/my`);
 
+export const getVacancyApplications = async (vacancyId: string) =>
+  fetchJson<any[]>(`${API_URL}/applications/vacancy/${vacancyId}`);
+
+export const createVacancy = async (data: any) =>
+  fetchJson<{ success: boolean; data?: Vacancy }>(`${API_URL}/vacancies`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+export const updateVacancy = async (vacancyId: string, data: any) =>
+  fetchJson<{ success: boolean; data?: Vacancy }>(`${API_URL}/vacancies/${vacancyId}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+
+export const deleteVacancy = async (vacancyId: string) =>
+  fetchJson<{ success: boolean }>(`${API_URL}/vacancies/${vacancyId}`, {
+    method: "DELETE",
+  });
+
 export const cancelJoinRequest = async (requestId: string) =>
   fetchJson<{ success: boolean }>(`${API_URL}/companies/requests/${requestId}`, {
     method: "DELETE",

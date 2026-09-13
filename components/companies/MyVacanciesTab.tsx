@@ -1,0 +1,221 @@
+import { useState, useEffect, useCallback } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  Platform,
+} from "react-native";
+import { getMyVacancies, deleteVacancy } from "@/lib/api";
+import { User } from "@/types/users";
+import { Vacancy } from "@/types/vacancies";
+import { VacancyCard } from "@/components/vacancies/VacancyCard";
+import { VacancySkeleton } from "@/components/vacancies/VacancySkeleton";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/store/useToastStore";
+import { Plus, Briefcase, MoreHorizontal } from "lucide-react-native";
+import { CreateVacancyForm } from "./CreateVacancyForm";
+
+interface MyVacanciesTabProps {
+  user: User;
+}
+
+export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
+  const [vacancies, setVacancies] = useState<Vacancy[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
+
+  const fetchVacancies = useCallback(async () => {
+    if (!user?.companyId) {
+      setVacancies([]);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const res = await getMyVacancies();
+      const list = Array.isArray(res) ? res : (res as any)?.data || [];
+      setVacancies(list);
+    } catch (error: any) {
+      if (!error?.message?.includes("No company")) {
+        console.error("Failed to fetch vacancies", error);
+      }
+      setVacancies([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user?.companyId]);
+
+  useEffect(() => {
+    fetchVacancies();
+  }, [fetchVacancies]);
+
+  if (!user) return null;
+
+  if (isCreating) {
+    return (
+      <CreateVacancyForm
+        onBack={() => setIsCreating(false)}
+        onSuccess={() => {
+          setIsCreating(false);
+          fetchVacancies();
+        }}
+      />
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <View className="gap-4 pb-10">
+        <View className="mb-2">
+          <Text className="text-2xl font-bold tracking-tight text-foreground">My Vacancies</Text>
+        </View>
+        <VacancySkeleton />
+        <VacancySkeleton />
+      </View>
+    );
+  }
+
+  const handleDelete = (vacancy: Vacancy) => {
+    Alert.alert(
+      "Delete Vacancy",
+      `Are you sure you want to delete "${vacancy.title}"?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setDeletingId(vacancy.id);
+            try {
+              await deleteVacancy(vacancy.id);
+              setVacancies((prev) => prev.filter((v) => v.id !== vacancy.id));
+              toast.success("Vacancy deleted successfully");
+            } catch (error: any) {
+              toast.error("Failed to delete vacancy", error.message);
+            } finally {
+              setDeletingId(null);
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleAction = (action: string) => {
+    if (!selectedVacancy) return;
+    const vacancy = selectedVacancy;
+    setSelectedVacancy(null);
+
+    setTimeout(() => {
+      if (action === "edit") {
+        toast.success("Coming Soon", "Editing vacancies is not fully implemented on mobile yet.");
+      } else if (action === "applicants") {
+        toast.success("Coming Soon", "Viewing applicants is not fully implemented on mobile yet.");
+      } else if (action === "delete") {
+        handleDelete(vacancy);
+      }
+    }, Platform.OS === 'ios' ? 300 : 0);
+  };
+
+  return (
+    <View className="flex-1 pb-16">
+      <View className="mb-6 flex-row items-center justify-between">
+        <View className="flex-1 pr-2">
+          <Text className="text-2xl font-bold tracking-tight text-foreground">My Vacancies</Text>
+          <Text className="text-sm text-muted-foreground">
+            Manage your company's active job postings.
+          </Text>
+        </View>
+        <Button size="sm" className="h-10 px-4" onPress={() => setIsCreating(true)}>
+          <Plus size={16} color="#ffffff" className="mr-1.5" />
+          <Text className="font-semibold text-primary-foreground">Create</Text>
+        </Button>
+      </View>
+
+      {vacancies.length === 0 ? (
+        <View className="items-center justify-center rounded-3xl border border-dashed border-border bg-card p-10">
+          <View className="mb-4 rounded-full bg-primary/10 p-4">
+            <Briefcase size={32} color="#3b82f6" />
+          </View>
+          <Text className="text-lg font-bold text-foreground">No Vacancies Yet</Text>
+          <Text className="mb-6 mt-1 text-center text-sm text-muted-foreground">
+            You haven't posted any job openings for your company yet.
+          </Text>
+          <Button onPress={() => setIsCreating(true)}>
+            <Plus size={16} color="#ffffff" className="mr-2" />
+            <Text className="font-semibold text-primary-foreground">Post a Vacancy</Text>
+          </Button>
+        </View>
+      ) : (
+        <View className="gap-4">
+          {vacancies.map((vacancy) => (
+            <VacancyCard
+              key={vacancy.id}
+              vacancy={vacancy}
+              onActionPress={() => setSelectedVacancy(vacancy)}
+              isActionLoading={deletingId === vacancy.id}
+            />
+          ))}
+        </View>
+      )}
+
+      <Modal
+        visible={!!selectedVacancy}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setSelectedVacancy(null)}
+      >
+        <TouchableOpacity
+          className="flex-1 justify-end bg-black/40 p-2 pb-8"
+          activeOpacity={1}
+          onPress={() => setSelectedVacancy(null)}
+        >
+          <View className="overflow-hidden rounded-2xl bg-card">
+            <View className="border-b border-border p-4 items-center bg-muted/30">
+              <Text className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                Manage Vacancy
+              </Text>
+              <Text className="text-base font-semibold text-foreground mt-1" numberOfLines={1}>
+                {selectedVacancy?.title}
+              </Text>
+            </View>
+
+            <TouchableOpacity
+              className="border-b border-border p-4 active:bg-muted"
+              onPress={() => handleAction("applicants")}
+            >
+              <Text className="text-center text-lg font-medium text-primary">View Applications</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="border-b border-border p-4 active:bg-muted"
+              onPress={() => handleAction("edit")}
+            >
+              <Text className="text-center text-lg font-medium text-foreground">Edit Vacancy</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="p-4 active:bg-muted bg-destructive/5"
+              onPress={() => handleAction("delete")}
+            >
+              <Text className="text-center text-lg font-semibold text-destructive">Delete Vacancy</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            className="mt-3 rounded-2xl bg-card p-4 active:bg-muted"
+            onPress={() => setSelectedVacancy(null)}
+          >
+            <Text className="text-center text-lg font-semibold text-foreground">Cancel</Text>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  );
+};
+

@@ -1,16 +1,18 @@
-import React from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Vacancy } from "@/types/vacancies";
 import { formatSalary, formatExperience, formatDate, formatEnum } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
+import { MoreHorizontal } from "lucide-react-native";
 
 type VacancyCardProps = {
   vacancy: Vacancy;
+  onActionPress?: () => void;
+  isActionLoading?: boolean;
 };
 
-export const VacancyCard = ({ vacancy }: VacancyCardProps) => {
+export const VacancyCard = ({ vacancy, onActionPress, isActionLoading }: VacancyCardProps) => {
   const router = useRouter();
 
   const handlePress = () => {
@@ -27,10 +29,10 @@ export const VacancyCard = ({ vacancy }: VacancyCardProps) => {
   return (
     <Pressable
       onPress={handlePress}
-      className="mb-4 rounded-lg border border-border bg-card p-4 shadow-sm"
+      className="mb-4 rounded-xl border border-border bg-card p-4 shadow-sm"
     >
       <View className="mb-4 flex-row justify-between">
-        <View className="flex-1 flex-row gap-3">
+        <View className="flex-1 flex-row gap-3 pr-2">
           <CustomAvatar
             imageUrl={vacancy.company.logoUrl}
             fallbackText={vacancy.company.name}
@@ -50,10 +52,25 @@ export const VacancyCard = ({ vacancy }: VacancyCardProps) => {
           </View>
         </View>
 
-        <View className="items-end pl-2">
-          <Text className="text-base font-bold text-success">
-            {formatSalary(vacancy.salaryMin, vacancy.salaryMax, vacancy.currency)}
-          </Text>
+        <View className="items-end justify-start gap-1">
+          <View className="flex-row items-center gap-2">
+            <Text className="text-base font-bold text-success">
+              {formatSalary(vacancy.salaryMin, vacancy.salaryMax, vacancy.currency)}
+            </Text>
+            {onActionPress && (
+              <TouchableOpacity
+                onPress={onActionPress}
+                className="rounded-full bg-muted/50 p-1.5"
+                disabled={isActionLoading}
+              >
+                {isActionLoading ? (
+                  <ActivityIndicator size="small" color="#64748b" />
+                ) : (
+                  <MoreHorizontal size={18} color="#64748b" />
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
 
