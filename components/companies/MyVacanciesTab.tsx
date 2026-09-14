@@ -14,8 +14,9 @@ import { VacancyCard } from "@/components/vacancies/VacancyCard";
 import { VacancySkeleton } from "@/components/vacancies/VacancySkeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/store/useToastStore";
-import { Plus, Briefcase, MoreHorizontal } from "lucide-react-native";
+import { Plus, Briefcase } from "lucide-react-native";
 import { VacancyForm } from "./VacancyForm";
+import { VacancyApplicantsView } from "./VacancyApplicantsView";
 
 interface MyVacanciesTabProps {
   user: User;
@@ -26,6 +27,8 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
+  const [viewingApplicantsVacancy, setViewingApplicantsVacancy] =
+    useState<Vacancy | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
@@ -56,6 +59,15 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
   }, [fetchVacancies]);
 
   if (!user) return null;
+
+  if (viewingApplicantsVacancy) {
+    return (
+      <VacancyApplicantsView
+        vacancy={viewingApplicantsVacancy}
+        onBack={() => setViewingApplicantsVacancy(null)}
+      />
+    );
+  }
 
   if (isCreating || editingVacancy) {
     return (
@@ -121,7 +133,7 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
       if (action === "edit") {
         setEditingVacancy(vacancy);
       } else if (action === "applicants") {
-        toast.success("Coming Soon", "Viewing applicants is not fully implemented on mobile yet.");
+        setViewingApplicantsVacancy(vacancy);
       } else if (action === "delete") {
         handleDelete(vacancy);
       }

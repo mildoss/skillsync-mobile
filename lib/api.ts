@@ -1,4 +1,5 @@
 import { VacanciesResponse, Vacancy } from "@/types/vacancies";
+import { Application, ApplicationStatus } from "@/types/application";
 import { Dictionaries } from "@/types/dictionaries";
 import { User, UsersResponse } from "@/types/users";
 import { CompaniesResponse, CompanyDetail } from "@/types/companies";
@@ -157,7 +158,20 @@ export const getMyVacancies = async () =>
   fetchJson<Vacancy[]>(`${API_URL}/vacancies/my`);
 
 export const getVacancyApplications = async (vacancyId: string) =>
-  fetchJson<any[]>(`${API_URL}/applications/vacancy/${vacancyId}`);
+  fetchJson<Application[]>(`${API_URL}/applications/vacancy/${vacancyId}`);
+
+export const updateApplicationStatus = async (
+  applicationId: string,
+  status: ApplicationStatus,
+) =>
+  fetchJson<{ success: boolean; data?: Application }>(
+    `${API_URL}/applications/${applicationId}/status`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status }),
+    },
+  );
 
 export const createVacancy = async (data: any) =>
   fetchJson<{ success: boolean; data?: Vacancy }>(`${API_URL}/vacancies`, {
