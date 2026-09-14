@@ -1,20 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getVacancy } from "@/lib/api";
+import { getVacancy, getMyApplications } from "@/lib/api";
 import { Vacancy } from "@/types/vacancies";
+import { Application } from "@/types/application";
 import { formatSalary, formatExperience, formatEnum, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
-import { ArrowLeft } from "lucide-react-native";
+import { ApplyModal } from "@/components/applications/ApplyModal";
+import { ApplicationStatusBadge } from "@/components/applications/ApplicationStatusBadge";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "@/store/useToastStore";
+import { ArrowLeft, Check } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { VacancyDetailsSkeleton } from "@/components/vacancies/VacancyDetailsSkeleton";
 
 export default function VacancyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { user } = useAuthStore();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
@@ -22,6 +28,21 @@ export default function VacancyDetailsScreen() {
   const [vacancy, setVacancy] = useState<Vacancy | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [myApplication, setMyApplication] = useState<Application | null>(null);
+  const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+
+  const fetchApplicationStatus = useCallback(async () => {
+    if (!user || user.role !== "APPLICANT" || !id) return;
+    try {
+      const myApps = await getMyApplications();
+      const existing = myApps.find((app) => app.vacancyId === id);
+      if (existing) {
+        setMyApplication(existing);
+      }
+    } catch {
+      // ignore
+    }
+  }, [user, id]);
 
   useEffect(() => {
     const fetchVacancy = async () => {
@@ -35,12 +56,11 @@ export default function VacancyDetailsScreen() {
         setIsLoading(false);
       }
     };
-    if (id) fetchVacancy();
-  }, [id]);
-
-  const handleApply = () => {
-    router.push("/(tabs)/profile");
-  };
+    if (id) {
+      fetchVacancy();
+      fetchApplicationStatus();
+    }
+  }, [id, fetchApplicationStatus]);
 
   if (isLoading) {
     return <VacancyDetailsSkeleton />;
@@ -146,10 +166,72 @@ export default function VacancyDetailsScreen() {
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         className="border-t border-border bg-background px-6 pt-4"
       >
-        <Button size="lg" onPress={handleApply} className="w-full">
-          Apply Now
-        </Button>
+        {user?.role === "EMPLOYER" ? (
+          <View className="items-center py-2">
+            <Text className="text-xs font-medium text-muted-foreground">
+              You are viewing this vacancy as an employer.
+            </Text>
+          </View>
+        ) : myApplication ? (
+          <View className="gap-2">
+            <View className="flex-row items-center justify-between">
+              <Text className="text-xs font-semibold text-muted-foreground">
+                Your Application Status:
+              </Text>
+              <ApplicationStatusBadge status={myApplication.status} />
+            </View>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="w-full flex-row items-center justify-center opacity-85"
+              disabled
+            >
+              <Check size={18} color="#22c55e" className="mr-2" />
+              <Text className="font-semibold text-secondary-foreground">
+                Already Applied
+              </Text>
+            </Button>
+          </View>
+        ) : (
+          <Button
+            size="lg"
+            onPress={() => {
+              if (!user) {
+                toast.error("Please log in", "Log in to apply for this job.");
+                router.push("/(tabs)/profile");
+                return;
+              }
+              setIsApplyModalOpen(true);
+            }}
+            className="w-full"
+          >
+            <Text className="font-semibold text-primary-foreground">
+              Apply for Job
+            </Text>
+          </Button>
+        )}
       </View>
+
+      <ApplyModal
+        isOpen={isApplyModalOpen}
+        onClose={() => setIsApplyModalOpen(false)}
+        vacancyId={vacancy.id}
+        vacancyTitle={vacancy.title}
+        companyName={vacancy.company.name}
+        onSuccess={(newApp) => {
+          setMyApplication(
+            newApp ||
+              ({
+                id: "temp",
+                vacancyId: vacancy.id,
+                status: "PENDING",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                vacancy,
+              } as Application),
+          );
+        }}
+      />
     </View>
   );
 }

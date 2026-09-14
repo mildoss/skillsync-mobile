@@ -28,6 +28,7 @@ export const ProfileTabs = ({ user, activeTab, onChangeTab }: ProfileTabsProps) 
 
   const applicantTabs: TabItem[] = [
     { key: "profile", label: "My Profile", icon: UserIcon },
+    { key: "applications", label: "My Applications", icon: FileText },
     { key: "billing", label: "Billing", icon: CreditCard },
   ];
 

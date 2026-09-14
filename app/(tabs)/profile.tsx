@@ -12,6 +12,7 @@ import { ApplicantProfileForm } from "@/components/profile/ApplicantProfileForm"
 import { getMe, getCategories, getSkills, getLanguages } from "@/lib/api";
 import { ProfileTabs, TabKey } from "@/components/profile/ProfileTabs";
 import { BillingTab } from "@/components/profile/BillingTab";
+import { MyApplicationsTab } from "@/components/profile/MyApplicationsTab";
 import { RequireCompany } from "@/components/companies/RequireCompany";
 import { MyCompanyTab } from "@/components/companies/MyCompanyTab";
 import { MyVacanciesTab } from "@/components/companies/MyVacanciesTab";
@@ -139,6 +140,8 @@ export default function ProfileScreen() {
           </View>
         ) : activeTab === "billing" ? (
           <BillingTab user={user} />
+        ) : activeTab === "applications" ? (
+          <MyApplicationsTab />
         ) : activeTab === "company" || activeTab === "vacancies" || activeTab === "team" ? (
           <RequireCompany user={user}>
             {activeTab === "company" && <MyCompanyTab user={user} />}

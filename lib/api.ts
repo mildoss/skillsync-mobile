@@ -157,6 +157,16 @@ export const getMyRequests = async () =>
 export const getMyVacancies = async () =>
   fetchJson<Vacancy[]>(`${API_URL}/vacancies/my`);
 
+export const getMyApplications = async () =>
+  fetchJson<Application[]>(`${API_URL}/applications/my`);
+
+export const applyToVacancy = async (vacancyId: string, coverLetter?: string) =>
+  fetchJson<{ success: boolean; data?: Application }>(`${API_URL}/applications`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ vacancyId, coverLetter: coverLetter || undefined }),
+  });
+
 export const getVacancyApplications = async (vacancyId: string) =>
   fetchJson<Application[]>(`${API_URL}/applications/vacancy/${vacancyId}`);
 
