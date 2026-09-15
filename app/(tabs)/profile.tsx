@@ -17,6 +17,7 @@ import { RequireCompany } from "@/components/companies/RequireCompany";
 import { MyCompanyTab } from "@/components/companies/MyCompanyTab";
 import { MyVacanciesTab } from "@/components/companies/MyVacanciesTab";
 import { MyTeamTab } from "@/components/companies/MyTeamTab";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
 import { Dictionaries } from "@/types/dictionaries";
 
 cssInterop(LogOut, {
@@ -48,14 +49,12 @@ export default function ProfileScreen() {
     }
   }, [isAuthenticated, setUser]);
 
-  // Refresh user whenever screen gains focus
   useFocusEffect(
     useCallback(() => {
       fetchUserProfile();
     }, [fetchUserProfile])
   );
 
-  // Refresh user when changing tabs (e.g. going to My Company / My Team)
   useEffect(() => {
     fetchUserProfile();
   }, [activeTab, fetchUserProfile]);
@@ -80,7 +79,7 @@ export default function ProfileScreen() {
             setLanguages(l);
           }
         })
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => {
           if (isMounted) setIsFetchingDictionaries(false);
         });
@@ -92,7 +91,7 @@ export default function ProfileScreen() {
 
   if (!isAuthenticated) {
     return (
-      <SafeAreaView className="flex-1 bg-background">
+      <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
         {authMode === "login" ? (
           <LoginForm onSwitchToRegister={() => setAuthMode("register")} />
         ) : (
@@ -104,25 +103,28 @@ export default function ProfileScreen() {
 
   if (!user || !user.role) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
+      <SafeAreaView className="flex-1 items-center justify-center bg-background" edges={["top", "left", "right"]}>
         <ActivityIndicator size="large" className="text-primary" />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
       <View className="flex-row items-center justify-between border-b border-border px-4 py-4">
         <View className="mr-3 flex-1">
           <Text className="text-2xl font-bold tracking-tight text-foreground">My Profile</Text>
         </View>
-        <TouchableOpacity
-          onPress={logout}
-          className="shrink-0 rounded-xl bg-destructive/10 p-2.5"
-          accessibilityLabel="Logout"
-        >
-          <LogOut className="text-destructive" size={22} />
-        </TouchableOpacity>
+        <View className="flex-row items-center gap-2">
+          <ThemeToggle />
+          <TouchableOpacity
+            onPress={logout}
+            className="shrink-0 rounded-xl bg-destructive/10 p-2.5"
+            accessibilityLabel="Logout"
+          >
+            <LogOut className="text-destructive" size={22} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {user && <ProfileTabs user={user} activeTab={activeTab} onChangeTab={setActiveTab} />}
