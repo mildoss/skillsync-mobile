@@ -11,9 +11,10 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { applyToVacancy } from "@/lib/api";
+import { applyToVacancy, getVacancy, generateCoverLetter } from "@/lib/api";
 import { toast } from "@/store/useToastStore";
-import { X, Send, Briefcase } from "lucide-react-native";
+import { useAuthStore } from "@/store/useAuthStore";
+import { X, Send, Briefcase, Sparkles } from "lucide-react-native";
 import { Button } from "@/components/ui/button";
 
 interface ApplyModalProps {
@@ -35,6 +36,8 @@ export const ApplyModal = ({
 }: ApplyModalProps) => {
   const [coverLetter, setCoverLetter] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const user = useAuthStore(state => state.user);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
@@ -51,6 +54,35 @@ export const ApplyModal = ({
       );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGenerateAI = async () => {
+    if (!user) {
+      toast.error("Error", "Please complete your profile first");
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const vacancy = await getVacancy(vacancyId);
+      if (!vacancy) throw new Error("Vacancy not found");
+      
+      const payload = {
+        vacancyId,
+        vacancyTitle: vacancy.title,
+        vacancyDescription: vacancy.description || "",
+        candidateAbout: user.about || "",
+        candidateSkills: user.skills?.map((s: any) => s.name) || [],
+        candidateExperience: user.experience != null ? `${user.experience} years` : "",
+      };
+
+      const res = await generateCoverLetter(payload);
+      setCoverLetter(res.text);
+      toast.success("Cover letter generated successfully!");
+    } catch (error: any) {
+      toast.error("Generation failed", error.message || "An unexpected error occurred");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -100,12 +132,28 @@ export const ApplyModal = ({
               </View>
 
               <View className="p-5">
-                <Text className="mb-1.5 text-sm font-semibold text-foreground">
-                  Cover Letter{" "}
-                  <Text className="text-xs font-normal text-muted-foreground">
-                    (optional)
+                <View className="mb-1.5 flex-row items-center justify-between">
+                  <Text className="text-sm font-semibold text-foreground">
+                    Cover Letter{" "}
+                    <Text className="text-xs font-normal text-muted-foreground">
+                      (optional)
+                    </Text>
                   </Text>
-                </Text>
+                  <TouchableOpacity
+                    onPress={handleGenerateAI}
+                    disabled={isGenerating}
+                    className="flex-row items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 active:bg-primary/20"
+                  >
+                    {isGenerating ? (
+                      <ActivityIndicator size="small" color="#3b82f6" />
+                    ) : (
+                      <>
+                        <Sparkles size={14} color="#3b82f6" />
+                        <Text className="text-xs font-semibold text-primary">AI Draft</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
                 <TextInput
                   placeholder="Introduce yourself, highlight your top skills, and explain why you're a great match for this role..."
                   placeholderTextColor="#9ca3af"

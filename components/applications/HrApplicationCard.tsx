@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Application, ApplicationStatus } from "@/types/application";
-import { updateApplicationStatus } from "@/lib/api";
+import { updateApplicationStatus, getLatestDraft, evaluateCandidate } from "@/lib/api";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
 import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,8 @@ import {
   Eye,
   Check,
   RotateCcw,
+  BrainCircuit,
+  Sparkles,
 } from "lucide-react-native";
 import { formatEnum, formatExperience } from "@/lib/utils";
 
@@ -36,6 +38,27 @@ export const HrApplicationCard = ({
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState<ApplicationStatus | null>(null);
   const [isCoverLetterExpanded, setIsCoverLetterExpanded] = useState(false);
+  const [matching, setMatching] = useState<{ score: number; reason: string } | null>(null);
+  const [isChecking, setIsChecking] = useState(true);
+  const [isEvaluating, setIsEvaluating] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const checkMatch = async () => {
+      try {
+        const res = await getLatestDraft("MATCHING", application.vacancyId, application.id);
+        if (isMounted && res?.data?.score != null) {
+          setMatching({ score: res.data.score, reason: res.data.reason || "" });
+        }
+      } catch (error) {
+        console.error("Failed to check AI matching", error);
+      } finally {
+        if (isMounted) setIsChecking(false);
+      }
+    };
+    checkMatch();
+    return () => { isMounted = false; };
+  }, [application.id, application.vacancyId]);
 
   const applicant = application.applicant;
   if (!applicant) return null;
@@ -65,6 +88,28 @@ export const HrApplicationCard = ({
       );
     } finally {
       setIsUpdating(null);
+    }
+  };
+
+  const handleEvaluate = async () => {
+    setIsEvaluating(true);
+    try {
+      const payload = {
+        applicationId: application.id,
+        vacancyId: application.vacancyId,
+        vacancyTitle: application.vacancy?.title || "",
+        vacancyDescription: application.vacancy?.description || "",
+        candidateAbout: applicant.about || "",
+        candidateSkills: applicant.skills?.map((s: any) => s.name) || [],
+        candidateExperience: applicant.experience != null ? `${applicant.experience} years` : "",
+      };
+      const res = await evaluateCandidate(payload);
+      setMatching({ score: res.score, reason: res.reason });
+      toast.success("Analysis complete!");
+    } catch (error: any) {
+      toast.error("Evaluation failed", error.message || "An unexpected error occurred");
+    } finally {
+      setIsEvaluating(false);
     }
   };
 
@@ -178,6 +223,62 @@ export const HrApplicationCard = ({
           )}
         </View>
       )}
+
+      {/* AI Matching Section */}
+      <View className="mt-3 rounded-xl border border-border/70 bg-muted/20 p-3">
+        <View className="flex-row items-center justify-between mb-2">
+          <View className="flex-row items-center gap-1.5">
+            <BrainCircuit size={14} color="#8b5cf6" />
+            <Text className="text-xs font-semibold text-foreground">AI Matching</Text>
+          </View>
+          {matching && (
+            <View
+              className={`rounded-full px-2 py-0.5 ${
+                matching.score >= 80
+                  ? "bg-green-500/10"
+                  : matching.score >= 50
+                    ? "bg-yellow-500/10"
+                    : "bg-red-500/10"
+              }`}
+            >
+              <Text
+                className={`text-[10px] font-bold ${
+                  matching.score >= 80
+                    ? "text-green-600 dark:text-green-400"
+                    : matching.score >= 50
+                      ? "text-yellow-600 dark:text-yellow-400"
+                      : "text-red-600 dark:text-red-400"
+                }`}
+              >
+                {matching.score}% MATCH
+              </Text>
+            </View>
+          )}
+        </View>
+        
+        {isChecking ? (
+          <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+        ) : matching ? (
+          <Text className="text-xs leading-relaxed text-muted-foreground">{matching.reason}</Text>
+        ) : (
+          <TouchableOpacity
+            onPress={handleEvaluate}
+            disabled={isEvaluating}
+            className="flex-row items-center self-start gap-1.5 rounded-lg bg-violet-500/10 px-3 py-1.5 active:bg-violet-500/20"
+          >
+            {isEvaluating ? (
+              <ActivityIndicator size="small" color="#8b5cf6" />
+            ) : (
+              <>
+                <Sparkles size={14} color="#8b5cf6" />
+                <Text className="text-xs font-semibold text-violet-600 dark:text-violet-400">
+                  Evaluate Candidate
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
 
       {coverLetterText ? (
         <View className="mt-3 rounded-xl border border-border/70 bg-muted/30 p-3">

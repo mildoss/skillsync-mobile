@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, Switch } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createVacancy, updateVacancy, getCategories, getSkills, getLanguages } from "@/lib/api";
+import { createVacancy, updateVacancy, getCategories, getSkills, getLanguages, generateVacancyDescription } from "@/lib/api";
 import { Dictionaries } from "@/types/dictionaries";
 import { Vacancy } from "@/types/vacancies";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/store/useToastStore";
-import { ArrowLeft } from "lucide-react-native";
+import { ArrowLeft, Sparkles } from "lucide-react-native";
 import {
   WORK_FORMATS,
   EXPERIENCE_OPTIONS,
@@ -81,6 +81,7 @@ export const VacancyForm = ({
   const [skills, setSkills] = useState<Dictionaries[]>([]);
   const [languages, setLanguages] = useState<Dictionaries[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [isLoadingDicts, setIsLoadingDicts] = useState(true);
 
   useEffect(() => {
@@ -182,6 +183,31 @@ export const VacancyForm = ({
       );
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleGenerateDescription = async () => {
+    const values = control._formValues;
+    if (!values.title || !values.skills || values.skills.length === 0) {
+      toast.error("Generation failed", "Please fill in Job Title and Required Skills first.");
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const selectedSkillLabels = values.skills.map((skillId: string) => {
+        const found = skills.find(s => s.id === skillId);
+        return found ? found.name : skillId;
+      });
+      const res = await generateVacancyDescription({
+        jobTitle: values.title,
+        keywords: selectedSkillLabels,
+      });
+      reset({ ...values, description: res.text });
+      toast.success("Description generated successfully!");
+    } catch (error: any) {
+      toast.error("Generation failed", error.message || "An unexpected error occurred");
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -378,9 +404,25 @@ export const VacancyForm = ({
             </View>
 
             <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">
-                Description <Text className="text-destructive">*</Text>
-              </Text>
+              <View className="flex-row items-center justify-between">
+                <Text className="text-sm font-medium text-foreground">
+                  Description <Text className="text-destructive">*</Text>
+                </Text>
+                <TouchableOpacity
+                  onPress={handleGenerateDescription}
+                  disabled={isGenerating}
+                  className="flex-row items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 active:bg-primary/20"
+                >
+                  {isGenerating ? (
+                    <ActivityIndicator size="small" color="#3b82f6" />
+                  ) : (
+                    <>
+                      <Sparkles size={14} color="#3b82f6" />
+                      <Text className="text-xs font-semibold text-primary">Generate with AI</Text>
+                    </>
+                  )}
+                </TouchableOpacity>
+              </View>
               <Controller
                 control={control}
                 name="description"
