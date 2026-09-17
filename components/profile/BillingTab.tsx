@@ -1,8 +1,13 @@
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { useState } from "react";
+import { View, Text, Alert, ActivityIndicator } from "react-native";
 import { Sparkles, Check, ShieldCheck, Zap } from "lucide-react-native";
 import { cssInterop } from "nativewind";
+import * as WebBrowser from "expo-web-browser";
 import { User } from "@/types/users";
 import { Button } from "@/components/ui/button";
+import { PRICING_PLANS, PricingPackage } from "@/lib/constans";
+import { createCheckoutSession, getMe } from "@/lib/api";
+import { useAuthStore } from "@/store/useAuthStore";
 
 [Sparkles, Check, ShieldCheck, Zap].forEach((Icon) => {
   cssInterop(Icon, {
@@ -14,55 +19,34 @@ interface BillingTabProps {
   user?: User | null;
 }
 
-interface PricingPackage {
-  id: string;
-  title: string;
-  price: string;
-  oldPrice: string;
-  credits: number;
-  description: string;
-  isPopular?: boolean;
-}
-
-const PRICING_PACKAGES: PricingPackage[] = [
-  {
-    id: "pack_10",
-    title: "Starter",
-    price: "2.99",
-    oldPrice: "4.99",
-    credits: 10,
-    description: "Perfect for single tasks and exploring AI capabilities.",
-    isPopular: false,
-  },
-  {
-    id: "pack_25",
-    title: "Pro",
-    price: "5.99",
-    oldPrice: "9.99",
-    credits: 25,
-    description: "The best choice for active job hunting or hiring.",
-    isPopular: true,
-  },
-  {
-    id: "pack_50",
-    title: "Ultimate",
-    price: "9.99",
-    oldPrice: "19.99",
-    credits: 50,
-    description: "Maximum power for HR professionals and agencies.",
-    isPopular: false,
-  },
-];
-
 export const BillingTab = ({ user }: BillingTabProps) => {
   const credits = user?.aiCredits ?? 0;
+  const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
 
-  const handleSelectPlan = (plan: PricingPackage) => {
-    Alert.alert(
-      `${plan.title} Plan`,
-      `In-app checkout for ${plan.credits} AI Tokens ($${plan.price}) will be available in the upcoming App Store / Google Play update. Web checkout via Stripe is active!`,
-      [{ text: "OK" }]
-    );
+  const handleSelectPlan = async (plan: PricingPackage) => {
+    try {
+      setLoadingPlanId(plan.id);
+      const res = await createCheckoutSession(plan.id);
+
+      if (!res?.checkoutUrl) {
+        Alert.alert("Checkout Error", "Failed to retrieve checkout URL from the server.");
+        return;
+      }
+
+      await WebBrowser.openBrowserAsync(res.checkoutUrl, {
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+        dismissButtonStyle: "done",
+      });
+
+      const freshUser = await getMe();
+      if (freshUser) {
+        useAuthStore.getState().setUser(freshUser);
+      }
+    } catch (error: any) {
+      Alert.alert("Payment Error", error?.message || "Failed to initiate payment session.");
+    } finally {
+      setLoadingPlanId(null);
+    }
   };
 
   return (
@@ -74,10 +58,10 @@ export const BillingTab = ({ user }: BillingTabProps) => {
         </Text>
       </View>
 
-      <View className="mb-8 rounded-3xl border border-primary/20 bg-primary/5 p-5 shadow-sm">
+      <View className="mb-8 overflow-hidden rounded-3xl border border-primary/20 bg-card p-5 shadow-sm">
         <View className="flex-row items-center gap-4">
-          <View className="items-center justify-center rounded-2xl bg-primary/10 p-3.5">
-            <Sparkles className="text-primary" size={28} />
+          <View className="h-14 w-14 items-center justify-center rounded-full border border-primary/20 bg-primary/10">
+            <Sparkles className="text-primary" size={26} />
           </View>
           <View className="flex-1">
             <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -104,7 +88,7 @@ export const BillingTab = ({ user }: BillingTabProps) => {
       </View>
 
       <View className="gap-5">
-        {PRICING_PACKAGES.map((plan) => {
+        {PRICING_PLANS.map((plan) => {
           const isPopular = plan.isPopular;
           return (
             <View
@@ -163,16 +147,25 @@ export const BillingTab = ({ user }: BillingTabProps) => {
                 onPress={() => handleSelectPlan(plan)}
                 variant={isPopular ? "default" : "outline"}
                 className="h-12 w-full rounded-2xl"
+                disabled={loadingPlanId !== null}
               >
-                <Zap
-                  className={`mr-2 ${isPopular ? "text-primary-foreground" : "text-primary"}`}
-                  size={16}
-                />
+                {loadingPlanId === plan.id ? (
+                  <ActivityIndicator
+                    size="small"
+                    color={isPopular ? "#ffffff" : "#3b82f6"}
+                    className="mr-2"
+                  />
+                ) : (
+                  <Zap
+                    className={`mr-2 ${isPopular ? "text-primary-foreground" : "text-primary"}`}
+                    size={16}
+                  />
+                )}
                 <Text
                   className={`text-sm font-bold ${isPopular ? "text-primary-foreground" : "text-foreground"
                     }`}
                 >
-                  Choose {plan.title}
+                  {loadingPlanId === plan.id ? "Preparing checkout..." : `Choose ${plan.title}`}
                 </Text>
               </Button>
             </View>
