@@ -131,6 +131,7 @@ export default function ProfileScreen() {
 
       <ScrollView
         className="flex-1 p-4"
+        contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6" />

@@ -47,7 +47,6 @@ export default function CompaniesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-      {/* Header with Search - pinned at top to prevent unmounting and losing focus/keyboard */}
       <View className="border-b border-border/40 px-4 pb-3 pt-2">
         <Text className="text-center text-3xl font-bold tracking-tight text-foreground">
           Top IT Companies
@@ -79,9 +78,8 @@ export default function CompaniesScreen() {
         </View>
       </View>
 
-      {/* Content Area */}
       {isLoading && companies.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
           {Array.from({ length: 5 }).map((_, i) => (
             <CompanySkeleton key={i} />
           ))}
@@ -96,7 +94,7 @@ export default function CompaniesScreen() {
           data={companies}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <CompanyCard company={item} />}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
           keyboardShouldPersistTaps="handled"
           onEndReached={() => {
             if (hasNextPage) {

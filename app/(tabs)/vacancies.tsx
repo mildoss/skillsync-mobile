@@ -106,7 +106,7 @@ export default function VacanciesScreen() {
       </View>
 
       {isLoading && vacancies.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
           {Array.from({ length: 5 }).map((_, i) => (
             <VacancySkeleton key={i} />
           ))}
@@ -121,7 +121,7 @@ export default function VacanciesScreen() {
           data={vacancies}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <VacancyCard vacancy={item} />}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
           keyboardShouldPersistTaps="handled"
           onEndReached={() => {
             if (hasNextPage) {

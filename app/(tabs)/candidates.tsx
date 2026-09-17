@@ -105,7 +105,7 @@ export default function CandidatesScreen() {
       </View>
 
       {isLoading && candidates.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16 }} keyboardShouldPersistTaps="handled">
+        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
           {Array.from({ length: 5 }).map((_, i) => (
             <CandidateSkeleton key={i} />
           ))}
@@ -120,7 +120,7 @@ export default function CandidatesScreen() {
           data={candidates}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <CandidateCard candidate={item} />}
-          contentContainerStyle={{ padding: 16 }}
+          contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
           keyboardShouldPersistTaps="handled"
           onEndReached={() => {
             if (hasNextPage) {
