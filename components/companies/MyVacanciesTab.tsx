@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Modal,
   Platform,
 } from "react-native";
-import { getMyVacancies, deleteVacancy } from "@/lib/api";
+import { deleteVacancy } from "@/lib/api";
 import { User } from "@/types/users";
 import { Vacancy } from "@/types/vacancies";
 import { VacancyCard } from "@/components/vacancies/VacancyCard";
@@ -17,14 +17,13 @@ import { toast } from "@/store/useToastStore";
 import { Plus, Briefcase } from "lucide-react-native";
 import { VacancyForm } from "./VacancyForm";
 import { VacancyApplicantsView } from "./VacancyApplicantsView";
+import { useMyVacancies } from "@/hooks/useVacancies";
 
 interface MyVacanciesTabProps {
   user: User;
 }
 
 export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
-  const [vacancies, setVacancies] = useState<Vacancy[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
   const [viewingApplicantsVacancy, setViewingApplicantsVacancy] =
@@ -33,30 +32,9 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
 
   const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
 
-  const fetchVacancies = useCallback(async () => {
-    if (!user?.companyId) {
-      setVacancies([]);
-      setIsLoading(false);
-      return;
-    }
+  const { data: fetchRes, isLoading, refetch } = useMyVacancies({ enabled: !!user?.companyId });
+  const vacancies: Vacancy[] = Array.isArray(fetchRes) ? fetchRes : (fetchRes as any)?.data || [];
 
-    try {
-      const res = await getMyVacancies();
-      const list = Array.isArray(res) ? res : (res as any)?.data || [];
-      setVacancies(list);
-    } catch (error: any) {
-      if (!error?.message?.includes("No company")) {
-        console.error("Failed to fetch vacancies", error);
-      }
-      setVacancies([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user?.companyId]);
-
-  useEffect(() => {
-    fetchVacancies();
-  }, [fetchVacancies]);
 
   if (!user) return null;
 
@@ -80,7 +58,7 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
         onSuccess={() => {
           setIsCreating(false);
           setEditingVacancy(null);
-          fetchVacancies();
+          refetch();
         }}
       />
     );
@@ -111,7 +89,7 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
             setDeletingId(vacancy.id);
             try {
               await deleteVacancy(vacancy.id);
-              setVacancies((prev) => prev.filter((v) => v.id !== vacancy.id));
+              refetch();
               toast.success("Vacancy deleted successfully");
             } catch (error: any) {
               toast.error("Failed to delete vacancy", error.message);

@@ -1,5 +1,5 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getUsers } from "@/lib/api";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getUsers, getUser } from "@/lib/api";
 
 export function useCandidates(params: Record<string, string | string[]> = {}) {
   const { data, isLoading, isFetchingNextPage, error, fetchNextPage, hasNextPage, refetch } =
@@ -36,4 +36,12 @@ export function useCandidates(params: Record<string, string | string[]> = {}) {
     refresh: refetch,
     hasNextPage,
   };
+}
+
+export function useCandidate(id: string) {
+  return useQuery({
+    queryKey: ["candidate", id],
+    queryFn: () => getUser(id),
+    enabled: !!id,
+  });
 }

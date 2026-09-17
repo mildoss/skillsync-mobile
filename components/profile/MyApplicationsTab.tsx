@@ -1,4 +1,3 @@
-import { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,40 +5,18 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { Application } from "@/types/application";
-import { getMyApplications } from "@/lib/api";
+import { useRouter } from "expo-router";
 import { ApplicantRequestCard } from "@/components/applications/ApplicantRequestCard";
 import { Button } from "@/components/ui/button";
 import { Search, Briefcase } from "lucide-react-native";
+import { useMyApplications } from "@/hooks/useApplications";
 
 export const MyApplicationsTab = () => {
   const router = useRouter();
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-
-  const fetchApplications = useCallback(async () => {
-    try {
-      const res = await getMyApplications();
-      setApplications(Array.isArray(res) ? res : []);
-    } catch (error) {
-      console.error("Failed to fetch my applications", error);
-      setApplications([]);
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchApplications();
-  }, [fetchApplications]);
-
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchApplications();
-  };
+  
+  const { data: applicationsRes = [], isLoading, isRefetching, refetch } = useMyApplications();
+  const applications: Application[] = Array.isArray(applicationsRes) ? applicationsRes : (applicationsRes as any)?.data || [];
 
   if (isLoading) {
     return (
@@ -90,7 +67,7 @@ export const MyApplicationsTab = () => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
           }
         >
           {applications.map((app) => (

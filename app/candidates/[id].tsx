@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { getUser } from "@/lib/api";
-import { User } from "@/types/users";
+import { useCandidate } from "@/hooks/useCandidates";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,23 +18,7 @@ export default function CandidateDetailsScreen() {
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
 
-  const [candidate, setCandidate] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchCandidate = async () => {
-      try {
-        const data = await getUser(id);
-        setCandidate(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load candidate");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (id) fetchCandidate();
-  }, [id]);
+  const { data: candidate, isLoading, error } = useCandidate(id as string);
 
   if (isLoading) {
     return <CandidateDetailsSkeleton />;
@@ -46,7 +28,7 @@ export default function CandidateDetailsScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background p-4">
         <Text className="mb-4 font-semibold text-destructive">
-          {error || "Candidate not found"}
+          {error?.message || "Candidate not found"}
         </Text>
         <Button onPress={() => router.back()}>Go Back</Button>
       </View>

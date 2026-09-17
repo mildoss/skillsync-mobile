@@ -1,5 +1,5 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getVacancies } from "@/lib/api";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getVacancies, getVacancy, getMyVacancies } from "@/lib/api";
 
 export function useVacancies(params: Record<string, string | string[]> = {}) {
   const { data, isLoading, isFetchingNextPage, error, fetchNextPage, hasNextPage, refetch } =
@@ -36,4 +36,20 @@ export function useVacancies(params: Record<string, string | string[]> = {}) {
     refresh: refetch,
     hasNextPage,
   };
+}
+
+export function useVacancy(id: string) {
+  return useQuery({
+    queryKey: ["vacancy", id],
+    queryFn: () => getVacancy(id),
+    enabled: !!id,
+  });
+}
+
+export function useMyVacancies(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["myVacancies"],
+    queryFn: getMyVacancies,
+    enabled: options?.enabled,
+  });
 }

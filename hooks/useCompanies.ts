@@ -1,5 +1,5 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getCompanies } from "@/lib/api";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getCompanies, getCompany, getMyRequests } from "@/lib/api";
 
 export function useCompanies(params: Record<string, string | string[]> = {}) {
   const { data, isLoading, isFetchingNextPage, error, fetchNextPage, hasNextPage, refetch } =
@@ -36,4 +36,20 @@ export function useCompanies(params: Record<string, string | string[]> = {}) {
     refresh: refetch,
     hasNextPage,
   };
+}
+
+export function useCompany(idOrSlug: string) {
+  return useQuery({
+    queryKey: ["company", idOrSlug],
+    queryFn: () => getCompany(idOrSlug),
+    enabled: !!idOrSlug,
+  });
+}
+
+export function useMyJoinRequests(options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ["myJoinRequests"],
+    queryFn: getMyRequests,
+    enabled: options?.enabled,
+  });
 }

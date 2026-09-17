@@ -1,9 +1,7 @@
-import { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { getCompany } from "@/lib/api";
-import { CompanyDetail } from "@/types/companies";
+import { useCompany } from "@/hooks/useCompanies";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Globe, Briefcase, Users } from "lucide-react-native";
@@ -18,36 +16,7 @@ export default function CompanyDetailsScreen() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
 
-  const [company, setCompany] = useState<CompanyDetail | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    async function load() {
-      try {
-        setIsLoading(true);
-        setError(null);
-        if (!id) return;
-        const data = await getCompany(id);
-        if (isMounted) {
-          setCompany(data);
-        }
-      } catch (err: any) {
-        if (isMounted) {
-          setError(err?.message || "Failed to load company");
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-    load();
-    return () => {
-      isMounted = false;
-    };
-  }, [id]);
+  const { data: company, isLoading, error } = useCompany(id as string);
 
   if (isLoading) {
     return <CompanyDetailsSkeleton />;
@@ -61,7 +30,7 @@ export default function CompanyDetailsScreen() {
       >
         <Text className="mb-2 font-semibold text-destructive">Error</Text>
         <Text className="mb-4 text-center text-muted-foreground">
-          {error || "Company not found"}
+          {error?.message || "Company not found"}
         </Text>
         <Button variant="outline" onPress={() => router.back()}>
           <Text className="text-foreground">Go Back</Text>

@@ -1,9 +1,7 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getVacancy, getMyApplications } from "@/lib/api";
-import { Vacancy } from "@/types/vacancies";
 import { Application } from "@/types/application";
 import { formatSalary, formatExperience, formatEnum, formatDate } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,6 +14,8 @@ import { toast } from "@/store/useToastStore";
 import { ArrowLeft, Check } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { VacancyDetailsSkeleton } from "@/components/vacancies/VacancyDetailsSkeleton";
+import { useVacancy } from "@/hooks/useVacancies";
+import { useMyApplications } from "@/hooks/useApplications";
 
 export default function VacancyDetailsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -25,42 +25,13 @@ export default function VacancyDetailsScreen() {
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
 
-  const [vacancy, setVacancy] = useState<Vacancy | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [myApplication, setMyApplication] = useState<Application | null>(null);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
+  const [tempApplication, setTempApplication] = useState<Application | null>(null);
 
-  const fetchApplicationStatus = useCallback(async () => {
-    if (!user || user.role !== "APPLICANT" || !id) return;
-    try {
-      const myApps = await getMyApplications();
-      const existing = myApps.find((app) => app.vacancyId === id);
-      if (existing) {
-        setMyApplication(existing);
-      }
-    } catch {
-      // ignore
-    }
-  }, [user, id]);
+  const { data: vacancy, isLoading, error } = useVacancy(id as string);
+  const { data: myApps } = useMyApplications({ enabled: user?.role === "APPLICANT" && !!id });
 
-  useEffect(() => {
-    const fetchVacancy = async () => {
-      try {
-        setIsLoading(true);
-        const data = await getVacancy(id);
-        setVacancy(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load vacancy");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    if (id) {
-      fetchVacancy();
-      fetchApplicationStatus();
-    }
-  }, [id, fetchApplicationStatus]);
+  const myApplication = tempApplication || (myApps?.find((app) => app.vacancyId === id) ?? null);
 
   if (isLoading) {
     return <VacancyDetailsSkeleton />;
@@ -219,7 +190,7 @@ export default function VacancyDetailsScreen() {
         vacancyTitle={vacancy.title}
         companyName={vacancy.company.name}
         onSuccess={(newApp) => {
-          setMyApplication(
+          setTempApplication(
             newApp ||
               ({
                 id: "temp",

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Vacancy } from "@/types/vacancies";
-import { Application, ApplicationStatus } from "@/types/application";
-import { getVacancyApplications } from "@/lib/api";
+import { ApplicationStatus } from "@/types/application";
 import { HrApplicationCard } from "@/components/applications/HrApplicationCard";
 import { ArrowLeft, Users, Inbox } from "lucide-react-native";
+import { useVacancyApplications } from "@/hooks/useApplications";
 
 interface VacancyApplicantsViewProps {
   vacancy: Vacancy;
@@ -24,37 +24,12 @@ export const VacancyApplicantsView = ({
   vacancy,
   onBack,
 }: VacancyApplicantsViewProps) => {
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterTab>("ALL");
 
-  const fetchApplications = useCallback(async () => {
-    try {
-      const res = await getVacancyApplications(vacancy.id);
-      setApplications(Array.isArray(res) ? res : []);
-    } catch (error) {
-      console.error("Failed to fetch vacancy applications", error);
-      setApplications([]);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
-  }, [vacancy.id]);
+  const { data: applications = [], isLoading, isRefetching, refetch } = useVacancyApplications(vacancy.id);
 
-  useEffect(() => {
-    fetchApplications();
-  }, [fetchApplications]);
-
-  const onRefresh = () => {
-    setIsRefreshing(true);
-    fetchApplications();
-  };
-
-  const handleStatusUpdated = (updatedApp: Application) => {
-    setApplications((prev) =>
-      prev.map((app) => (app.id === updatedApp.id ? updatedApp : app)),
-    );
+  const handleStatusUpdated = () => {
+    refetch();
   };
 
   const counts = useMemo(() => {
@@ -124,8 +99,8 @@ export const VacancyApplicantsView = ({
                 key={tab.value}
                 onPress={() => setActiveFilter(tab.value)}
                 className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-1.5 ${isActive
-                    ? "border-primary bg-primary"
-                    : "border-border bg-card"
+                  ? "border-primary bg-primary"
+                  : "border-border bg-card"
                   }`}
               >
                 <Text
@@ -184,7 +159,7 @@ export const VacancyApplicantsView = ({
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
           refreshControl={
-            <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
           }
         >
           {filteredApplications.map((app) => (
