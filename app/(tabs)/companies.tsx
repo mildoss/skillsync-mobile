@@ -15,6 +15,7 @@ import { CompanySkeleton } from "@/components/companies/CompanySkeleton";
 import { Input } from "@/components/ui/input";
 import { Search, X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 export default function CompaniesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,12 +49,17 @@ export default function CompaniesScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
       <View className="border-b border-border/40 px-4 pb-3 pt-2">
-        <Text className="text-center text-3xl font-bold tracking-tight text-foreground">
-          Top IT Companies
-        </Text>
-        <Text className="my-2 text-center text-sm text-muted-foreground">
-          Discover the best places to work and explore their open vacancies.
-        </Text>
+        <View className="flex-row items-center justify-between">
+          <View className="flex-1 pr-2">
+            <Text className="text-3xl font-bold tracking-tight text-foreground">
+              Top IT Companies
+            </Text>
+            <Text className="my-0.5 text-sm text-muted-foreground">
+              Explore leading tech employers
+            </Text>
+          </View>
+          <NotificationBell />
+        </View>
 
         <View className="relative mt-2">
           <View className="absolute left-3 top-3 z-10">

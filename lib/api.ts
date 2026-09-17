@@ -5,6 +5,7 @@ import { User, UsersResponse } from "@/types/users";
 import { CompaniesResponse, CompanyDetail } from "@/types/companies";
 import { LoginInput, RegisterInput } from "@/lib/validation/auth";
 import { AuthResponse } from "@/types/auth";
+import { NotificationResponse } from "@/types/notifications";
 import { API_URL, fetchJson } from "@/lib/utils";
 import { useAuthStore } from "@/store/useAuthStore";
 import * as FileSystem from "expo-file-system/legacy";
@@ -287,4 +288,12 @@ export const createCheckoutSession = async (packageId: string) =>
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ packageId }),
+  });
+
+export const getNotifications = async () =>
+  fetchJson<NotificationResponse>(`${API_URL}/notifications`);
+
+export const markNotificationsAsRead = async () =>
+  fetchJson<{ success: boolean }>(`${API_URL}/notifications/read`, {
+    method: "PATCH",
   });

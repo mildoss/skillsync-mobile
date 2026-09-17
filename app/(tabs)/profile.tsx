@@ -18,6 +18,7 @@ import { MyCompanyTab } from "@/components/companies/MyCompanyTab";
 import { MyVacanciesTab } from "@/components/companies/MyVacanciesTab";
 import { MyTeamTab } from "@/components/companies/MyTeamTab";
 import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Dictionaries } from "@/types/dictionaries";
 
 cssInterop(LogOut, {
@@ -116,6 +117,7 @@ export default function ProfileScreen() {
           <Text className="text-2xl font-bold tracking-tight text-foreground">My Profile</Text>
         </View>
         <View className="flex-row items-center gap-2">
+          <NotificationBell />
           <ThemeToggle />
           <TouchableOpacity
             onPress={logout}

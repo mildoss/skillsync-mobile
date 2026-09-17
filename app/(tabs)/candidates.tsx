@@ -16,6 +16,7 @@ import { CandidateSkeleton } from "@/components/candidates/CandidateSkeleton";
 import { Input } from "@/components/ui/input";
 import { Filter, Search, X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 export default function CandidatesScreen() {
   const params = useLocalSearchParams();
@@ -66,19 +67,22 @@ export default function CandidatesScreen() {
             <Text className="text-3xl font-bold tracking-tight text-foreground">Candidates</Text>
             <Text className="my-0.5 text-sm text-muted-foreground">Find the right people</Text>
           </View>
-          <Pressable
-            onPress={() => router.push({ pathname: "/candidates/filters", params })}
-            className="relative h-11 w-11 items-center justify-center rounded-xl bg-primary/10"
-          >
-            <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
-            {filterCount > 0 ? (
-              <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-destructive">
-                <Text className="text-[10px] font-bold text-destructive-foreground">
-                  {filterCount}
-                </Text>
-              </View>
-            ) : null}
-          </Pressable>
+          <View className="flex-row items-center gap-2">
+            <NotificationBell />
+            <Pressable
+              onPress={() => router.push({ pathname: "/candidates/filters", params })}
+              className="relative h-11 w-11 items-center justify-center rounded-xl bg-primary/10"
+            >
+              <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
+              {filterCount > 0 ? (
+                <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-destructive">
+                  <Text className="text-[10px] font-bold text-destructive-foreground">
+                    {filterCount}
+                  </Text>
+                </View>
+              ) : null}
+            </Pressable>
+          </View>
         </View>
 
         <View className="relative mt-3">
