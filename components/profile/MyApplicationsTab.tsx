@@ -11,6 +11,7 @@ import { ApplicantRequestCard } from "@/components/applications/ApplicantRequest
 import { Button } from "@/components/ui/button";
 import { Search, Briefcase } from "lucide-react-native";
 import { useMyApplications } from "@/hooks/useApplications";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 export const MyApplicationsTab = () => {
   const router = useRouter();
@@ -41,27 +42,23 @@ export const MyApplicationsTab = () => {
       </View>
 
       {applications.length === 0 ? (
-        <View className="items-center justify-center rounded-3xl border border-dashed border-border bg-card p-10 text-center">
-          <View className="mb-4 rounded-full bg-primary/10 p-4">
-            <Search size={32} color="#3b82f6" />
-          </View>
-          <Text className="text-lg font-bold text-foreground">
-            No applications yet
-          </Text>
-          <Text className="mb-6 mt-1 text-center text-sm leading-relaxed text-muted-foreground">
-            You haven't applied to any jobs yet. Explore open roles to find your next career opportunity.
-          </Text>
-          <Button
-            size="lg"
-            onPress={() => router.push("/(tabs)/vacancies")}
-            className="flex-row items-center gap-2"
-          >
-            <Briefcase size={16} color="#ffffff" />
-            <Text className="font-semibold text-primary-foreground">
-              Explore Vacancies
-            </Text>
-          </Button>
-        </View>
+        <EmptyState
+          icon={<Search size={32} color="#3b82f6" />}
+          title="No applications yet"
+          description="You haven't applied to any jobs yet. Explore open roles to find your next career opportunity."
+          action={
+            <Button
+              size="lg"
+              onPress={() => router.push("/(tabs)/vacancies")}
+              className="flex-row items-center gap-2"
+            >
+              <Briefcase size={16} color="#ffffff" />
+              <Text className="font-semibold text-primary-foreground">
+                Explore Vacancies
+              </Text>
+            </Button>
+          }
+        />
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}

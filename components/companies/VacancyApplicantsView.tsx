@@ -8,52 +8,29 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Vacancy } from "@/types/vacancies";
-import { ApplicationStatus } from "@/types/application";
 import { HrApplicationCard } from "@/components/applications/HrApplicationCard";
 import { ArrowLeft, Users, Inbox } from "lucide-react-native";
 import { useVacancyApplications } from "@/hooks/useApplications";
+import { useApplicationFilters } from "@/hooks/useApplicationFilters";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { cn } from "@/lib/utils";
 
 interface VacancyApplicantsViewProps {
   vacancy: Vacancy;
   onBack: () => void;
 }
 
-type FilterTab = "ALL" | ApplicationStatus;
-
 export const VacancyApplicantsView = ({
   vacancy,
   onBack,
 }: VacancyApplicantsViewProps) => {
-  const [activeFilter, setActiveFilter] = useState<FilterTab>("ALL");
-
   const { data: applications = [], isLoading, isRefetching, refetch } = useVacancyApplications(vacancy.id);
+  
+  const { activeFilter, setActiveFilter, filteredApplications, filterTabs } = useApplicationFilters(applications);
 
   const handleStatusUpdated = () => {
     refetch();
   };
-
-  const counts = useMemo(() => {
-    return {
-      ALL: applications.length,
-      PENDING: applications.filter((a) => a.status === "PENDING").length,
-      REVIEWING: applications.filter((a) => a.status === "REVIEWING").length,
-      INVITED: applications.filter((a) => a.status === "INVITED").length,
-      REJECTED: applications.filter((a) => a.status === "REJECTED").length,
-    };
-  }, [applications]);
-
-  const filteredApplications = useMemo(() => {
-    if (activeFilter === "ALL") return applications;
-    return applications.filter((a) => a.status === activeFilter);
-  }, [applications, activeFilter]);
-
-  const filterTabs: { label: string; value: FilterTab; count: number }[] = [
-    { label: "All", value: "ALL", count: counts.ALL },
-    { label: "Pending", value: "PENDING", count: counts.PENDING },
-    { label: "Reviewed", value: "REVIEWING", count: counts.REVIEWING },
-    { label: "Invited", value: "INVITED", count: counts.INVITED },
-    { label: "Rejected", value: "REJECTED", count: counts.REJECTED },
-  ];
 
   return (
     <View className="flex-1 pb-16">
@@ -68,7 +45,7 @@ export const VacancyApplicantsView = ({
 
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1 pr-3">
-          <Text className="text-2xl font-bold tracking-tight text-foreground">
+          <Text className="text-2xl font-bold tracking-tight text-foreground" numberOfLines={2}>
             Applicants
           </Text>
           <Text
@@ -98,24 +75,30 @@ export const VacancyApplicantsView = ({
               <TouchableOpacity
                 key={tab.value}
                 onPress={() => setActiveFilter(tab.value)}
-                className={`flex-row items-center gap-1.5 rounded-full border px-3.5 py-1.5 ${isActive
-                  ? "border-primary bg-primary"
-                  : "border-border bg-card"
-                  }`}
+                className={cn(
+                  "flex-row items-center gap-1.5 rounded-full border px-3.5 py-1.5",
+                  isActive ? "border-primary bg-primary" : "border-border bg-card"
+                )}
               >
                 <Text
-                  className={`text-xs font-semibold ${isActive ? "text-primary-foreground" : "text-foreground"
-                    }`}
+                  className={cn(
+                    "text-sm font-medium",
+                    isActive ? "text-primary-foreground" : "text-muted-foreground"
+                  )}
                 >
                   {tab.label}
                 </Text>
                 <View
-                  className={`rounded-full px-1.5 py-0.2 ${isActive ? "bg-primary-foreground/20" : "bg-muted"
-                    }`}
+                  className={cn(
+                    "min-w-[20px] items-center justify-center rounded-full px-1.5 py-0.5",
+                    isActive ? "bg-primary-foreground/20" : "bg-muted"
+                  )}
                 >
                   <Text
-                    className={`text-[10px] font-bold ${isActive ? "text-primary-foreground" : "text-muted-foreground"
-                      }`}
+                    className={cn(
+                      "text-[10px] font-bold",
+                      isActive ? "text-primary-foreground" : "text-muted-foreground"
+                    )}
                   >
                     {tab.count}
                   </Text>
@@ -134,26 +117,18 @@ export const VacancyApplicantsView = ({
           </Text>
         </View>
       ) : applications.length === 0 ? (
-        <View className="items-center justify-center rounded-3xl border border-dashed border-border bg-card p-10">
-          <View className="mb-4 rounded-full bg-primary/10 p-4">
-            <Inbox size={32} color="#3b82f6" />
-          </View>
-          <Text className="text-lg font-bold text-foreground">
-            No Applicants Yet
-          </Text>
-          <Text className="mt-1 text-center text-sm text-muted-foreground">
-            No candidates have submitted an application for this vacancy yet.
-          </Text>
-        </View>
+        <EmptyState
+          icon={<Inbox size={32} color="#3b82f6" />}
+          title="No applicants yet"
+          description="You haven't received any applications for this vacancy yet. Check back later."
+        />
       ) : filteredApplications.length === 0 ? (
-        <View className="items-center justify-center rounded-3xl border border-dashed border-border bg-card p-10">
-          <Text className="text-base font-semibold text-foreground">
-            No {activeFilter.toLowerCase()} applicants
-          </Text>
-          <Text className="mt-1 text-center text-xs text-muted-foreground">
-            There are currently no candidates matching the selected status.
-          </Text>
-        </View>
+        <EmptyState
+          icon={<Inbox size={32} color="#a1a1aa" />}
+          title={`No ${activeFilter.toLowerCase()} applications`}
+          description={`There are currently no applications with the status "${activeFilter.toLowerCase()}"`}
+          variant="minimal"
+        />
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}

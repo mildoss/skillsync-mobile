@@ -6,16 +6,14 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
-  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCompanies } from "@/hooks/useCompanies";
 import { CompanyCard } from "@/components/companies/CompanyCard";
 import { CompanySkeleton } from "@/components/companies/CompanySkeleton";
-import { Input } from "@/components/ui/input";
-import { Search, X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
+
+import { SearchHeader } from "@/components/shared/SearchHeader";
 
 export default function CompaniesScreen() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -48,41 +46,15 @@ export default function CompaniesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-      <View className="border-b border-border/40 px-4 pb-3 pt-2">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-1 pr-2">
-            <Text className="text-3xl font-bold tracking-tight text-foreground">
-              Top IT Companies
-            </Text>
-            <Text className="my-0.5 text-sm text-muted-foreground">
-              Explore leading tech employers
-            </Text>
-          </View>
-          <NotificationBell />
-        </View>
-
-        <View className="relative mt-2">
-          <View className="absolute left-3 top-3 z-10">
-            <Search size={20} color={isDark ? "#a1a1aa" : "#71717a"} />
-          </View>
-          <Input
-            placeholder="Search companies by name..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSubmit}
-            returnKeyType="search"
-            autoCapitalize="none"
-            autoCorrect={false}
-            className="h-12 border-border bg-card pl-10 pr-10"
-            placeholderTextColor={isDark ? "#a1a1aa" : "#71717a"}
-          />
-          {searchQuery.length > 0 && (
-            <Pressable onPress={handleClear} className="absolute right-3 top-3.5 z-10" hitSlop={8}>
-              <X size={18} color={isDark ? "#a1a1aa" : "#71717a"} />
-            </Pressable>
-          )}
-        </View>
-      </View>
+      <SearchHeader
+        title="Top IT Companies"
+        subtitle="Explore leading tech employers"
+        placeholder="Search companies by name..."
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSubmit={handleSubmit}
+        onClear={handleClear}
+      />
 
       {isLoading && companies.length === 0 ? (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">

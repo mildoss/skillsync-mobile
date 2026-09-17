@@ -6,17 +6,15 @@ import {
   ActivityIndicator,
   RefreshControl,
   ScrollView,
-  Pressable,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useCandidates } from "@/hooks/useCandidates";
 import { CandidateCard } from "@/components/candidates/CandidateCard";
 import { CandidateSkeleton } from "@/components/candidates/CandidateSkeleton";
-import { Input } from "@/components/ui/input";
-import { Filter, Search, X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
-import { NotificationBell } from "@/components/notifications/NotificationBell";
+
+import { SearchHeader } from "@/components/shared/SearchHeader";
 
 export default function CandidatesScreen() {
   const params = useLocalSearchParams();
@@ -61,52 +59,17 @@ export default function CandidatesScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
-      <View className="border-b border-border/40 px-4 pb-3 pt-2">
-        <View className="flex-row items-center justify-between">
-          <View>
-            <Text className="text-3xl font-bold tracking-tight text-foreground">Candidates</Text>
-            <Text className="my-0.5 text-sm text-muted-foreground">Find the right people</Text>
-          </View>
-          <View className="flex-row items-center gap-2">
-            <NotificationBell />
-            <Pressable
-              onPress={() => router.push({ pathname: "/candidates/filters", params })}
-              className="relative h-11 w-11 items-center justify-center rounded-xl bg-primary/10"
-            >
-              <Filter size={20} color={isDark ? "#ffffff" : "#4f46e5"} />
-              {filterCount > 0 ? (
-                <View className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-destructive">
-                  <Text className="text-[10px] font-bold text-destructive-foreground">
-                    {filterCount}
-                  </Text>
-                </View>
-              ) : null}
-            </Pressable>
-          </View>
-        </View>
-
-        <View className="relative mt-3">
-          <View className="absolute left-3 top-3 z-10">
-            <Search size={20} color={isDark ? "#a1a1aa" : "#71717a"} />
-          </View>
-          <Input
-            placeholder="Search candidates by name, position, skill..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            onSubmitEditing={handleSubmit}
-            returnKeyType="search"
-            autoCapitalize="none"
-            autoCorrect={false}
-            className="h-12 border-border bg-card pl-10 pr-10"
-            placeholderTextColor={isDark ? "#a1a1aa" : "#71717a"}
-          />
-          {searchQuery.length > 0 && (
-            <Pressable onPress={handleClear} className="absolute right-3 top-3.5 z-10" hitSlop={8}>
-              <X size={18} color={isDark ? "#a1a1aa" : "#71717a"} />
-            </Pressable>
-          )}
-        </View>
-      </View>
+      <SearchHeader
+        title="Candidates"
+        subtitle="Find the right people"
+        placeholder="Search candidates by name, position, skill..."
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onSubmit={handleSubmit}
+        onClear={handleClear}
+        onFilterPress={() => router.push({ pathname: "/candidates/filters", params })}
+        filterCount={filterCount}
+      />
 
       {isLoading && candidates.length === 0 ? (
         <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">

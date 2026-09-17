@@ -18,6 +18,7 @@ import { Plus, Briefcase } from "lucide-react-native";
 import { VacancyForm } from "./VacancyForm";
 import { VacancyApplicantsView } from "./VacancyApplicantsView";
 import { useMyVacancies } from "@/hooks/useVacancies";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 interface MyVacanciesTabProps {
   user: User;
@@ -134,19 +135,17 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
       </View>
 
       {vacancies.length === 0 ? (
-        <View className="items-center justify-center rounded-3xl border border-dashed border-border bg-card p-10">
-          <View className="mb-4 rounded-full bg-primary/10 p-4">
-            <Briefcase size={32} color="#3b82f6" />
-          </View>
-          <Text className="text-lg font-bold text-foreground">No Vacancies Yet</Text>
-          <Text className="mb-6 mt-1 text-center text-sm text-muted-foreground">
-            You haven't posted any job openings for your company yet.
-          </Text>
-          <Button onPress={() => setIsCreating(true)}>
-            <Plus size={16} color="#ffffff" className="mr-2" />
-            <Text className="font-semibold text-primary-foreground">Post a Vacancy</Text>
-          </Button>
-        </View>
+        <EmptyState
+          icon={<Briefcase size={32} color="#3b82f6" />}
+          title="No Vacancies Yet"
+          description="You haven't posted any job openings for your company yet."
+          action={
+            <Button onPress={() => setIsCreating(true)}>
+              <Plus size={16} color="#ffffff" className="mr-2" />
+              <Text className="font-semibold text-primary-foreground">Post a Vacancy</Text>
+            </Button>
+          }
+        />
       ) : (
         <View className="gap-4">
           {vacancies.map((vacancy) => (
