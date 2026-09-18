@@ -11,6 +11,7 @@ interface FormSelectProps<T extends FieldValues> {
   placeholder?: string;
   className?: string;
   valueAsNumber?: boolean;
+  disabled?: boolean;
 }
 
 export function FormSelect<T extends FieldValues>({
@@ -22,6 +23,7 @@ export function FormSelect<T extends FieldValues>({
   placeholder,
   className,
   valueAsNumber,
+  disabled,
 }: FormSelectProps<T>) {
   return (
     <View className="gap-2">
@@ -46,6 +48,7 @@ export function FormSelect<T extends FieldValues>({
                 }
               }}
               placeholder={placeholder}
+              disabled={disabled}
             />
             {error && <Text className="text-xs text-destructive">{error.message}</Text>}
           </>

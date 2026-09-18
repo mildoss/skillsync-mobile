@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { View, Text, ActivityIndicator, Alert } from "react-native";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCompanySchema, CreateCompanyInput } from "@/lib/validation/company";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/select";
-import { ImageUpload } from "@/components/shared/ImageUpload";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormSelect } from "@/components/ui/FormSelect";
+import { FormTextarea } from "@/components/ui/FormTextarea";
+import { CompanyProfileHeader } from "./CompanyProfileHeader";
+import { CompanyDangerZone } from "./CompanyDangerZone";
 import { getCompany, updateCompany, uploadCompanyLogo, deleteCompany, getMe } from "@/lib/api";
 import { toast } from "@/store/useToastStore";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -215,130 +217,58 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
       </View>
 
       <View className="rounded-2xl border border-border bg-card p-6 shadow-sm">
-        <View className="flex-col gap-6 border-b border-border pb-6">
-          <ImageUpload
-            currentImageUrl={previewUri || logoUrl}
-            name={name || "Company"}
-            onFileSelectAction={
-              isReadOnly
-                ? () => {}
-                : (uri, mimeType, name) => {
-                    setSelectedFile({ uri, mimeType, name });
-                    setPreviewUri(uri);
-                    setHasLogoChanged(true);
-                  }
-            }
-            onRemoveAction={
-              isReadOnly
-                ? () => {}
-                : () => {
-                    setSelectedFile(null);
-                    setPreviewUri(null);
-                    setValue("logoUrl", "");
-                    setHasLogoChanged(true);
-                  }
-            }
-          />
-          <View>
-            <Text className="truncate text-xl font-bold text-foreground">
-              {name || "Company Name"}
-            </Text>
-            <Text className="truncate font-medium text-muted-foreground">
-              {company.companyType || "Company Type"}
-            </Text>
-          </View>
-        </View>
+        <CompanyProfileHeader
+          company={company}
+          name={name}
+          previewUri={previewUri}
+          logoUrl={logoUrl}
+          isReadOnly={isReadOnly}
+          onFileSelectAction={(uri, mimeType, selectedName) => {
+            setSelectedFile({ uri, mimeType, name: selectedName });
+            setPreviewUri(uri);
+            setHasLogoChanged(true);
+          }}
+          onRemoveAction={() => {
+            setSelectedFile(null);
+            setPreviewUri(null);
+            setValue("logoUrl", "");
+            setHasLogoChanged(true);
+          }}
+        />
 
         <View className="mt-6 gap-4">
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Company Name</Text>
-            <Controller
-              control={control}
-              name="name"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  placeholder="Acme Corp"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                  editable={!isReadOnly}
-                />
-              )}
-            />
-            {formState.errors.name && (
-              <Text className="text-xs text-destructive">{formState.errors.name.message}</Text>
-            )}
-          </View>
+          <FormInput
+            control={control}
+            name="name"
+            label="Company Name"
+            placeholder="Acme Corp"
+            editable={!isReadOnly}
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Company Type</Text>
-            <Controller
-              control={control}
-              name="companyType"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={COMPANY_TYPES}
-                  value={value}
-                  onValueChange={onChange}
-                  placeholder="Select company type..."
-                  disabled={isReadOnly}
-                />
-              )}
-            />
-            {formState.errors.companyType && (
-              <Text className="text-xs text-destructive">
-                {formState.errors.companyType.message}
-              </Text>
-            )}
-          </View>
+          <FormSelect
+            control={control}
+            name="companyType"
+            label="Company Type"
+            options={COMPANY_TYPES}
+            placeholder="Select company type..."
+            disabled={isReadOnly}
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Website URL</Text>
-            <Controller
-              control={control}
-              name="websiteUrl"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  placeholder="https://example.com"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value || ""}
-                  editable={!isReadOnly}
-                />
-              )}
-            />
-            {formState.errors.websiteUrl && (
-              <Text className="text-xs text-destructive">
-                {formState.errors.websiteUrl.message}
-              </Text>
-            )}
-          </View>
+          <FormInput
+            control={control}
+            name="websiteUrl"
+            label="Website URL"
+            placeholder="https://example.com"
+            editable={!isReadOnly}
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Description</Text>
-            <Controller
-              control={control}
-              name="description"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  placeholder="Tell candidates about your company..."
-                  multiline
-                  numberOfLines={4}
-                  className="h-24 py-2"
-                  textAlignVertical="top"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value || ""}
-                  editable={!isReadOnly}
-                />
-              )}
-            />
-            {formState.errors.description && (
-              <Text className="text-xs text-destructive">
-                {formState.errors.description.message}
-              </Text>
-            )}
-          </View>
+          <FormTextarea
+            control={control}
+            name="description"
+            label="Description"
+            placeholder="Tell candidates about your company..."
+            editable={!isReadOnly}
+          />
         </View>
       </View>
 
@@ -355,23 +285,11 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
             </Text>
           </Button>
 
-          <View className="mt-8 rounded-2xl border border-destructive/20 bg-destructive/5 p-6">
-            <Text className="text-lg font-bold text-destructive">Danger Zone</Text>
-            <Text className="mt-1 text-sm text-muted-foreground">
-              Once you delete your company, there is no going back. All vacancies and team connections
-              will be permanently removed.
-            </Text>
-            <Button
-              variant="destructive"
-              className="mt-4 border border-destructive/30"
-              onPress={handleDeleteCompany}
-              disabled={isDeleting || isPending}
-            >
-              <Text className="font-semibold text-destructive">
-                {isDeleting ? "Deleting..." : "Delete Company"}
-              </Text>
-            </Button>
-          </View>
+          <CompanyDangerZone
+            isDeleting={isDeleting}
+            isPending={isPending}
+            onDelete={handleDeleteCompany}
+          />
         </>
       )}
     </View>
