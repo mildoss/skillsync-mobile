@@ -12,36 +12,13 @@ import { Bell, X, CheckCheck, ChevronRight, Inbox } from "lucide-react-native";
 import { cssInterop } from "nativewind";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { Notification } from "@/types/notifications";
-import { formatDate } from "@/lib/utils";
+import { formatRelativeTime } from "@/lib/utils";
 
 [Bell, X, CheckCheck, ChevronRight, Inbox].forEach((Icon) => {
   cssInterop(Icon, {
     className: { target: "style", nativeStyleToProp: { color: true } },
   });
 });
-
-function formatNotificationTime(dateString: string): string {
-  try {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) return "";
-
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / (1000 * 60));
-    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays === 1) return "Yesterday";
-    if (diffDays < 7) return `${diffDays}d ago`;
-
-    return formatDate(dateString);
-  } catch {
-    return formatDate(dateString);
-  }
-}
 
 export const NotificationModal = () => {
   const router = useRouter();
@@ -181,7 +158,7 @@ export const NotificationModal = () => {
                       </View>
 
                       <Text className="shrink-0 text-[10px] font-medium text-muted-foreground/80">
-                        {formatNotificationTime(n.createdAt)}
+                        {formatRelativeTime(n.createdAt)}
                       </Text>
                     </View>
                   </TouchableOpacity>
