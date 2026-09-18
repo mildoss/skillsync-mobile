@@ -7,10 +7,13 @@ import {
   ApplicantProfileFormValues,
   updateApplicantProfileSchema,
 } from "@/lib/validation/user";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormSelect } from "@/components/ui/FormSelect";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 import { ImageUpload } from "@/components/shared/ImageUpload";
 import { updateUser, uploadAvatar, getMe } from "@/lib/api";
 import { toast } from "@/store/useToastStore";
@@ -235,25 +238,19 @@ export const ApplicantProfileForm = ({ user, categories, skills, languages }: Pr
         </View>
 
         <View className="mt-6 gap-4">
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Name *</Text>
-            <Controller
+          <View className="gap-4">
+            <FormInput
               control={control}
               name="name"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input placeholder="John" onBlur={onBlur} onChangeText={onChange} value={value} />
-              )}
+              label="First Name"
+              required
+              placeholder="John"
             />
-            {errors.name && <Text className="text-xs text-destructive">{errors.name.message}</Text>}
-          </View>
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Surname</Text>
-            <Controller
+            <FormInput
               control={control}
               name="surname"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input placeholder="Doe" onBlur={onBlur} onChangeText={onChange} value={value} />
-              )}
+              label="Surname"
+              placeholder="Doe"
             />
           </View>
         </View>
@@ -262,121 +259,62 @@ export const ApplicantProfileForm = ({ user, categories, skills, languages }: Pr
       <View className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <Text className="mb-6 text-xl font-bold text-foreground">Professional Details</Text>
         <View className="gap-4">
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Primary Position *</Text>
-            <Controller
-              control={control}
-              name="position"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  placeholder="e.g. Frontend Developer"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-            />
-            {errors.position && (
-              <Text className="text-xs text-destructive">{errors.position.message}</Text>
-            )}
-          </View>
+          <FormInput
+            control={control}
+            name="position"
+            label="Primary Position"
+            required
+            placeholder="e.g. Frontend Developer"
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Category *</Text>
-            <Controller
-              control={control}
-              name="categoryId"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={mapToOptions(categories)}
-                  value={value}
-                  onValueChange={onChange}
-                  placeholder="Select category..."
-                />
-              )}
-            />
-            {errors.categoryId && (
-              <Text className="text-xs text-destructive">{errors.categoryId.message}</Text>
-            )}
-          </View>
+          <FormSelect
+            control={control}
+            name="categoryId"
+            label="Category"
+            required
+            options={mapToOptions(categories)}
+            placeholder="Select category..."
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Experience (Years)</Text>
-            <Controller
-              control={control}
-              name="experience"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={EXPERIENCE_OPTIONS}
-                  value={value?.toString()}
-                  onValueChange={(val) => onChange(val ? Number(val) : undefined)}
-                  placeholder="Any experience"
-                />
-              )}
-            />
-          </View>
+          <FormSelect
+            control={control}
+            name="experience"
+            label="Experience (Years)"
+            options={EXPERIENCE_OPTIONS}
+            placeholder="Any experience"
+            valueAsNumber
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">Location</Text>
-            <Controller
-              control={control}
-              name="location"
-              render={({ field: { onChange, value } }) => (
-                <Select
-                  options={LOCATION_OPTIONS}
-                  value={value}
-                  onValueChange={onChange}
-                  placeholder="Not specified"
-                />
-              )}
-            />
-          </View>
+          <FormSelect
+            control={control}
+            name="location"
+            label="Location"
+            options={LOCATION_OPTIONS}
+            placeholder="Not specified"
+          />
         </View>
       </View>
 
       <View className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <Text className="mb-6 text-xl font-bold text-foreground">About & Resume</Text>
         <View className="gap-4">
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">About Me</Text>
-            <Controller
-              control={control}
-              name="about"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  placeholder="Tell recruiters about your background..."
-                  multiline
-                  numberOfLines={4}
-                  className="h-32 py-3"
-                  textAlignVertical="top"
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value}
-                />
-              )}
-            />
-            {errors.about && (
-              <Text className="text-xs text-destructive">{errors.about.message}</Text>
-            )}
-          </View>
+          <FormTextarea
+            control={control}
+            name="about"
+            label="About Me"
+            placeholder="Tell recruiters about your background..."
+          />
 
-          <View className="gap-2">
-            <Text className="text-sm font-medium text-foreground">CV / Resume URL (Optional)</Text>
-            <Controller
+          <View className="rounded-xl border border-border bg-muted/30 p-4">
+            <Text className="mb-1 text-sm font-semibold text-foreground">Resume / CV Link</Text>
+            <Text className="mb-3 text-xs text-muted-foreground">
+              Provide a link to your resume (Google Drive, Dropbox, etc.)
+            </Text>
+            <FormInput
               control={control}
               name="cvUrl"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <Input
-                  placeholder="https://drive.google.com/..."
-                  onBlur={onBlur}
-                  onChangeText={onChange}
-                  value={value || ""}
-                />
-              )}
+              placeholder="https://drive.google.com/..."
             />
-            {errors.cvUrl && (
-              <Text className="text-xs text-destructive">{errors.cvUrl.message}</Text>
-            )}
           </View>
         </View>
       </View>

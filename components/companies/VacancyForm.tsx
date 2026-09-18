@@ -6,9 +6,10 @@ import { createVacancy, updateVacancy, getCategories, getSkills, getLanguages, g
 import { Dictionaries } from "@/types/dictionaries";
 import { Vacancy } from "@/types/vacancies";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormSelect } from "@/components/ui/FormSelect";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 import { toast } from "@/store/useToastStore";
 import { ArrowLeft, Sparkles } from "lucide-react-native";
 import {
@@ -235,133 +236,68 @@ export const VacancyForm = ({
           </View>
         ) : (
           <View className="gap-5">
-            <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">
-                Job Title <Text className="text-destructive">*</Text>
-              </Text>
-              <Controller
-                control={control}
-                name="title"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    placeholder="e.g. Senior Frontend Engineer"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                  />
-                )}
-              />
-              {errors.title && (
-                <Text className="text-xs text-destructive">{errors.title.message}</Text>
-              )}
-            </View>
+            <FormInput
+              control={control}
+              name="title"
+              label="Job Title"
+              required
+              placeholder="e.g. Senior Frontend Engineer"
+            />
 
-            <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">
-                Category <Text className="text-destructive">*</Text>
-              </Text>
-              <Controller
-                control={control}
-                name="categoryId"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    options={mapToOptions(categories)}
-                    value={value}
-                    onValueChange={onChange}
-                    placeholder="Select a category"
-                  />
-                )}
-              />
-              {errors.categoryId && (
-                <Text className="text-xs text-destructive">{errors.categoryId.message}</Text>
-              )}
-            </View>
+            <FormSelect
+              control={control}
+              name="categoryId"
+              label="Category"
+              required
+              options={mapToOptions(categories)}
+              placeholder="Select a category"
+            />
 
-            <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">Work Format</Text>
-              <Controller
-                control={control}
-                name="type"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    options={WORK_FORMATS}
-                    value={value}
-                    onValueChange={onChange}
-                    placeholder="Select format"
-                  />
-                )}
-              />
-            </View>
+            <FormSelect
+              control={control}
+              name="type"
+              label="Work Format"
+              options={WORK_FORMATS}
+              placeholder="Select format"
+            />
 
-            <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">Required Experience</Text>
-              <Controller
-                control={control}
-                name="experience"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    options={EXPERIENCE_OPTIONS}
-                    value={value?.toString()}
-                    onValueChange={(val) => onChange(val ? Number(val) : undefined)}
-                    placeholder="Any experience"
-                  />
-                )}
-              />
-            </View>
+            <FormSelect
+              control={control}
+              name="experience"
+              label="Required Experience"
+              options={EXPERIENCE_OPTIONS}
+              placeholder="Any experience"
+              valueAsNumber
+            />
 
-            <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">Location</Text>
-              <Controller
-                control={control}
-                name="location"
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    options={LOCATION_OPTIONS}
-                    value={value}
-                    onValueChange={onChange}
-                    placeholder="Select location (optional)"
-                  />
-                )}
-              />
-            </View>
+            <FormSelect
+              control={control}
+              name="location"
+              label="Location"
+              options={LOCATION_OPTIONS}
+              placeholder="Select location (optional)"
+            />
 
             <View className="flex-row gap-3">
-              <View className="flex-1 gap-2">
-                <Text className="text-sm font-medium text-foreground">Min Salary ($)</Text>
-                <Controller
+              <View className="flex-1">
+                <FormInput
                   control={control}
                   name="salaryMin"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input
-                      placeholder="e.g. 2000"
-                      keyboardType="numeric"
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value != null ? String(value) : ""}
-                    />
-                  )}
+                  label="Min Salary ($)"
+                  placeholder="e.g. 2000"
+                  keyboardType="numeric"
                 />
               </View>
-              <View className="flex-1 gap-2">
-                <Text className="text-sm font-medium text-foreground">Max Salary ($)</Text>
-                <Controller
+              <View className="flex-1">
+                <FormInput
                   control={control}
                   name="salaryMax"
-                  render={({ field: { onChange, onBlur, value } }) => (
-                    <Input
-                      placeholder="e.g. 3500"
-                      keyboardType="numeric"
-                      onBlur={onBlur}
-                      onChangeText={onChange}
-                      value={value != null ? String(value) : ""}
-                    />
-                  )}
+                  label="Max Salary ($)"
+                  placeholder="e.g. 3500"
+                  keyboardType="numeric"
                 />
               </View>
             </View>
-            {errors.salaryMax && (
-              <Text className="text-xs text-destructive">{errors.salaryMax.message}</Text>
-            )}
 
             <View className="gap-2">
               <Text className="text-sm font-medium text-foreground">
@@ -404,10 +340,7 @@ export const VacancyForm = ({
             </View>
 
             <View className="gap-2">
-              <View className="flex-row items-center justify-between">
-                <Text className="text-sm font-medium text-foreground">
-                  Description <Text className="text-destructive">*</Text>
-                </Text>
+              <View className="flex-row items-center justify-end">
                 <TouchableOpacity
                   onPress={handleGenerateDescription}
                   disabled={isGenerating}
@@ -423,25 +356,13 @@ export const VacancyForm = ({
                   )}
                 </TouchableOpacity>
               </View>
-              <Controller
+              <FormTextarea
                 control={control}
                 name="description"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    placeholder="Describe role responsibilities, team, and benefits..."
-                    multiline
-                    numberOfLines={6}
-                    className="h-36 py-3"
-                    textAlignVertical="top"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                  />
-                )}
+                label="Description"
+                required
+                placeholder="Describe role responsibilities, team, and benefits..."
               />
-              {errors.description && (
-                <Text className="text-xs text-destructive">{errors.description.message}</Text>
-              )}
             </View>
 
             <View className="flex-row items-center justify-between rounded-2xl border border-border bg-muted/30 p-4">
