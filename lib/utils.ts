@@ -137,7 +137,9 @@ export const EXPERIENCE_OPTIONS = [
 
 import { useAuthStore } from "@/store/useAuthStore";
 
-export const API_URL = process.env.EXPO_PUBLIC_API_URL;
+export const API_URL =
+  process.env.EXPO_PUBLIC_API_URL ||
+  "https://f4mbg0hoz8.execute-api.us-east-1.amazonaws.com";
 
 const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 

@@ -12,10 +12,18 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://f4mbg0hoz8.execute-api.us-east-1.amazonaws.com",
+        "EXPO_PUBLIC_SOCKET_URL": "https://skillsync-backend-cdj9.onrender.com"
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://f4mbg0hoz8.execute-api.us-east-1.amazonaws.com",
+        "EXPO_PUBLIC_SOCKET_URL": "https://skillsync-backend-cdj9.onrender.com"
+      }
     }
   },
   "submit": {

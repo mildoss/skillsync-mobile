@@ -4,7 +4,8 @@ import { Message } from "@/types/chat";
 import { ApplicationStatus } from "@/types/application";
 import { useAuthStore } from "@/store/useAuthStore";
 
-const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || "http://localhost:3000";
+const SOCKET_URL =
+  process.env.EXPO_PUBLIC_SOCKET_URL || "https://skillsync-backend-cdj9.onrender.com";
 
 type UseChatSocketProps = {
   user: { id: string; name: string; avatarUrl: string | null };
