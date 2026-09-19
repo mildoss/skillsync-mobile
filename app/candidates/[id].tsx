@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -9,6 +10,7 @@ import { formatEnum, formatExperience } from "@/lib/utils";
 import { ArrowLeft, FileText } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { useAuthStore } from "@/store/useAuthStore";
+import { InviteModal } from "@/components/applications/InviteModal";
 
 import { CandidateDetailsSkeleton } from "@/components/candidates/CandidateDetailsSkeleton";
 
@@ -19,6 +21,7 @@ export default function CandidateDetailsScreen() {
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
   const { user } = useAuthStore();
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 
   const { data: candidate, isLoading, error } = useCandidate(id as string);
 
@@ -155,10 +158,23 @@ export default function CandidateDetailsScreen() {
           style={{ paddingBottom: Math.max(insets.bottom, 16) }}
           className="border-t border-border bg-background px-6 pt-4"
         >
-          <Button size="lg" className="w-full">
+          <Button
+            size="lg"
+            className="w-full"
+            onPress={() => setIsInviteModalOpen(true)}
+          >
             Invite to vacancy
           </Button>
         </View>
+      )}
+
+      {candidate && (
+        <InviteModal
+          isOpen={isInviteModalOpen}
+          onClose={() => setIsInviteModalOpen(false)}
+          candidateId={candidate.id}
+          candidateName={`${candidate.name} ${candidate.surname}`}
+        />
       )}
     </View>
   );

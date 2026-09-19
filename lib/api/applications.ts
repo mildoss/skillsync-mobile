@@ -26,3 +26,19 @@ export const updateApplicationStatus = async (
       body: JSON.stringify({ status }),
     },
   );
+
+export const inviteCandidate = async (payload: {
+  applicantId: string;
+  vacancyId: string;
+  message?: string;
+}) =>
+  fetchJson<{ success: boolean; data?: Application }>(`${API_URL}/applications/invite`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      applicantId: payload.applicantId,
+      vacancyId: payload.vacancyId,
+      message: payload.message ?? "",
+    }),
+  });
+
