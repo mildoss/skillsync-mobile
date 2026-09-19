@@ -7,3 +7,4 @@ export * from "./api/dictionaries";
 export * from "./api/ai";
 export * from "./api/payments";
 export * from "./api/notifications";
+export * from "./api/chat";

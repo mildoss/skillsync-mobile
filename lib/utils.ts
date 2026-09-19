@@ -97,6 +97,7 @@ export function buildQueryParams(
 }
 
 export function formatChatTime(date: Date): string {
+  if (!date || isNaN(date.getTime())) return "";
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffMins = Math.floor(diffMs / (1000 * 60));
