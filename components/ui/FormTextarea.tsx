@@ -16,6 +16,7 @@ export function FormTextarea<T extends FieldValues>({
   label,
   required,
   className,
+  onChangeText: customOnChangeText,
   ...props
 }: FormTextareaProps<T>) {
   return (
@@ -31,18 +32,21 @@ export function FormTextarea<T extends FieldValues>({
         render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
           <>
             <Input
+              {...props}
               multiline
               numberOfLines={6}
               textAlignVertical="top"
               onBlur={onBlur}
-              onChangeText={onChange}
+              onChangeText={(text) => {
+                onChange(text);
+                customOnChangeText?.(text);
+              }}
               value={value}
               className={cn(
                 "h-36 py-3",
                 error ? "border-destructive focus:border-destructive" : "",
                 className
               )}
-              {...props}
             />
             {error && <Text className="text-xs text-destructive">{error.message}</Text>}
           </>

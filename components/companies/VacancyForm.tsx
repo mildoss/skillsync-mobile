@@ -2,7 +2,16 @@ import { useState, useEffect } from "react";
 import { View, Text, TouchableOpacity, ActivityIndicator, Switch } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createVacancy, updateVacancy, getCategories, getSkills, getLanguages, generateVacancyDescription } from "@/lib/api";
+import {
+  createVacancy,
+  updateVacancy,
+  getCategories,
+  getSkills,
+  getLanguages,
+  generateVacancyDescription,
+  getLatestDraft,
+} from "@/lib/api";
+import { getStoredDraft, setStoredDraft, removeStoredDraft } from "@/lib/storage";
 import { Dictionaries } from "@/types/dictionaries";
 import { Vacancy } from "@/types/vacancies";
 import { Button } from "@/components/ui/button";
@@ -11,7 +20,7 @@ import { FormInput } from "@/components/ui/FormInput";
 import { FormSelect } from "@/components/ui/FormSelect";
 import { FormTextarea } from "@/components/ui/FormTextarea";
 import { toast } from "@/store/useToastStore";
-import { ArrowLeft, Sparkles } from "lucide-react-native";
+import { ArrowLeft, Sparkles, History } from "lucide-react-native";
 import {
   WORK_FORMATS,
   EXPERIENCE_OPTIONS,
@@ -78,12 +87,16 @@ export const VacancyForm = ({
   onSuccess,
 }: VacancyFormProps) => {
   const isEditing = !!initialData;
+  const storageKey = "new_vacancy_description";
   const [categories, setCategories] = useState<Dictionaries[]>([]);
   const [skills, setSkills] = useState<Dictionaries[]>([]);
   const [languages, setLanguages] = useState<Dictionaries[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isLoadingDicts, setIsLoadingDicts] = useState(true);
+  const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+  const [isFetchingDraft, setIsFetchingDraft] = useState(false);
+  const [isDraftLoaded, setIsDraftLoaded] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -111,6 +124,7 @@ export const VacancyForm = ({
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<VacancyFormValues, any, VacancyInput>({
     resolver: zodResolver(vacancySchema),
@@ -149,6 +163,50 @@ export const VacancyForm = ({
     }
   }, [initialData, reset]);
 
+  useEffect(() => {
+    let isMounted = true;
+    if (initialData || hasLoadedDraft) return;
+
+    const fetchDraft = async () => {
+      try {
+        setIsFetchingDraft(true);
+
+        const local = await getStoredDraft(storageKey);
+        if (local) {
+          if (isMounted) {
+            setValue("description", local);
+            setHasLoadedDraft(true);
+            setIsDraftLoaded(true);
+            setIsFetchingDraft(false);
+          }
+          return;
+        }
+
+        const res = await getLatestDraft("VACANCY");
+
+        if (isMounted && res?.data?.text) {
+          setValue("description", res.data.text);
+          await setStoredDraft(storageKey, res.data.text);
+          setIsDraftLoaded(true);
+        }
+
+        if (isMounted) {
+          setHasLoadedDraft(true);
+        }
+      } catch (error) {
+        console.error("Draft fetch error", error);
+      } finally {
+        if (isMounted) setIsFetchingDraft(false);
+      }
+    };
+
+    void fetchDraft();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [initialData, hasLoadedDraft, setValue]);
+
   const onInvalid = (formErrors: any) => {
     const errorKeys = Object.keys(formErrors);
     if (errorKeys.length > 0) {
@@ -174,6 +232,7 @@ export const VacancyForm = ({
       } else {
         await createVacancy(payload);
         toast.success("Vacancy published successfully!");
+        await removeStoredDraft(storageKey);
       }
       reset();
       onSuccess();
@@ -203,7 +262,11 @@ export const VacancyForm = ({
         jobTitle: values.title,
         keywords: selectedSkillLabels,
       });
-      reset({ ...values, description: res.text });
+      setValue("description", res.text);
+      if (!isEditing) {
+        await setStoredDraft(storageKey, res.text);
+      }
+      setIsDraftLoaded(false);
       toast.success("Description generated successfully!");
     } catch (error: any) {
       toast.error("Generation failed", error.message || "An unexpected error occurred");
@@ -340,10 +403,13 @@ export const VacancyForm = ({
             </View>
 
             <View className="gap-2">
-              <View className="flex-row items-center justify-end">
+              <View className="flex-row items-center justify-between">
+                <Text className="text-sm font-medium text-foreground">
+                  Description <Text className="text-destructive">*</Text>
+                </Text>
                 <TouchableOpacity
                   onPress={handleGenerateDescription}
-                  disabled={isGenerating}
+                  disabled={isGenerating || isFetchingDraft}
                   className="flex-row items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 active:bg-primary/20"
                 >
                   {isGenerating ? (
@@ -356,12 +422,34 @@ export const VacancyForm = ({
                   )}
                 </TouchableOpacity>
               </View>
+
+              {isDraftLoaded && (
+                <View className="flex-row items-center gap-1">
+                  <History size={12} color="#f59e0b" />
+                  <Text className="text-xs font-medium text-amber-500">
+                    Restored from draft
+                  </Text>
+                </View>
+              )}
               <FormTextarea
                 control={control}
                 name="description"
-                label="Description"
-                required
-                placeholder="Describe role responsibilities, team, and benefits..."
+                placeholder={
+                  isFetchingDraft
+                    ? "Looking for your latest draft..."
+                    : "Describe role responsibilities, team, and benefits..."
+                }
+                onChangeText={(text) => {
+                  setIsDraftLoaded(false);
+                  if (!isEditing) {
+                    if (text.trim() === "") {
+                      void removeStoredDraft(storageKey);
+                    } else {
+                      void setStoredDraft(storageKey, text);
+                    }
+                  }
+                }}
+                editable={!isFetchingDraft && !isGenerating}
               />
             </View>
 

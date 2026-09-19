@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Modal,
   View,
@@ -11,10 +11,11 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { applyToVacancy, getVacancy, generateCoverLetter } from "@/lib/api";
+import { applyToVacancy, getVacancy, generateCoverLetter, getLatestDraft } from "@/lib/api";
+import { getStoredDraft, setStoredDraft, removeStoredDraft } from "@/lib/storage";
 import { toast } from "@/store/useToastStore";
 import { useAuthStore } from "@/store/useAuthStore";
-import { X, Send, Briefcase, Sparkles } from "lucide-react-native";
+import { X, Send, Briefcase, Sparkles, History } from "lucide-react-native";
 import { Button } from "@/components/ui/button";
 
 interface ApplyModalProps {
@@ -37,14 +38,60 @@ export const ApplyModal = ({
   const [coverLetter, setCoverLetter] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isDraftLoaded, setIsDraftLoaded] = useState(false);
+  const [isFetchingDraft, setIsFetchingDraft] = useState(false);
   const user = useAuthStore(state => state.user);
+
+  const storageKey = `draft_${vacancyId}`;
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (isOpen) {
+      const fetchDraft = async () => {
+        setIsFetchingDraft(true);
+
+        const local = await getStoredDraft(storageKey);
+        if (local) {
+          if (isMounted) {
+            setCoverLetter(local);
+            setIsDraftLoaded(true);
+            setIsFetchingDraft(false);
+          }
+          return;
+        }
+
+        const res = await getLatestDraft("COVER_LETTER", vacancyId);
+
+        if (!isMounted) return;
+
+        if (res?.data?.text) {
+          setCoverLetter(res.data.text);
+          await setStoredDraft(storageKey, res.data.text);
+          setIsDraftLoaded(true);
+        }
+
+        setIsFetchingDraft(false);
+      };
+
+      void fetchDraft();
+
+      return () => {
+        isMounted = false;
+        setIsDraftLoaded(false);
+        setIsFetchingDraft(false);
+      };
+    }
+  }, [isOpen, vacancyId, storageKey]);
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
     try {
       const res = await applyToVacancy(vacancyId, coverLetter.trim() || undefined);
       toast.success("Application sent successfully!");
+      await removeStoredDraft(storageKey);
       setCoverLetter("");
+      setIsDraftLoaded(false);
       onSuccess(res?.data);
       onClose();
     } catch (error: any) {
@@ -78,11 +125,23 @@ export const ApplyModal = ({
 
       const res = await generateCoverLetter(payload);
       setCoverLetter(res.text);
-      toast.success("Cover letter generated successfully!");
+      await setStoredDraft(storageKey, res.text);
+      setIsDraftLoaded(false);
+      toast.success(`Generated! Remaining credits: ${res.remainingCredits ?? ""}`);
     } catch (error: any) {
       toast.error("Generation failed", error.message || "An unexpected error occurred");
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleChangeText = (text: string) => {
+    setCoverLetter(text);
+    setIsDraftLoaded(false);
+    if (text.trim() === "") {
+      void removeStoredDraft(storageKey);
+    } else {
+      void setStoredDraft(storageKey, text);
     }
   };
 
@@ -132,35 +191,53 @@ export const ApplyModal = ({
               </View>
 
               <View className="p-5">
-                <View className="mb-1.5 flex-row items-center justify-between">
-                  <Text className="text-sm font-semibold text-foreground">
-                    Cover Letter{" "}
-                    <Text className="text-xs font-normal text-muted-foreground">
-                      (optional)
+                <View className="mb-2 flex-row items-start justify-between">
+                  <View className="flex-1 pr-2">
+                    <Text className="text-sm font-semibold text-foreground">
+                      Cover Letter{" "}
+                      <Text className="text-xs font-normal text-muted-foreground">
+                        (optional)
+                      </Text>
                     </Text>
-                  </Text>
+                    {isDraftLoaded && (
+                      <View className="mt-1 flex-row items-center gap-1">
+                        <History size={12} color="#f59e0b" />
+                        <Text className="text-xs font-medium text-amber-500">
+                          Restored from your latest draft
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                   <TouchableOpacity
                     onPress={handleGenerateAI}
-                    disabled={isGenerating}
-                    className="flex-row items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 active:bg-primary/20"
+                    disabled={isGenerating || isSubmitting || isFetchingDraft}
+                    className="flex-row items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1.5 active:bg-primary/20"
                   >
                     {isGenerating ? (
                       <ActivityIndicator size="small" color="#3b82f6" />
                     ) : (
                       <>
                         <Sparkles size={14} color="#3b82f6" />
-                        <Text className="text-xs font-semibold text-primary">AI Draft</Text>
+                        <Text className="text-xs font-semibold text-primary">
+                          {isFetchingDraft ? "Loading..." : "AI Draft"}
+                        </Text>
                       </>
                     )}
                   </TouchableOpacity>
                 </View>
+
                 <TextInput
-                  placeholder="Introduce yourself, highlight your top skills, and explain why you're a great match for this role..."
+                  placeholder={
+                    isFetchingDraft
+                      ? "Looking for your latest draft..."
+                      : "Introduce yourself, highlight your top skills, and explain why you're a great match for this role..."
+                  }
                   placeholderTextColor="#9ca3af"
                   multiline
                   numberOfLines={5}
                   value={coverLetter}
-                  onChangeText={setCoverLetter}
+                  onChangeText={handleChangeText}
+                  editable={!isFetchingDraft && !isSubmitting && !isGenerating}
                   textAlignVertical="top"
                   className="h-36 rounded-2xl border border-border bg-muted/20 p-3.5 text-sm leading-relaxed text-foreground focus:border-primary"
                 />
