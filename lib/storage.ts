@@ -38,3 +38,20 @@ export const removeStoredDraft = async (key: string): Promise<void> => {
     console.warn("Failed to remove local draft", e);
   }
 };
+
+export const hasSeenOnboarding = async (): Promise<boolean> => {
+  try {
+    const val = await getStoredDraft("has_seen_onboarding");
+    return val === "true";
+  } catch {
+    return false;
+  }
+};
+
+export const setOnboardingSeen = async (): Promise<void> => {
+  try {
+    await setStoredDraft("has_seen_onboarding", "true");
+  } catch {
+    // ignore
+  }
+};
