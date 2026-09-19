@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { PRICING_PLANS, PricingPackage } from "@/lib/constans";
 import { createCheckoutSession, getMe } from "@/lib/api";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useTransactions } from "@/hooks/useTransactions";
+import { TransactionHistory } from "@/components/profile/TransactionHistory";
 
 [Sparkles, Check, ShieldCheck, Zap].forEach((Icon) => {
   cssInterop(Icon, {
@@ -22,6 +24,11 @@ interface BillingTabProps {
 export const BillingTab = ({ user }: BillingTabProps) => {
   const credits = user?.aiCredits ?? 0;
   const [loadingPlanId, setLoadingPlanId] = useState<string | null>(null);
+  const {
+    data: transactions = [],
+    isLoading: isLoadingTransactions,
+    refetch: refetchTransactions,
+  } = useTransactions();
 
   const handleSelectPlan = async (plan: PricingPackage) => {
     try {
@@ -42,6 +49,7 @@ export const BillingTab = ({ user }: BillingTabProps) => {
       if (freshUser) {
         useAuthStore.getState().setUser(freshUser);
       }
+      refetchTransactions();
     } catch (error: any) {
       Alert.alert("Payment Error", error?.message || "Failed to initiate payment session.");
     } finally {
@@ -172,6 +180,20 @@ export const BillingTab = ({ user }: BillingTabProps) => {
           );
         })}
       </View>
+
+      <View className="mt-8 mb-3">
+        <Text className="text-xl font-bold tracking-tight text-foreground">
+          Transaction History
+        </Text>
+        <Text className="mt-1 text-xs text-muted-foreground">
+          View your past token purchases and receipts.
+        </Text>
+      </View>
+
+      <TransactionHistory
+        transactions={transactions}
+        isLoading={isLoadingTransactions}
+      />
 
       <View className="mt-8 flex-row items-center gap-3 rounded-2xl border border-dashed border-border bg-muted/30 p-4">
         <ShieldCheck className="text-muted-foreground" size={22} />
