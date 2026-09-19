@@ -85,6 +85,8 @@ export default function RootLayout() {
             name="candidates/filters"
             options={{ presentation: "modal", headerShown: false }}
           />
+          <Stack.Screen name="chats/index" options={{ headerShown: false }} />
+          <Stack.Screen name="chats/[id]" options={{ headerShown: false }} />
         </Stack>
       </View>
     </QueryClientProvider>

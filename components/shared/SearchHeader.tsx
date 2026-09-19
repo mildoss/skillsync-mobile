@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Filter, Search, X } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { ChatCounter } from "@/components/chats/ChatCounter";
 
 interface SearchHeaderProps {
   title: string;
@@ -40,6 +41,7 @@ export const SearchHeader = ({
           <Text className="my-0.5 text-sm text-muted-foreground">{subtitle}</Text>
         </View>
         <View className="flex-row items-center gap-2">
+          <ChatCounter />
           <NotificationBell />
           {onFilterPress && (
             <Pressable

@@ -17,6 +17,7 @@ import {
   Eye,
   Check,
   RotateCcw,
+  MessageSquare,
 } from "lucide-react-native";
 import { formatEnum, formatExperience } from "@/lib/utils";
 
@@ -76,7 +77,16 @@ export const HrApplicationCard = ({
           </View>
         </TouchableOpacity>
 
-        <ApplicationStatusBadge status={application.status} />
+        <View className="flex-row items-center gap-2">
+          <TouchableOpacity
+            onPress={() => router.push(`/chats/${application.id}` as any)}
+            className="h-8 w-8 items-center justify-center rounded-lg bg-primary/10"
+            accessibilityLabel="Open chat"
+          >
+            <MessageSquare size={16} color="#4f46e5" />
+          </TouchableOpacity>
+          <ApplicationStatusBadge status={application.status} />
+        </View>
       </View>
 
       {(applicant.experience != null || applicant.location) && (

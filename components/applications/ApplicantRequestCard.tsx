@@ -4,7 +4,7 @@ import { Application } from "@/types/application";
 import { CustomAvatar } from "@/components/shared/CustomAvatar";
 import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { formatDate } from "@/lib/utils";
-import { ChevronRight, FileText } from "lucide-react-native";
+import { ChevronRight, FileText, MessageSquare } from "lucide-react-native";
 
 export const ApplicantRequestCard = ({
   application,
@@ -51,7 +51,19 @@ export const ApplicantRequestCard = ({
           </View>
         </View>
 
-        <ApplicationStatusBadge status={application.status} />
+        <View className="flex-row items-center gap-2">
+          <TouchableOpacity
+            onPress={(e) => {
+              e.stopPropagation();
+              router.push(`/chats/${application.id}` as any);
+            }}
+            className="h-8 w-8 items-center justify-center rounded-lg bg-primary/10"
+            accessibilityLabel="Open chat"
+          >
+            <MessageSquare size={16} color="#4f46e5" />
+          </TouchableOpacity>
+          <ApplicationStatusBadge status={application.status} />
+        </View>
       </View>
 
       {/* Applied date & cover letter preview */}
