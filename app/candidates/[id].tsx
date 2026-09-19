@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { formatEnum, formatExperience } from "@/lib/utils";
 import { ArrowLeft, FileText } from "lucide-react-native";
 import { useColorScheme } from "nativewind";
+import { useAuthStore } from "@/store/useAuthStore";
 
 import { CandidateDetailsSkeleton } from "@/components/candidates/CandidateDetailsSkeleton";
 
@@ -17,6 +18,7 @@ export default function CandidateDetailsScreen() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const insets = useSafeAreaInsets();
+  const { user } = useAuthStore();
 
   const { data: candidate, isLoading, error } = useCandidate(id as string);
 
@@ -148,15 +150,16 @@ export default function CandidateDetailsScreen() {
         )}
       </ScrollView>
 
-      {/* Floating Invite Button - visually represented for now */}
-      <View
-        style={{ paddingBottom: Math.max(insets.bottom, 16) }}
-        className="border-t border-border bg-background px-6 pt-4"
-      >
-        <Button size="lg" className="w-full">
-          Invite to vacancy
-        </Button>
-      </View>
+      {user?.role !== "APPLICANT" && (
+        <View
+          style={{ paddingBottom: Math.max(insets.bottom, 16) }}
+          className="border-t border-border bg-background px-6 pt-4"
+        >
+          <Button size="lg" className="w-full">
+            Invite to vacancy
+          </Button>
+        </View>
+      )}
     </View>
   );
 }

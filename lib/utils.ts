@@ -228,10 +228,13 @@ export const fetchJson = async <T>(
     }
 
     if (!res.ok) {
-      const errorData = (await res.json().catch(() => null)) as {
-        error?: string;
-        message?: string | string[];
-      } | null;
+      let errorData = null;
+      try {
+        const text = await res.text();
+        if (text) errorData = JSON.parse(text);
+      } catch (e) {
+        // ignore
+      }
       let errorMsg = `HTTP ${res.status} ${res.statusText}`;
       if (errorData?.message) {
         errorMsg = Array.isArray(errorData.message)
@@ -245,15 +248,21 @@ export const fetchJson = async <T>(
       throw err;
     }
 
-    const data: unknown = await res.json();
-    return data as T;
+    const text = await res.text();
+    if (!text) return {} as T;
+
+    return JSON.parse(text) as T;
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     const status = (error as any)?.status;
     const isClientError = status && status >= 400 && status < 500;
 
+    const method = options.method || "GET";
+    const isIdempotent = method.toUpperCase() === "GET";
+
     if (
       retries > 0 &&
+      isIdempotent &&
       !isClientError &&
       message !== "Unauthorized" &&
       !message.includes("Session expired")

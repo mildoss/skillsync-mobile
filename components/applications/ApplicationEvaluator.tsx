@@ -15,58 +15,68 @@ export const ApplicationEvaluator = ({
   onEvaluate,
 }: ApplicationEvaluatorProps) => {
   return (
-    <View className="mt-3 rounded-xl border border-border/70 bg-muted/20 p-3">
-      <View className="flex-row items-center justify-between mb-2">
-        <View className="flex-row items-center gap-1.5">
-          <BrainCircuit size={14} color="#8b5cf6" />
-          <Text className="text-xs font-semibold text-foreground">AI Matching</Text>
+    <View className="mt-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-3.5">
+      <View className="mb-2.5 flex-row items-center justify-between">
+        <View className="flex-row items-center gap-2">
+          <BrainCircuit size={16} color="#6366f1" />
+          <Text className="text-xs font-bold text-indigo-500">AI Candidate Match</Text>
         </View>
-        {matching && (
-          <View
-            className={`rounded-full px-2 py-0.5 ${
-              matching.score >= 80
-                ? "bg-green-500/10"
-                : matching.score >= 50
-                  ? "bg-yellow-500/10"
-                  : "bg-red-500/10"
-            }`}
+
+        {!matching && !isChecking && (
+          <TouchableOpacity
+            onPress={onEvaluate}
+            disabled={isEvaluating}
+            className="flex-row items-center gap-1.5 rounded-lg bg-indigo-500/10 px-2.5 py-1.5 active:bg-indigo-500/20"
           >
-            <Text
-              className={`text-[10px] font-bold ${
-                matching.score >= 80
-                  ? "text-green-600 dark:text-green-400"
-                  : matching.score >= 50
-                    ? "text-yellow-600 dark:text-yellow-400"
-                    : "text-red-600 dark:text-red-400"
-              }`}
-            >
-              {matching.score}% MATCH
-            </Text>
-          </View>
+            {isEvaluating ? (
+              <ActivityIndicator size="small" color="#6366f1" />
+            ) : (
+              <>
+                <Sparkles size={12} color="#6366f1" />
+                <Text className="text-xs font-semibold text-indigo-500">
+                  Evaluate (1 credit)
+                </Text>
+              </>
+            )}
+          </TouchableOpacity>
         )}
       </View>
 
       {isChecking ? (
-        <ActivityIndicator size="small" color="#8b5cf6" className="self-start" />
+        <View className="py-1">
+          <ActivityIndicator size="small" color="#6366f1" className="self-start" />
+        </View>
       ) : matching ? (
-        <Text className="text-xs leading-relaxed text-muted-foreground">{matching.reason}</Text>
+        <View className="flex-row items-start gap-3 pt-1">
+          <View
+            className={`h-11 w-11 shrink-0 items-center justify-center rounded-full ${
+              matching.score >= 80
+                ? "bg-green-500/20"
+                : matching.score >= 50
+                  ? "bg-amber-500/20"
+                  : "bg-red-500/20"
+            }`}
+          >
+            <Text
+              className={`text-sm font-black ${
+                matching.score >= 80
+                  ? "text-green-600 dark:text-green-400"
+                  : matching.score >= 50
+                    ? "text-amber-600 dark:text-amber-400"
+                    : "text-red-600 dark:text-red-400"
+              }`}
+            >
+              {matching.score}%
+            </Text>
+          </View>
+          <Text className="flex-1 text-xs leading-relaxed text-foreground/80 font-medium">
+            {matching.reason}
+          </Text>
+        </View>
       ) : (
-        <TouchableOpacity
-          onPress={onEvaluate}
-          disabled={isEvaluating}
-          className="flex-row items-center self-start gap-1.5 rounded-lg bg-violet-500/10 px-3 py-1.5 active:bg-violet-500/20"
-        >
-          {isEvaluating ? (
-            <ActivityIndicator size="small" color="#8b5cf6" />
-          ) : (
-            <>
-              <Sparkles size={14} color="#8b5cf6" />
-              <Text className="text-xs font-semibold text-violet-600 dark:text-violet-400">
-                Evaluate Candidate
-              </Text>
-            </>
-          )}
-        </TouchableOpacity>
+        <Text className="text-xs text-muted-foreground">
+          AI analysis is not available for this candidate yet.
+        </Text>
       )}
     </View>
   );

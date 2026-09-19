@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 import { Application, ApplicationStatus } from "@/types/application";
-import { updateApplicationStatus, getLatestDraft, evaluateCandidate } from "@/lib/api";
+import { updateApplicationStatus, getLatestDraft, evaluateCandidate, getVacancy, getUser } from "@/lib/api";
 import { toast } from "@/store/useToastStore";
 
 interface UseHrApplicationCardProps {
@@ -22,9 +22,11 @@ export const useHrApplicationCard = ({
     let isMounted = true;
     const checkMatch = async () => {
       try {
-        const res = await getLatestDraft("MATCHING", application.vacancyId, application.id);
-        if (isMounted && res?.data?.score != null) {
-          setMatching({ score: res.data.score, reason: res.data.reason || "" });
+        const res = await getLatestDraft("MATCHING", application.id);
+        if (isMounted && res?.data?.data) {
+          setMatching(res.data.data);
+        } else if (isMounted && (res?.data as any)?.score != null) {
+          setMatching(res.data as any);
         }
       } catch (error) {
         console.error("Failed to check AI matching", error);
@@ -32,11 +34,13 @@ export const useHrApplicationCard = ({
         if (isMounted) setIsChecking(false);
       }
     };
-    checkMatch();
+
+    void checkMatch();
+
     return () => {
       isMounted = false;
     };
-  }, [application.id, application.vacancyId]);
+  }, [application.id]);
 
   const handleStatusUpdate = async (newStatus: ApplicationStatus) => {
     setIsUpdating(newStatus);
@@ -67,18 +71,53 @@ export const useHrApplicationCard = ({
     setIsEvaluating(true);
     try {
       const applicant = application.applicant;
+      let vacancyTitle = application.vacancy?.title || "";
+      let vacancyDescription = application.vacancy?.description || "";
+      let candidateAbout = applicant.about || "";
+      let candidateSkills = applicant.skills?.map((s: any) => s.name) || [];
+      let candidateExperience = applicant.experience != null ? `${applicant.experience} years` : "";
+
+      if (!vacancyTitle || !vacancyDescription) {
+        try {
+          const vacancy = await getVacancy(application.vacancyId);
+          if (vacancy) {
+            vacancyTitle = vacancy.title || "";
+            vacancyDescription = vacancy.description || "";
+          }
+        } catch {
+          // ignore
+        }
+      }
+
+      if (!candidateAbout || candidateSkills.length === 0) {
+        try {
+          const fullApplicant = await getUser(applicant.id);
+          if (fullApplicant) {
+            candidateAbout = fullApplicant.about || candidateAbout;
+            candidateSkills = fullApplicant.skills?.map((s: any) => s.name) || candidateSkills;
+            if (fullApplicant.experience != null) {
+              candidateExperience = `${fullApplicant.experience} years`;
+            }
+          }
+        } catch {
+          // ignore
+        }
+      }
+
       const payload = {
         applicationId: application.id,
         vacancyId: application.vacancyId,
-        vacancyTitle: application.vacancy?.title || "",
-        vacancyDescription: application.vacancy?.description || "",
-        candidateAbout: applicant.about || "",
-        candidateSkills: applicant.skills?.map((s: any) => s.name) || [],
-        candidateExperience: applicant.experience != null ? `${applicant.experience} years` : "",
+        vacancyTitle,
+        vacancyDescription,
+        candidateAbout,
+        candidateSkills,
+        candidateExperience,
       };
       const res = await evaluateCandidate(payload);
-      setMatching({ score: res.score, reason: res.reason });
-      toast.success("Analysis complete!");
+      if (res?.score != null) {
+        setMatching({ score: res.score, reason: res.reason });
+        toast.success("Analysis complete!");
+      }
     } catch (error: any) {
       toast.error("Evaluation failed", error.message || "An unexpected error occurred");
     } finally {

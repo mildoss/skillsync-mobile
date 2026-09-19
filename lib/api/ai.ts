@@ -1,11 +1,14 @@
-import { API_URL, fetchJson } from "@/lib/utils";
+import { API_URL, fetchJson, buildQueryParams } from "@/lib/utils";
+import { AiDraftResponse, AiGenerationType } from "@/types/ai";
 
-export const getLatestDraft = async (type: "COVER_LETTER" | "VACANCY" | "MATCHING", vacancyId?: string, applicationId?: string) => {
-  const url = new URL(`${API_URL}/ai/draft`);
-  url.searchParams.append("type", type);
-  if (vacancyId) url.searchParams.append("vacancyId", vacancyId);
-  if (applicationId) url.searchParams.append("applicationId", applicationId);
-  return fetchJson<{ data?: { score?: number; reason?: string }; text?: string }>(url.toString());
+export const getLatestDraft = async (type: AiGenerationType, vacancyId?: string) => {
+  const query = buildQueryParams({ type, vacancyId });
+  try {
+    const res = await fetchJson<AiDraftResponse>(`${API_URL}/ai/draft?${query.toString()}`);
+    return { data: res };
+  } catch {
+    return { data: null };
+  }
 };
 
 export const generateCoverLetter = async (payload: { vacancyId: string; vacancyTitle: string; vacancyDescription: string; candidateAbout: string; candidateSkills: string[]; candidateExperience: string }) =>
