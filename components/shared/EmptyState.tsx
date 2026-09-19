@@ -23,8 +23,7 @@ export const EmptyState = ({
     <View
       className={cn(
         "items-center justify-center p-10 text-center",
-        variant === "default" &&
-          "rounded-3xl border border-dashed border-border bg-card",
+        variant === "default" && "rounded-3xl border border-dashed border-border bg-card",
         variant === "minimal" && "py-12",
         className,
       )}
@@ -32,16 +31,13 @@ export const EmptyState = ({
       <View
         className={cn(
           "mb-4 rounded-full p-4",
-          variant === "default" ? "bg-primary/10" : "bg-transparent mb-2 p-0",
+          variant === "default" ? "bg-primary/10" : "mb-2 bg-transparent p-0",
         )}
       >
         {icon}
       </View>
       <Text
-        className={cn(
-          "font-bold text-foreground",
-          variant === "default" ? "text-lg" : "text-xl",
-        )}
+        className={cn("font-bold text-foreground", variant === "default" ? "text-lg" : "text-xl")}
       >
         {title}
       </Text>

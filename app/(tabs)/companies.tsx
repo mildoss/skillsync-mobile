@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-} from "react-native";
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCompanies } from "@/hooks/useCompanies";
 import { CompanyCard } from "@/components/companies/CompanyCard";
@@ -57,7 +50,10 @@ export default function CompaniesScreen() {
       />
 
       {isLoading && companies.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
+          keyboardShouldPersistTaps="handled"
+        >
           {Array.from({ length: 5 }).map((_, i) => (
             <CompanySkeleton key={i} />
           ))}

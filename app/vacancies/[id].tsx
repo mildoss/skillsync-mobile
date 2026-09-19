@@ -158,9 +158,7 @@ export default function VacancyDetailsScreen() {
               disabled
             >
               <Check size={18} color="#22c55e" className="mr-2" />
-              <Text className="font-semibold text-secondary-foreground">
-                Already Applied
-              </Text>
+              <Text className="font-semibold text-secondary-foreground">Already Applied</Text>
             </Button>
           </View>
         ) : (
@@ -176,9 +174,7 @@ export default function VacancyDetailsScreen() {
             }}
             className="w-full"
           >
-            <Text className="font-semibold text-primary-foreground">
-              Apply for Job
-            </Text>
+            <Text className="font-semibold text-primary-foreground">Apply for Job</Text>
           </Button>
         )}
       </View>

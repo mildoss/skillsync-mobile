@@ -246,12 +246,7 @@ export const ApplicantProfileForm = ({ user, categories, skills, languages }: Pr
               required
               placeholder="John"
             />
-            <FormInput
-              control={control}
-              name="surname"
-              label="Surname"
-              placeholder="Doe"
-            />
+            <FormInput control={control} name="surname" label="Surname" placeholder="Doe" />
           </View>
         </View>
       </View>
@@ -310,11 +305,7 @@ export const ApplicantProfileForm = ({ user, categories, skills, languages }: Pr
             <Text className="mb-3 text-xs text-muted-foreground">
               Provide a link to your resume (Google Drive, Dropbox, etc.)
             </Text>
-            <FormInput
-              control={control}
-              name="cvUrl"
-              placeholder="https://drive.google.com/..."
-            />
+            <FormInput control={control} name="cvUrl" placeholder="https://drive.google.com/..." />
           </View>
         </View>
       </View>

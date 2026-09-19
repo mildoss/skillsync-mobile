@@ -29,7 +29,7 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
   const [isSearching, setIsSearching] = useState(false);
   const [isJoining, setIsJoining] = useState<string | null>(null);
   const [sentRequests, setSentRequests] = useState<Set<string>>(
-    new Set(user?.pendingCompanyIds || [])
+    new Set(user?.pendingCompanyIds || []),
   );
 
   useEffect(() => {
@@ -123,14 +123,15 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
 
       <View className="mt-4 gap-3">
         {isSearching ? (
-          <ActivityIndicator size="small" className="text-primary my-4" />
+          <ActivityIndicator size="small" className="my-4 text-primary" />
         ) : search.length >= 2 && companies.length === 0 ? (
-          <Text className="text-center text-sm text-muted-foreground my-4">
+          <Text className="my-4 text-center text-sm text-muted-foreground">
             No companies found. Try a different name.
           </Text>
         ) : (
           companies.map((company) => {
-            const isSent = sentRequests.has(company.id) || user?.pendingCompanyIds?.includes(company.id);
+            const isSent =
+              sentRequests.has(company.id) || user?.pendingCompanyIds?.includes(company.id);
 
             return (
               <View
@@ -170,7 +171,7 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
                     disabled={isJoining === company.id}
                   >
                     <Send className="mr-2 text-primary-foreground" size={14} />
-                    <Text className="text-primary-foreground font-medium">
+                    <Text className="font-medium text-primary-foreground">
                       {isJoining === company.id ? "Sending..." : "Join"}
                     </Text>
                   </Button>

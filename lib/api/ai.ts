@@ -11,21 +11,39 @@ export const getLatestDraft = async (type: AiGenerationType, vacancyId?: string)
   }
 };
 
-export const generateCoverLetter = async (payload: { vacancyId: string; vacancyTitle: string; vacancyDescription: string; candidateAbout: string; candidateSkills: string[]; candidateExperience: string }) =>
+export const generateCoverLetter = async (payload: {
+  vacancyId: string;
+  vacancyTitle: string;
+  vacancyDescription: string;
+  candidateAbout: string;
+  candidateSkills: string[];
+  candidateExperience: string;
+}) =>
   fetchJson<{ text: string; remainingCredits: number }>(`${API_URL}/ai/cover-letter`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
-export const generateVacancyDescription = async (payload: { jobTitle: string; keywords: string[] }) =>
+export const generateVacancyDescription = async (payload: {
+  jobTitle: string;
+  keywords: string[];
+}) =>
   fetchJson<{ text: string; remainingCredits: number }>(`${API_URL}/ai/vacancy`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
-export const evaluateCandidate = async (payload: { applicationId: string; vacancyId: string; vacancyTitle: string; vacancyDescription: string; candidateAbout: string; candidateSkills: string[]; candidateExperience: string }) =>
+export const evaluateCandidate = async (payload: {
+  applicationId: string;
+  vacancyId: string;
+  vacancyTitle: string;
+  vacancyDescription: string;
+  candidateAbout: string;
+  candidateSkills: string[];
+  candidateExperience: string;
+}) =>
   fetchJson<{ score: number; reason: string; remainingCredits: number }>(`${API_URL}/ai/match`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

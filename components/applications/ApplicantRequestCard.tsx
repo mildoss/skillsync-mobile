@@ -6,11 +6,7 @@ import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { formatDate } from "@/lib/utils";
 import { ChevronRight, FileText, MessageSquare } from "lucide-react-native";
 
-export const ApplicantRequestCard = ({
-  application,
-}: {
-  application: Application;
-}) => {
+export const ApplicantRequestCard = ({ application }: { application: Application }) => {
   const router = useRouter();
   const vacancy = application.vacancy;
 
@@ -36,16 +32,10 @@ export const ApplicantRequestCard = ({
             size="sm"
           />
           <View className="flex-1">
-            <Text
-              className="text-base font-bold text-foreground"
-              numberOfLines={1}
-            >
+            <Text className="text-base font-bold text-foreground" numberOfLines={1}>
               {vacancy.title}
             </Text>
-            <Text
-              className="text-xs font-medium text-muted-foreground"
-              numberOfLines={1}
-            >
+            <Text className="text-xs font-medium text-muted-foreground" numberOfLines={1}>
               {vacancy.company?.name || "Company"}
             </Text>
           </View>
@@ -72,14 +62,9 @@ export const ApplicantRequestCard = ({
           <View className="mb-2.5 rounded-xl bg-muted/40 p-2.5">
             <View className="mb-1 flex-row items-center gap-1.5">
               <FileText size={12} color="#6b7280" />
-              <Text className="text-[11px] font-semibold text-foreground">
-                Your Cover Letter
-              </Text>
+              <Text className="text-[11px] font-semibold text-foreground">Your Cover Letter</Text>
             </View>
-            <Text
-              className="text-xs italic text-muted-foreground"
-              numberOfLines={2}
-            >
+            <Text className="text-xs italic text-muted-foreground" numberOfLines={2}>
               "{application.coverLetter}"
             </Text>
           </View>
@@ -90,9 +75,7 @@ export const ApplicantRequestCard = ({
             Applied {formatDate(application.createdAt)}
           </Text>
           <View className="flex-row items-center gap-0.5">
-            <Text className="text-xs font-semibold text-primary">
-              View Vacancy
-            </Text>
+            <Text className="text-xs font-semibold text-primary">View Vacancy</Text>
             <ChevronRight size={14} color="#3b82f6" />
           </View>
         </View>

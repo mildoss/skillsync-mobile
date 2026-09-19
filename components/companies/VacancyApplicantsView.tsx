@@ -20,13 +20,16 @@ interface VacancyApplicantsViewProps {
   onBack: () => void;
 }
 
-export const VacancyApplicantsView = ({
-  vacancy,
-  onBack,
-}: VacancyApplicantsViewProps) => {
-  const { data: applications = [], isLoading, isRefetching, refetch } = useVacancyApplications(vacancy.id);
-  
-  const { activeFilter, setActiveFilter, filteredApplications, filterTabs } = useApplicationFilters(applications);
+export const VacancyApplicantsView = ({ vacancy, onBack }: VacancyApplicantsViewProps) => {
+  const {
+    data: applications = [],
+    isLoading,
+    isRefetching,
+    refetch,
+  } = useVacancyApplications(vacancy.id);
+
+  const { activeFilter, setActiveFilter, filteredApplications, filterTabs } =
+    useApplicationFilters(applications);
 
   const handleStatusUpdated = () => {
     refetch();
@@ -48,18 +51,13 @@ export const VacancyApplicantsView = ({
           <Text className="text-2xl font-bold tracking-tight text-foreground" numberOfLines={2}>
             Applicants
           </Text>
-          <Text
-            className="mt-0.5 text-sm font-medium text-muted-foreground"
-            numberOfLines={2}
-          >
+          <Text className="mt-0.5 text-sm font-medium text-muted-foreground" numberOfLines={2}>
             for {vacancy.title}
           </Text>
         </View>
         <View className="flex-row items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1">
           <Users size={14} color="#3b82f6" />
-          <Text className="text-xs font-semibold text-primary">
-            {applications.length} Total
-          </Text>
+          <Text className="text-xs font-semibold text-primary">{applications.length} Total</Text>
         </View>
       </View>
 
@@ -77,13 +75,13 @@ export const VacancyApplicantsView = ({
                 onPress={() => setActiveFilter(tab.value)}
                 className={cn(
                   "flex-row items-center gap-1.5 rounded-full border px-3.5 py-1.5",
-                  isActive ? "border-primary bg-primary" : "border-border bg-card"
+                  isActive ? "border-primary bg-primary" : "border-border bg-card",
                 )}
               >
                 <Text
                   className={cn(
                     "text-sm font-medium",
-                    isActive ? "text-primary-foreground" : "text-muted-foreground"
+                    isActive ? "text-primary-foreground" : "text-muted-foreground",
                   )}
                 >
                   {tab.label}
@@ -91,13 +89,13 @@ export const VacancyApplicantsView = ({
                 <View
                   className={cn(
                     "min-w-[20px] items-center justify-center rounded-full px-1.5 py-0.5",
-                    isActive ? "bg-primary-foreground/20" : "bg-muted"
+                    isActive ? "bg-primary-foreground/20" : "bg-muted",
                   )}
                 >
                   <Text
                     className={cn(
                       "text-[10px] font-bold",
-                      isActive ? "text-primary-foreground" : "text-muted-foreground"
+                      isActive ? "text-primary-foreground" : "text-muted-foreground",
                     )}
                   >
                     {tab.count}
@@ -112,9 +110,7 @@ export const VacancyApplicantsView = ({
       {isLoading ? (
         <View className="items-center justify-center py-20">
           <ActivityIndicator size="large" color="#3b82f6" />
-          <Text className="mt-3 text-xs text-muted-foreground">
-            Loading applicants...
-          </Text>
+          <Text className="mt-3 text-xs text-muted-foreground">Loading applicants...</Text>
         </View>
       ) : applications.length === 0 ? (
         <EmptyState
@@ -133,9 +129,7 @@ export const VacancyApplicantsView = ({
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 120 }}
-          refreshControl={
-            <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
-          }
+          refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
         >
           {filteredApplications.map((app) => (
             <HrApplicationCard

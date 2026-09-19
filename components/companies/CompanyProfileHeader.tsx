@@ -30,9 +30,7 @@ export const CompanyProfileHeader = ({
         onRemoveAction={isReadOnly ? () => {} : onRemoveAction}
       />
       <View>
-        <Text className="truncate text-xl font-bold text-foreground">
-          {name || "Company Name"}
-        </Text>
+        <Text className="truncate text-xl font-bold text-foreground">{name || "Company Name"}</Text>
         <Text className="truncate font-medium text-muted-foreground">
           {company.companyType || "Company Type"}
         </Text>

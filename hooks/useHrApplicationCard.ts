@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { Alert } from "react-native";
 import { Application, ApplicationStatus } from "@/types/application";
-import { updateApplicationStatus, getLatestDraft, evaluateCandidate, getVacancy, getUser } from "@/lib/api";
+import {
+  updateApplicationStatus,
+  getLatestDraft,
+  evaluateCandidate,
+  getVacancy,
+  getUser,
+} from "@/lib/api";
 import { toast } from "@/store/useToastStore";
 
 interface UseHrApplicationCardProps {
@@ -57,10 +63,7 @@ export const useHrApplicationCard = ({
         onStatusUpdated({ ...application, status: newStatus });
       }
     } catch (error: any) {
-      toast.error(
-        "Failed to update status",
-        error.message || "An unexpected error occurred",
-      );
+      toast.error("Failed to update status", error.message || "An unexpected error occurred");
     } finally {
       setIsUpdating(null);
     }

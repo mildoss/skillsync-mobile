@@ -6,8 +6,7 @@ export const getVacancies = async (queryParams: URLSearchParams) =>
 
 export const getVacancy = async (id: string) => fetchJson<Vacancy>(`${API_URL}/vacancies/${id}`);
 
-export const getMyVacancies = async () =>
-  fetchJson<Vacancy[]>(`${API_URL}/vacancies/my`);
+export const getMyVacancies = async () => fetchJson<Vacancy[]>(`${API_URL}/vacancies/my`);
 
 export const createVacancy = async (data: any) =>
   fetchJson<{ success: boolean; data?: Vacancy }>(`${API_URL}/vacancies`, {

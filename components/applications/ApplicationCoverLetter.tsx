@@ -6,12 +6,10 @@ interface ApplicationCoverLetterProps {
   coverLetterText?: string | null;
 }
 
-export const ApplicationCoverLetter = ({
-  coverLetterText,
-}: ApplicationCoverLetterProps) => {
+export const ApplicationCoverLetter = ({ coverLetterText }: ApplicationCoverLetterProps) => {
   const [isCoverLetterExpanded, setIsCoverLetterExpanded] = useState(false);
   const text = coverLetterText?.trim();
-  
+
   if (!text) return null;
 
   const isLongLetter = text.length > 130;
@@ -20,9 +18,7 @@ export const ApplicationCoverLetter = ({
     <View className="mt-3 rounded-xl border border-border/70 bg-muted/30 p-3">
       <View className="mb-1 flex-row items-center gap-1.5">
         <FileText size={13} color="#6b7280" />
-        <Text className="text-xs font-semibold text-foreground">
-          Cover Letter
-        </Text>
+        <Text className="text-xs font-semibold text-foreground">Cover Letter</Text>
       </View>
       <Text
         className="text-xs leading-relaxed text-muted-foreground"

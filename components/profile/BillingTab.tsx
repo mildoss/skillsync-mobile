@@ -101,10 +101,9 @@ export const BillingTab = ({ user }: BillingTabProps) => {
           return (
             <View
               key={plan.id}
-              className={`relative rounded-3xl border p-6 ${isPopular
-                ? "border-primary bg-card shadow-md"
-                : "border-border bg-card"
-                }`}
+              className={`relative rounded-3xl border p-6 ${
+                isPopular ? "border-primary bg-card shadow-md" : "border-border bg-card"
+              }`}
             >
               {isPopular && (
                 <View className="absolute -top-3 left-6 rounded-full bg-primary px-3.5 py-1 shadow-sm">
@@ -170,8 +169,9 @@ export const BillingTab = ({ user }: BillingTabProps) => {
                   />
                 )}
                 <Text
-                  className={`text-sm font-bold ${isPopular ? "text-primary-foreground" : "text-foreground"
-                    }`}
+                  className={`text-sm font-bold ${
+                    isPopular ? "text-primary-foreground" : "text-foreground"
+                  }`}
                 >
                   {loadingPlanId === plan.id ? "Preparing checkout..." : `Choose ${plan.title}`}
                 </Text>
@@ -181,7 +181,7 @@ export const BillingTab = ({ user }: BillingTabProps) => {
         })}
       </View>
 
-      <View className="mt-8 mb-3">
+      <View className="mb-3 mt-8">
         <Text className="text-xl font-bold tracking-tight text-foreground">
           Transaction History
         </Text>
@@ -190,15 +190,14 @@ export const BillingTab = ({ user }: BillingTabProps) => {
         </Text>
       </View>
 
-      <TransactionHistory
-        transactions={transactions}
-        isLoading={isLoadingTransactions}
-      />
+      <TransactionHistory transactions={transactions} isLoading={isLoadingTransactions} />
 
       <View className="mt-8 flex-row items-center gap-3 rounded-2xl border border-dashed border-border bg-muted/30 p-4">
         <ShieldCheck className="text-muted-foreground" size={22} />
         <Text className="flex-1 text-xs leading-relaxed text-muted-foreground">
-          All transactions are processed securely via <Text className="font-semibold text-foreground">Stripe</Text>. Tokens have no expiration date.
+          All transactions are processed securely via{" "}
+          <Text className="font-semibold text-foreground">Stripe</Text>. Tokens have no expiration
+          date.
         </Text>
       </View>
     </View>

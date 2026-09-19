@@ -47,9 +47,7 @@ function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps
             left: 20,
             right: 20,
             height: 1,
-            backgroundColor: isDark
-              ? "rgba(255,255,255,0.12)"
-              : "rgba(255,255,255,0.7)",
+            backgroundColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.7)",
             borderRadius: 1,
           }}
         />
@@ -61,13 +59,9 @@ function LiquidGlassTabBar({ state, descriptors, navigation }: BottomTabBarProps
             justifyContent: "space-around",
             paddingVertical: 10,
             paddingHorizontal: 8,
-            backgroundColor: isDark
-              ? "rgba(18, 18, 24, 0.45)"
-              : "rgba(255, 255, 255, 0.35)",
+            backgroundColor: isDark ? "rgba(18, 18, 24, 0.45)" : "rgba(255, 255, 255, 0.35)",
             borderWidth: 1,
-            borderColor: isDark
-              ? "rgba(255,255,255,0.08)"
-              : "rgba(0,0,0,0.06)",
+            borderColor: isDark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
             borderRadius: 28,
           }}
         >

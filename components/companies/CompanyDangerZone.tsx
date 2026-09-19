@@ -7,11 +7,7 @@ interface CompanyDangerZoneProps {
   onDelete: () => void;
 }
 
-export const CompanyDangerZone = ({
-  isDeleting,
-  isPending,
-  onDelete,
-}: CompanyDangerZoneProps) => {
+export const CompanyDangerZone = ({ isDeleting, isPending, onDelete }: CompanyDangerZoneProps) => {
   return (
     <View className="mt-8 rounded-2xl border border-destructive/20 bg-destructive/5 p-6">
       <Text className="text-lg font-bold text-destructive">Danger Zone</Text>

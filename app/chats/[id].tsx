@@ -1,10 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -27,9 +22,7 @@ export default function ChatRoomScreen() {
   const isDark = colorScheme === "dark";
   const { user, isAuthenticated } = useAuthStore();
 
-  const [realtimeStatus, setRealtimeStatus] = useState<ApplicationStatus | null>(
-    null,
-  );
+  const [realtimeStatus, setRealtimeStatus] = useState<ApplicationStatus | null>(null);
 
   const { data: myChats = [], isLoading: isLoadingChats } = useQuery<ChatRoom[]>({
     queryKey: ["my-chats"],
@@ -80,9 +73,7 @@ export default function ChatRoomScreen() {
         name: chatRoom.vacancy?.company?.name || "Company",
         avatar: chatRoom.vacancy?.company?.logoUrl || null,
         subtitle: chatRoom.vacancy?.title || "Vacancy",
-        href: chatRoom.vacancy?.company?.id
-          ? `/companies/${chatRoom.vacancy.company.id}`
-          : null,
+        href: chatRoom.vacancy?.company?.id ? `/companies/${chatRoom.vacancy.company.id}` : null,
       };
     } else {
       return {
@@ -91,21 +82,15 @@ export default function ChatRoomScreen() {
         }`.trim(),
         avatar: chatRoom.applicant?.avatarUrl || null,
         subtitle: chatRoom.vacancy?.title || "Vacancy",
-        href: chatRoom.applicant?.id
-          ? `/candidates/${chatRoom.applicant.id}`
-          : null,
+        href: chatRoom.applicant?.id ? `/candidates/${chatRoom.applicant.id}` : null,
       };
     }
   }, [chatRoom, user?.role]);
 
-  const currentStatus: ApplicationStatus =
-    realtimeStatus || chatRoom?.status || "PENDING";
+  const currentStatus: ApplicationStatus = realtimeStatus || chatRoom?.status || "PENDING";
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-background"
-      edges={["top", "left", "right"]}
-    >
+    <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
       <View className="flex-row items-center justify-between border-b border-border/40 bg-card px-4 py-3 shadow-sm">
         <View className="flex-1 flex-row items-center gap-3">
           <TouchableOpacity
@@ -127,23 +112,13 @@ export default function ChatRoomScreen() {
             activeOpacity={partnerInfo.href ? 0.7 : 1}
             className="flex-1 flex-row items-center gap-2.5"
           >
-            <CustomAvatar
-              imageUrl={partnerInfo.avatar}
-              fallbackText={partnerInfo.name}
-              size="sm"
-            />
+            <CustomAvatar imageUrl={partnerInfo.avatar} fallbackText={partnerInfo.name} size="sm" />
             <View className="flex-1">
-              <Text
-                className="text-base font-bold text-foreground"
-                numberOfLines={1}
-              >
+              <Text className="text-base font-bold text-foreground" numberOfLines={1}>
                 {partnerInfo.name}
               </Text>
               {partnerInfo.subtitle ? (
-                <Text
-                  className="text-xs font-medium text-muted-foreground"
-                  numberOfLines={1}
-                >
+                <Text className="text-xs font-medium text-muted-foreground" numberOfLines={1}>
                   {partnerInfo.subtitle}
                 </Text>
               ) : null}
@@ -156,13 +131,8 @@ export default function ChatRoomScreen() {
 
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator
-            size="large"
-            color={isDark ? "#818cf8" : "#4f46e5"}
-          />
-          <Text className="mt-3 text-sm text-muted-foreground">
-            Loading conversation...
-          </Text>
+          <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#4f46e5"} />
+          <Text className="mt-3 text-sm text-muted-foreground">Loading conversation...</Text>
         </View>
       ) : (
         <ChatWindow

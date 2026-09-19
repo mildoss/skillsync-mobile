@@ -28,11 +28,7 @@ export function ThemeToggle() {
         className="h-10 w-10 items-center justify-center rounded-xl bg-secondary"
         accessibilityLabel="Change theme"
       >
-        {isDark ? (
-          <Moon size={20} color="#fafafa" />
-        ) : (
-          <Sun size={20} color="#09090b" />
-        )}
+        {isDark ? <Moon size={20} color="#fafafa" /> : <Sun size={20} color="#09090b" />}
       </TouchableOpacity>
 
       <Modal
@@ -41,10 +37,7 @@ export function ThemeToggle() {
         animationType="fade"
         onRequestClose={() => setVisible(false)}
       >
-        <Pressable
-          className="flex-1 justify-end bg-black/40"
-          onPress={() => setVisible(false)}
-        >
+        <Pressable className="flex-1 justify-end bg-black/40" onPress={() => setVisible(false)}>
           <Pressable
             className="mx-4 mb-8 overflow-hidden rounded-2xl bg-card"
             onPress={(e) => e.stopPropagation()}
@@ -53,9 +46,7 @@ export function ThemeToggle() {
               <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Appearance
               </Text>
-              <Text className="mt-1 text-base font-semibold text-foreground">
-                Choose Theme
-              </Text>
+              <Text className="mt-1 text-base font-semibold text-foreground">Choose Theme</Text>
             </View>
 
             {options.map(({ mode, label, Icon }) => {
@@ -64,31 +55,37 @@ export function ThemeToggle() {
                 <TouchableOpacity
                   key={mode}
                   onPress={() => handleSelect(mode)}
-                  className={`flex-row items-center border-b border-border px-4 py-3.5 ${isSelected ? "bg-primary/5" : ""
-                    }`}
+                  className={`flex-row items-center border-b border-border px-4 py-3.5 ${
+                    isSelected ? "bg-primary/5" : ""
+                  }`}
                   activeOpacity={0.6}
                 >
                   <View
-                    className={`mr-3 h-9 w-9 items-center justify-center rounded-xl ${isSelected ? "bg-primary/15" : "bg-muted"
-                      }`}
+                    className={`mr-3 h-9 w-9 items-center justify-center rounded-xl ${
+                      isSelected ? "bg-primary/15" : "bg-muted"
+                    }`}
                   >
                     <Icon
                       size={18}
-                      color={isSelected ? (isDark ? "#818cf8" : "#4f46e5") : (isDark ? "#a1a1aa" : "#71717a")}
+                      color={
+                        isSelected
+                          ? isDark
+                            ? "#818cf8"
+                            : "#4f46e5"
+                          : isDark
+                            ? "#a1a1aa"
+                            : "#71717a"
+                      }
                     />
                   </View>
                   <Text
-                    className={`flex-1 text-base font-medium ${isSelected ? "text-primary" : "text-foreground"
-                      }`}
+                    className={`flex-1 text-base font-medium ${
+                      isSelected ? "text-primary" : "text-foreground"
+                    }`}
                   >
                     {label}
                   </Text>
-                  {isSelected && (
-                    <Check
-                      size={20}
-                      color={isDark ? "#818cf8" : "#4f46e5"}
-                    />
-                  )}
+                  {isSelected && <Check size={20} color={isDark ? "#818cf8" : "#4f46e5"} />}
                 </TouchableOpacity>
               );
             })}

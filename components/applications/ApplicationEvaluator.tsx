@@ -33,9 +33,7 @@ export const ApplicationEvaluator = ({
             ) : (
               <>
                 <Sparkles size={12} color="#6366f1" />
-                <Text className="text-xs font-semibold text-indigo-500">
-                  Evaluate (1 credit)
-                </Text>
+                <Text className="text-xs font-semibold text-indigo-500">Evaluate (1 credit)</Text>
               </>
             )}
           </TouchableOpacity>
@@ -69,7 +67,7 @@ export const ApplicationEvaluator = ({
               {matching.score}%
             </Text>
           </View>
-          <Text className="flex-1 text-xs leading-relaxed text-foreground/80 font-medium">
+          <Text className="flex-1 text-xs font-medium leading-relaxed text-foreground/80">
             {matching.reason}
           </Text>
         </View>

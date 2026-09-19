@@ -16,7 +16,13 @@ interface SelectProps {
   disabled?: boolean;
 }
 
-export function Select({ options, value, onValueChange, placeholder = "Select...", disabled = false }: SelectProps) {
+export function Select({
+  options,
+  value,
+  onValueChange,
+  placeholder = "Select...",
+  disabled = false,
+}: SelectProps) {
   const [modalVisible, setModalVisible] = useState(false);
 
   const selectedOption = options.find((o) => o.value === value);

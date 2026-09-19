@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Alert,
-  Modal,
-  Platform,
-} from "react-native";
+import { View, Text, TouchableOpacity, Alert, Modal, Platform } from "react-native";
 import { deleteVacancy } from "@/lib/api";
 import { User } from "@/types/users";
 import { Vacancy } from "@/types/vacancies";
@@ -27,15 +20,13 @@ interface MyVacanciesTabProps {
 export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
   const [isCreating, setIsCreating] = useState(false);
   const [editingVacancy, setEditingVacancy] = useState<Vacancy | null>(null);
-  const [viewingApplicantsVacancy, setViewingApplicantsVacancy] =
-    useState<Vacancy | null>(null);
+  const [viewingApplicantsVacancy, setViewingApplicantsVacancy] = useState<Vacancy | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const [selectedVacancy, setSelectedVacancy] = useState<Vacancy | null>(null);
 
   const { data: fetchRes, isLoading, refetch } = useMyVacancies({ enabled: !!user?.companyId });
   const vacancies: Vacancy[] = Array.isArray(fetchRes) ? fetchRes : (fetchRes as any)?.data || [];
-
 
   if (!user) return null;
 
@@ -78,29 +69,25 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
   }
 
   const handleDelete = (vacancy: Vacancy) => {
-    Alert.alert(
-      "Delete Vacancy",
-      `Are you sure you want to delete "${vacancy.title}"?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Delete",
-          style: "destructive",
-          onPress: async () => {
-            setDeletingId(vacancy.id);
-            try {
-              await deleteVacancy(vacancy.id);
-              refetch();
-              toast.success("Vacancy deleted successfully");
-            } catch (error: any) {
-              toast.error("Failed to delete vacancy", error.message);
-            } finally {
-              setDeletingId(null);
-            }
-          },
+    Alert.alert("Delete Vacancy", `Are you sure you want to delete "${vacancy.title}"?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: async () => {
+          setDeletingId(vacancy.id);
+          try {
+            await deleteVacancy(vacancy.id);
+            refetch();
+            toast.success("Vacancy deleted successfully");
+          } catch (error: any) {
+            toast.error("Failed to delete vacancy", error.message);
+          } finally {
+            setDeletingId(null);
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handleAction = (action: string) => {
@@ -108,15 +95,18 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
     const vacancy = selectedVacancy;
     setSelectedVacancy(null);
 
-    setTimeout(() => {
-      if (action === "edit") {
-        setEditingVacancy(vacancy);
-      } else if (action === "applicants") {
-        setViewingApplicantsVacancy(vacancy);
-      } else if (action === "delete") {
-        handleDelete(vacancy);
-      }
-    }, Platform.OS === 'ios' ? 300 : 0);
+    setTimeout(
+      () => {
+        if (action === "edit") {
+          setEditingVacancy(vacancy);
+        } else if (action === "applicants") {
+          setViewingApplicantsVacancy(vacancy);
+        } else if (action === "delete") {
+          handleDelete(vacancy);
+        }
+      },
+      Platform.OS === "ios" ? 300 : 0,
+    );
   };
 
   return (
@@ -171,11 +161,11 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
           onPress={() => setSelectedVacancy(null)}
         >
           <View className="overflow-hidden rounded-2xl bg-card">
-            <View className="border-b border-border p-4 items-center bg-muted/30">
-              <Text className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+            <View className="items-center border-b border-border bg-muted/30 p-4">
+              <Text className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 Manage Vacancy
               </Text>
-              <Text className="text-base font-semibold text-foreground mt-1" numberOfLines={1}>
+              <Text className="mt-1 text-base font-semibold text-foreground" numberOfLines={1}>
                 {selectedVacancy?.title}
               </Text>
             </View>
@@ -184,7 +174,9 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
               className="border-b border-border p-4 active:bg-muted"
               onPress={() => handleAction("applicants")}
             >
-              <Text className="text-center text-lg font-medium text-primary">View Applications</Text>
+              <Text className="text-center text-lg font-medium text-primary">
+                View Applications
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -195,10 +187,12 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="p-4 active:bg-muted bg-destructive/5"
+              className="bg-destructive/5 p-4 active:bg-muted"
               onPress={() => handleAction("delete")}
             >
-              <Text className="text-center text-lg font-semibold text-destructive">Delete Vacancy</Text>
+              <Text className="text-center text-lg font-semibold text-destructive">
+                Delete Vacancy
+              </Text>
             </TouchableOpacity>
           </View>
 
@@ -213,4 +207,3 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
     </View>
   );
 };
-

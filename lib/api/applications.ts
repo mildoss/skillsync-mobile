@@ -1,8 +1,7 @@
 import { Application, ApplicationStatus } from "@/types/application";
 import { API_URL, fetchJson } from "@/lib/utils";
 
-export const getMyApplications = async () =>
-  fetchJson<Application[]>(`${API_URL}/applications/my`);
+export const getMyApplications = async () => fetchJson<Application[]>(`${API_URL}/applications/my`);
 
 export const applyToVacancy = async (vacancyId: string, coverLetter?: string) =>
   fetchJson<{ success: boolean; data?: Application }>(`${API_URL}/applications`, {
@@ -14,10 +13,7 @@ export const applyToVacancy = async (vacancyId: string, coverLetter?: string) =>
 export const getVacancyApplications = async (vacancyId: string) =>
   fetchJson<Application[]>(`${API_URL}/applications/vacancy/${vacancyId}`);
 
-export const updateApplicationStatus = async (
-  applicationId: string,
-  status: ApplicationStatus,
-) =>
+export const updateApplicationStatus = async (applicationId: string, status: ApplicationStatus) =>
   fetchJson<{ success: boolean; data?: Application }>(
     `${API_URL}/applications/${applicationId}/status`,
     {
@@ -41,4 +37,3 @@ export const inviteCandidate = async (payload: {
       message: payload.message ?? "",
     }),
   });
-

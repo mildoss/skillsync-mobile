@@ -59,14 +59,18 @@ export const CreateCompanyForm = ({ onBack }: CreateCompanyFormProps) => {
       <Text className="text-2xl font-bold tracking-tight text-foreground">Create Company</Text>
 
       <View className="gap-4">
-
         <View className="gap-2">
           <Text className="text-sm font-medium text-foreground">Company Name *</Text>
           <Controller
             control={control}
             name="name"
             render={({ field: { onChange, onBlur, value } }) => (
-              <Input placeholder="Acme Corp" onBlur={onBlur} onChangeText={onChange} value={value} />
+              <Input
+                placeholder="Acme Corp"
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
             )}
           />
           {errors.name && <Text className="text-xs text-destructive">{errors.name.message}</Text>}

@@ -63,16 +63,18 @@ export const ProfileTabs = ({ user, activeTab, onChangeTab }: ProfileTabsProps) 
             <TouchableOpacity
               key={tab.key}
               onPress={() => onChangeTab(tab.key)}
-              className={`flex-row items-center gap-2 rounded-full px-4 py-2 transition-colors ${isActive ? "bg-primary" : "bg-muted"
-                }`}
+              className={`flex-row items-center gap-2 rounded-full px-4 py-2 transition-colors ${
+                isActive ? "bg-primary" : "bg-muted"
+              }`}
             >
               <Icon
                 className={isActive ? "text-primary-foreground" : "text-muted-foreground"}
                 size={16}
               />
               <Text
-                className={`text-sm font-medium ${isActive ? "text-primary-foreground" : "text-muted-foreground"
-                  }`}
+                className={`text-sm font-medium ${
+                  isActive ? "text-primary-foreground" : "text-muted-foreground"
+                }`}
               >
                 {tab.label}
               </Text>

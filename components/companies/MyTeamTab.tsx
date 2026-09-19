@@ -98,37 +98,33 @@ export const MyTeamTab = ({ user }: MyTeamTabProps) => {
   };
 
   const handleRemove = (employeeId: string, name: string) => {
-    Alert.alert(
-      "Remove Employee",
-      `Are you sure you want to remove ${name} from your company?`,
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Remove",
-          style: "destructive",
-          onPress: async () => {
-            if (!user.companyId) return;
-            setActionId(employeeId);
-            const prevEmployees = employees;
-            setEmployees((prev) => prev.filter((emp) => emp.id !== employeeId));
+    Alert.alert("Remove Employee", `Are you sure you want to remove ${name} from your company?`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Remove",
+        style: "destructive",
+        onPress: async () => {
+          if (!user.companyId) return;
+          setActionId(employeeId);
+          const prevEmployees = employees;
+          setEmployees((prev) => prev.filter((emp) => emp.id !== employeeId));
 
-            try {
-              await removeEmployee(user.companyId, employeeId);
-              toast.success("Employee removed");
-              const compRes = await getCompany(user.companyId);
-              if (compRes?.employees) {
-                setEmployees(compRes.employees);
-              }
-            } catch (error: any) {
-              setEmployees(prevEmployees);
-              toast.error("Failed to remove employee", error.message);
-            } finally {
-              setActionId(null);
+          try {
+            await removeEmployee(user.companyId, employeeId);
+            toast.success("Employee removed");
+            const compRes = await getCompany(user.companyId);
+            if (compRes?.employees) {
+              setEmployees(compRes.employees);
             }
-          },
+          } catch (error: any) {
+            setEmployees(prevEmployees);
+            toast.error("Failed to remove employee", error.message);
+          } finally {
+            setActionId(null);
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   if (isLoading) {
@@ -167,9 +163,7 @@ export const MyTeamTab = ({ user }: MyTeamTabProps) => {
                   />
                 ) : (
                   <View className="h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                    <Text className="font-bold text-primary">
-                      {request.user.name.charAt(0)}
-                    </Text>
+                    <Text className="font-bold text-primary">{request.user.name.charAt(0)}</Text>
                   </View>
                 )}
                 <View className="flex-1">
@@ -227,9 +221,7 @@ export const MyTeamTab = ({ user }: MyTeamTabProps) => {
                   />
                 ) : (
                   <View className="h-10 w-10 items-center justify-center rounded-full bg-primary/10">
-                    <Text className="font-bold text-primary">
-                      {emp.name.charAt(0)}
-                    </Text>
+                    <Text className="font-bold text-primary">{emp.name.charAt(0)}</Text>
                   </View>
                 )}
                 <View className="flex-1">

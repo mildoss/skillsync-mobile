@@ -29,7 +29,7 @@ export function useApplicationFilters(applications: Application[]) {
       { label: "Invited", value: "INVITED", count: counts.INVITED },
       { label: "Rejected", value: "REJECTED", count: counts.REJECTED },
     ],
-    [counts]
+    [counts],
   );
 
   return {

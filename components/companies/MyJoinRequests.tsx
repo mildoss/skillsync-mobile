@@ -119,7 +119,7 @@ export const MyJoinRequests = ({ onBack }: MyJoinRequestsProps) => {
                 </Text>
                 <View className="mt-1 flex-row items-center gap-1">
                   {getStatusIcon(request.status)}
-                  <Text className="text-xs text-muted-foreground capitalize">
+                  <Text className="text-xs capitalize text-muted-foreground">
                     {request.status.toLowerCase()} • {formatDate(request.createdAt)}
                   </Text>
                 </View>

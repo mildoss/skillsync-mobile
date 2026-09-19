@@ -39,14 +39,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
 
   const isReadOnly = user.companyRole !== "OWNER";
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    formState,
-  } = useForm<CreateCompanyInput>({
+  const { control, handleSubmit, watch, setValue, reset, formState } = useForm<CreateCompanyInput>({
     resolver: zodResolver(createCompanySchema),
     defaultValues: {
       name: "",
@@ -107,7 +100,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
           const res = await uploadCompanyLogo(
             selectedFile.uri,
             selectedFile.mimeType,
-            selectedFile.name
+            selectedFile.name,
           );
           if (res && res.url) {
             finalLogoUrl = res.url;
@@ -185,7 +178,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -274,12 +267,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
 
       {!isReadOnly && (
         <>
-          <Button
-            className="mt-4"
-            size="lg"
-            onPress={handleSubmit(onSubmit)}
-            disabled={isPending}
-          >
+          <Button className="mt-4" size="lg" onPress={handleSubmit(onSubmit)} disabled={isPending}>
             <Text className="font-semibold text-primary-foreground">
               {isPending ? "Saving..." : "Save Changes"}
             </Text>

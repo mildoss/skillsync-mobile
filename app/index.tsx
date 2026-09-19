@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { MessageSquare, Bot, Briefcase, Sparkles, ArrowRight } from "lucide-react-native";
@@ -18,17 +13,20 @@ const FEATURES = [
   {
     icon: MessageSquare,
     title: "Real-time Messaging",
-    description: "Direct real-time chats between candidates and recruiters with instant read receipts.",
+    description:
+      "Direct real-time chats between candidates and recruiters with instant read receipts.",
   },
   {
     icon: Bot,
     title: "AI-Powered Matching",
-    description: "Calculate job fit percentage, generate tailored cover letters and resume highlights.",
+    description:
+      "Calculate job fit percentage, generate tailored cover letters and resume highlights.",
   },
   {
     icon: Briefcase,
     title: "Curated Tech Vacancies",
-    description: "Explore hundreds of verified IT job openings from startups to leading enterprises.",
+    description:
+      "Explore hundreds of verified IT job openings from startups to leading enterprises.",
   },
 ];
 
@@ -94,7 +92,7 @@ export default function WelcomeScreen() {
           <View className="h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
             <Sparkles size={16} color={isDark ? "#818cf8" : "#4f46e5"} />
           </View>
-          <Text className="text-sm font-bold tracking-wider uppercase text-primary">
+          <Text className="text-sm font-bold uppercase tracking-wider text-primary">
             Next-Gen Job Board
           </Text>
         </View>
@@ -135,9 +133,7 @@ export default function WelcomeScreen() {
                   <Icon size={20} color={isDark ? "#818cf8" : "#4f46e5"} />
                 </View>
                 <View className="flex-1">
-                  <Text className="mb-1 text-base font-bold text-foreground">
-                    {item.title}
-                  </Text>
+                  <Text className="mb-1 text-base font-bold text-foreground">{item.title}</Text>
                   <Text className="text-xs leading-relaxed text-muted-foreground">
                     {item.description}
                   </Text>
@@ -152,25 +148,14 @@ export default function WelcomeScreen() {
         style={{ paddingBottom: Math.max(insets.bottom, 16) }}
         className="border-t border-border/40 bg-card/80 px-6 pt-4 backdrop-blur-md"
       >
-        <Button
-          size="lg"
-          className="w-full shadow-md shadow-primary/20"
-          onPress={handleGetStarted}
-        >
+        <Button size="lg" className="w-full shadow-md shadow-primary/20" onPress={handleGetStarted}>
           <View className="flex-row items-center gap-2">
-            <Text className="text-base font-bold text-primary-foreground">
-              Get Started
-            </Text>
+            <Text className="text-base font-bold text-primary-foreground">Get Started</Text>
             <ArrowRight size={18} color="#ffffff" />
           </View>
         </Button>
 
-        <Button
-          variant="ghost"
-          size="lg"
-          className="mt-2 w-full"
-          onPress={handleSignIn}
-        >
+        <Button variant="ghost" size="lg" className="mt-2 w-full" onPress={handleSignIn}>
           <Text className="text-sm font-semibold text-muted-foreground">
             Already have an account? <Text className="font-bold text-primary">Sign In</Text>
           </Text>

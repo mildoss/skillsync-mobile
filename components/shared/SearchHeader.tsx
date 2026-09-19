@@ -35,9 +35,7 @@ export const SearchHeader = ({
     <View className="border-b border-border/40 px-4 pb-3 pt-2">
       <View className="flex-row items-center justify-between">
         <View className="flex-1 pr-2">
-          <Text className="text-3xl font-bold tracking-tight text-foreground">
-            {title}
-          </Text>
+          <Text className="text-3xl font-bold tracking-tight text-foreground">{title}</Text>
           <Text className="my-0.5 text-sm text-muted-foreground">{subtitle}</Text>
         </View>
         <View className="flex-row items-center gap-2">
@@ -77,11 +75,7 @@ export const SearchHeader = ({
           placeholderTextColor={isDark ? "#a1a1aa" : "#71717a"}
         />
         {searchQuery.length > 0 && (
-          <Pressable
-            onPress={onClear}
-            className="absolute right-3 top-3.5 z-10"
-            hitSlop={8}
-          >
+          <Pressable onPress={onClear} className="absolute right-3 top-3.5 z-10" hitSlop={8}>
             <X size={18} color={isDark ? "#a1a1aa" : "#71717a"} />
           </Pressable>
         )}

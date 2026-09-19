@@ -10,4 +10,3 @@ export const createCheckoutSession = async (packageId: string) =>
 
 export const getMyTransactions = async () =>
   fetchJson<Transaction[]>(`${API_URL}/payments/history`);
-

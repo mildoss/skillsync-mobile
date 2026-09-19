@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Keyboard,
-  Platform,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Keyboard, Platform } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Send } from "lucide-react-native";
 
@@ -49,8 +42,7 @@ export const ChatInputBar = ({
     };
   }, []);
 
-  const bottomPadding =
-    !isKeyboardVisible && insets.bottom > 0 ? insets.bottom + 10 : 12;
+  const bottomPadding = !isKeyboardVisible && insets.bottom > 0 ? insets.bottom + 10 : 12;
 
   return (
     <View
@@ -66,8 +58,7 @@ export const ChatInputBar = ({
       ) : isApplicantPending ? (
         <View className="rounded-xl border border-border/60 bg-secondary px-4 py-3">
           <Text className="text-center text-xs font-medium text-muted-foreground">
-            You will be able to send messages once the recruiter accepts your
-            application.
+            You will be able to send messages once the recruiter accepts your application.
           </Text>
         </View>
       ) : (

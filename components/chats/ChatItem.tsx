@@ -21,9 +21,7 @@ export const ChatItem = ({ chat, currentUserRole, onPress }: ChatItemProps) => {
         status: chat.status,
       }
     : {
-        name: `${chat.applicant?.name || "Candidate"} ${
-          chat.applicant?.surname || ""
-        }`.trim(),
+        name: `${chat.applicant?.name || "Candidate"} ${chat.applicant?.surname || ""}`.trim(),
         avatar: chat.applicant?.avatarUrl,
         subtitle: chat.vacancy?.title || "Vacancy",
         status: chat.status,
@@ -38,18 +36,11 @@ export const ChatItem = ({ chat, currentUserRole, onPress }: ChatItemProps) => {
       activeOpacity={0.7}
       className="flex-row items-center gap-3 border-b border-border/40 bg-card px-4 py-3.5"
     >
-      <CustomAvatar
-        imageUrl={info.avatar}
-        fallbackText={info.name}
-        size="md"
-      />
+      <CustomAvatar imageUrl={info.avatar} fallbackText={info.name} size="md" />
 
       <View className="flex-1">
         <View className="mb-1 flex-row items-center justify-between">
-          <Text
-            className="flex-1 text-base font-bold text-foreground"
-            numberOfLines={1}
-          >
+          <Text className="flex-1 text-base font-bold text-foreground" numberOfLines={1}>
             {info.name}
           </Text>
           {lastMessage?.createdAt && (
@@ -60,10 +51,7 @@ export const ChatItem = ({ chat, currentUserRole, onPress }: ChatItemProps) => {
         </View>
 
         <View className="mb-1 flex-row items-center gap-2">
-          <Text
-            className="flex-1 text-xs font-semibold text-primary"
-            numberOfLines={1}
-          >
+          <Text className="flex-1 text-xs font-semibold text-primary" numberOfLines={1}>
             {info.subtitle}
           </Text>
           <ApplicationStatusBadge status={info.status} />
@@ -72,9 +60,7 @@ export const ChatItem = ({ chat, currentUserRole, onPress }: ChatItemProps) => {
         <View className="flex-row items-center justify-between gap-2">
           <Text
             className={`flex-1 text-xs ${
-              unreadCount > 0
-                ? "font-bold text-foreground"
-                : "text-muted-foreground"
+              unreadCount > 0 ? "font-bold text-foreground" : "text-muted-foreground"
             }`}
             numberOfLines={1}
           >

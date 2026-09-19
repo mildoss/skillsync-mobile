@@ -63,27 +63,17 @@ export const InviteModal = ({
       onSuccess?.();
       onClose();
     } catch (error: any) {
-      toast.error(
-        "Failed to invite candidate",
-        error.message || "An unexpected error occurred",
-      );
+      toast.error("Failed to invite candidate", error.message || "An unexpected error occurred");
     } finally {
       setIsSending(false);
     }
   };
 
   return (
-    <Modal
-      visible={isOpen}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={isOpen} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="flex-1 justify-end bg-black/50 p-3 pb-8 sm:justify-center sm:p-6">
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
             <View className="overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
               <View className="border-b border-border/70 p-5">
                 <View className="flex-row items-center justify-between">
@@ -95,10 +85,7 @@ export const InviteModal = ({
                       <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Invite Candidate
                       </Text>
-                      <Text
-                        className="text-lg font-bold text-foreground"
-                        numberOfLines={1}
-                      >
+                      <Text className="text-lg font-bold text-foreground" numberOfLines={1}>
                         {candidateName}
                       </Text>
                     </View>
@@ -141,7 +128,7 @@ export const InviteModal = ({
                       Select Vacancy <Text className="text-destructive">*</Text>
                     </Text>
                     <ScrollView
-                      className="max-h-40 mb-4"
+                      className="mb-4 max-h-40"
                       nestedScrollEnabled
                       showsVerticalScrollIndicator
                     >
@@ -152,23 +139,22 @@ export const InviteModal = ({
                             <TouchableOpacity
                               key={vacancy.id}
                               onPress={() => setSelectedVacancyId(vacancy.id)}
-                              className={`flex-row items-center justify-between rounded-xl border p-3 ${isSelected
+                              className={`flex-row items-center justify-between rounded-xl border p-3 ${
+                                isSelected
                                   ? "border-primary bg-primary/10"
                                   : "border-border bg-muted/20"
-                                }`}
+                              }`}
                             >
                               <View className="flex-1 pr-2">
                                 <Text
-                                  className={`text-sm font-semibold ${isSelected ? "text-primary" : "text-foreground"
-                                    }`}
+                                  className={`text-sm font-semibold ${
+                                    isSelected ? "text-primary" : "text-foreground"
+                                  }`}
                                   numberOfLines={1}
                                 >
                                   {vacancy.title}
                                 </Text>
-                                <Text
-                                  className="text-xs text-muted-foreground"
-                                  numberOfLines={1}
-                                >
+                                <Text className="text-xs text-muted-foreground" numberOfLines={1}>
                                   {vacancy.type} • {vacancy.location || "Location not specified"}
                                 </Text>
                               </View>
@@ -185,9 +171,7 @@ export const InviteModal = ({
 
                     <Text className="mb-1.5 text-sm font-semibold text-foreground">
                       Message{" "}
-                      <Text className="text-xs font-normal text-muted-foreground">
-                        (optional)
-                      </Text>
+                      <Text className="text-xs font-normal text-muted-foreground">(optional)</Text>
                     </Text>
                     <TextInput
                       placeholder="Hi! We loved your profile and would like to invite you to apply..."

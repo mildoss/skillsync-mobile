@@ -45,7 +45,7 @@ export function FormTextarea<T extends FieldValues>({
               className={cn(
                 "h-36 py-3",
                 error ? "border-destructive focus:border-destructive" : "",
-                className
+                className,
               )}
             />
             {error && <Text className="text-xs text-destructive">{error.message}</Text>}

@@ -29,7 +29,7 @@ export const getCompanyRequests = async (companyId: string) =>
 export const handleJoinRequest = async (
   companyId: string,
   requestId: string,
-  status: "APPROVED" | "REJECTED"
+  status: "APPROVED" | "REJECTED",
 ) =>
   fetchJson<{ success: boolean }>(`${API_URL}/companies/${companyId}/requests/${requestId}`, {
     method: "PATCH",
@@ -53,8 +53,7 @@ export const joinCompany = async (companyId: string) => {
   }
 };
 
-export const getMyRequests = async () =>
-  fetchJson<any[]>(`${API_URL}/companies/requests/me`);
+export const getMyRequests = async () => fetchJson<any[]>(`${API_URL}/companies/requests/me`);
 
 export const cancelJoinRequest = async (requestId: string) =>
   fetchJson<{ success: boolean }>(`${API_URL}/companies/requests/${requestId}`, {

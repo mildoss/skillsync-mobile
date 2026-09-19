@@ -19,12 +19,7 @@ import { cn } from "@/lib/utils";
 export const MyApplicationsTab = () => {
   const router = useRouter();
 
-  const {
-    data: applicationsRes = [],
-    isLoading,
-    isRefetching,
-    refetch,
-  } = useMyApplications();
+  const { data: applicationsRes = [], isLoading, isRefetching, refetch } = useMyApplications();
   const applications: Application[] = Array.isArray(applicationsRes)
     ? applicationsRes
     : (applicationsRes as any)?.data || [];
@@ -36,9 +31,7 @@ export const MyApplicationsTab = () => {
     return (
       <View className="items-center justify-center py-16">
         <ActivityIndicator size="large" color="#3b82f6" />
-        <Text className="mt-3 text-xs text-muted-foreground">
-          Loading your applications...
-        </Text>
+        <Text className="mt-3 text-xs text-muted-foreground">Loading your applications...</Text>
       </View>
     );
   }
@@ -46,9 +39,7 @@ export const MyApplicationsTab = () => {
   return (
     <View className="flex-1 pb-10">
       <View className="mb-4">
-        <Text className="text-2xl font-bold tracking-tight text-foreground">
-          My Applications
-        </Text>
+        <Text className="text-2xl font-bold tracking-tight text-foreground">My Applications</Text>
         <Text className="text-sm text-muted-foreground">
           Track the status of jobs you've applied for.
         </Text>
@@ -66,9 +57,7 @@ export const MyApplicationsTab = () => {
               className="flex-row items-center gap-2"
             >
               <Briefcase size={16} color="#ffffff" />
-              <Text className="font-semibold text-primary-foreground">
-                Explore Vacancies
-              </Text>
+              <Text className="font-semibold text-primary-foreground">Explore Vacancies</Text>
             </Button>
           }
         />
@@ -88,17 +77,13 @@ export const MyApplicationsTab = () => {
                     onPress={() => setActiveFilter(tab.value)}
                     className={cn(
                       "flex-row items-center gap-1.5 rounded-full border px-3.5 py-1.5",
-                      isActive
-                        ? "border-primary bg-primary"
-                        : "border-border bg-card",
+                      isActive ? "border-primary bg-primary" : "border-border bg-card",
                     )}
                   >
                     <Text
                       className={cn(
                         "text-sm font-medium",
-                        isActive
-                          ? "text-primary-foreground"
-                          : "text-muted-foreground",
+                        isActive ? "text-primary-foreground" : "text-muted-foreground",
                       )}
                     >
                       {tab.label}
@@ -112,9 +97,7 @@ export const MyApplicationsTab = () => {
                       <Text
                         className={cn(
                           "text-[10px] font-bold",
-                          isActive
-                            ? "text-primary-foreground"
-                            : "text-muted-foreground",
+                          isActive ? "text-primary-foreground" : "text-muted-foreground",
                         )}
                       >
                         {tab.count}
@@ -140,9 +123,7 @@ export const MyApplicationsTab = () => {
             <ScrollView
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{ paddingBottom: 120 }}
-              refreshControl={
-                <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
-              }
+              refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
             >
               {filteredApplications.map((app) => (
                 <ApplicantRequestCard key={app.id} application={app} />

@@ -8,10 +8,7 @@ interface TransactionHistoryProps {
   isLoading?: boolean;
 }
 
-export const TransactionHistory = ({
-  transactions,
-  isLoading,
-}: TransactionHistoryProps) => {
+export const TransactionHistory = ({ transactions, isLoading }: TransactionHistoryProps) => {
   if (isLoading) {
     return (
       <View className="items-center justify-center rounded-2xl border border-border bg-card py-10">
@@ -55,10 +52,7 @@ export const TransactionHistory = ({
   return (
     <View className="space-y-3">
       {transactions.map((tx) => (
-        <View
-          key={tx.id}
-          className="rounded-2xl border border-border bg-card p-4 shadow-sm"
-        >
+        <View key={tx.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <View className="mb-3 flex-row items-center justify-between gap-2">
             <Text className="text-xs font-medium text-muted-foreground">
               {formatDate(tx.createdAt)}
@@ -94,9 +88,7 @@ export const TransactionHistory = ({
             </View>
 
             <View className="flex-row items-center gap-1 rounded-lg bg-primary/10 px-2.5 py-1">
-              <Text className="text-xs font-bold text-primary">
-                +{tx.creditsAdded} Tokens
-              </Text>
+              <Text className="text-xs font-bold text-primary">+{tx.creditsAdded} Tokens</Text>
             </View>
           </View>
         </View>

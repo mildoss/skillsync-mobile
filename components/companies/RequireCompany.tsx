@@ -32,14 +32,15 @@ export const RequireCompany = ({ user, children }: RequireCompanyProps) => {
   if (view === "select") {
     return (
       <View className="flex-1 items-center justify-center p-6 py-10">
-        <View className="bg-primary/10 mb-6 rounded-full p-6">
+        <View className="mb-6 rounded-full bg-primary/10 p-6">
           <Building className="text-primary" size={48} />
         </View>
         <Text className="mb-2 text-center text-2xl font-bold tracking-tight text-foreground">
           SkillSync Business
         </Text>
         <Text className="mb-8 text-center text-base text-muted-foreground">
-          To start posting vacancies and hiring candidates, you need to create a company profile or join an existing team.
+          To start posting vacancies and hiring candidates, you need to create a company profile or
+          join an existing team.
         </Text>
 
         <View className="w-full gap-4">
@@ -47,7 +48,7 @@ export const RequireCompany = ({ user, children }: RequireCompanyProps) => {
             onPress={() => setView("create")}
             className="flex-row items-center gap-4 rounded-2xl border border-border bg-card p-5 active:bg-muted"
           >
-            <View className="bg-primary/10 rounded-full p-3">
+            <View className="rounded-full bg-primary/10 p-3">
               <Building className="text-primary" size={24} />
             </View>
             <View className="flex-1">
@@ -62,7 +63,7 @@ export const RequireCompany = ({ user, children }: RequireCompanyProps) => {
             onPress={() => setView("join")}
             className="flex-row items-center gap-4 rounded-2xl border border-border bg-card p-5 active:bg-muted"
           >
-            <View className="bg-primary/10 rounded-full p-3">
+            <View className="rounded-full bg-primary/10 p-3">
               <Search className="text-primary" size={24} />
             </View>
             <View className="flex-1">
@@ -79,7 +80,7 @@ export const RequireCompany = ({ user, children }: RequireCompanyProps) => {
               className="flex-row items-center justify-between rounded-2xl border border-primary bg-primary/5 p-5 active:bg-primary/10"
             >
               <View className="flex-row items-center gap-4">
-                <View className="bg-background rounded-full p-2">
+                <View className="rounded-full bg-background p-2">
                   <ListTodo className="text-primary" size={20} />
                 </View>
                 <View>

@@ -1,9 +1,4 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { Application } from "@/types/application";
 import { useHrApplicationCard } from "@/hooks/useHrApplicationCard";
@@ -12,13 +7,7 @@ import { ApplicationStatusBadge } from "./ApplicationStatusBadge";
 import { ApplicationEvaluator } from "./ApplicationEvaluator";
 import { ApplicationCoverLetter } from "./ApplicationCoverLetter";
 import { Button } from "@/components/ui/button";
-import {
-  X,
-  Eye,
-  Check,
-  RotateCcw,
-  MessageSquare,
-} from "lucide-react-native";
+import { X, Eye, Check, RotateCcw, MessageSquare } from "lucide-react-native";
 import { formatEnum, formatExperience } from "@/lib/utils";
 
 interface HrApplicationCardProps {
@@ -26,10 +15,7 @@ interface HrApplicationCardProps {
   onStatusUpdated?: (updatedApp: Application) => void;
 }
 
-export const HrApplicationCard = ({
-  application,
-  onStatusUpdated,
-}: HrApplicationCardProps) => {
+export const HrApplicationCard = ({ application, onStatusUpdated }: HrApplicationCardProps) => {
   const router = useRouter();
   const {
     isUpdating,
@@ -56,22 +42,12 @@ export const HrApplicationCard = ({
           activeOpacity={0.7}
           className="flex-1 flex-row items-center gap-3"
         >
-          <CustomAvatar
-            imageUrl={applicant.avatarUrl}
-            fallbackText={applicant.name}
-            size="sm"
-          />
+          <CustomAvatar imageUrl={applicant.avatarUrl} fallbackText={applicant.name} size="sm" />
           <View className="flex-1">
-            <Text
-              className="text-base font-bold text-foreground"
-              numberOfLines={1}
-            >
+            <Text className="text-base font-bold text-foreground" numberOfLines={1}>
               {applicant.name} {applicant.surname}
             </Text>
-            <Text
-              className="text-xs font-medium text-muted-foreground"
-              numberOfLines={1}
-            >
+            <Text className="text-xs font-medium text-muted-foreground" numberOfLines={1}>
               {applicant.position || "Candidate"}
             </Text>
           </View>
@@ -115,9 +91,7 @@ export const HrApplicationCard = ({
               key={skill.id || skill.name}
               className="rounded-full border border-border/60 bg-muted/40 px-2 py-0.5"
             >
-              <Text className="text-[11px] font-medium text-foreground">
-                {skill.name}
-              </Text>
+              <Text className="text-[11px] font-medium text-foreground">{skill.name}</Text>
             </View>
           ))}
           {applicant.skills.length > 5 && (
@@ -154,9 +128,7 @@ export const HrApplicationCard = ({
               ) : (
                 <>
                   <X size={14} color="#ef4444" className="mr-1" />
-                  <Text className="text-xs font-semibold text-destructive">
-                    Reject
-                  </Text>
+                  <Text className="text-xs font-semibold text-destructive">Reject</Text>
                 </>
               )}
             </Button>
@@ -173,9 +145,7 @@ export const HrApplicationCard = ({
               ) : (
                 <>
                   <Eye size={14} color="#3b82f6" className="mr-1" />
-                  <Text className="text-xs font-semibold text-primary">
-                    Review
-                  </Text>
+                  <Text className="text-xs font-semibold text-primary">Review</Text>
                 </>
               )}
             </Button>
@@ -190,9 +160,7 @@ export const HrApplicationCard = ({
               ) : (
                 <>
                   <Check size={14} color="#ffffff" className="mr-1" />
-                  <Text className="text-xs font-semibold text-white">
-                    Invite
-                  </Text>
+                  <Text className="text-xs font-semibold text-white">Invite</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -213,9 +181,7 @@ export const HrApplicationCard = ({
               ) : (
                 <>
                   <X size={14} color="#ef4444" className="mr-1" />
-                  <Text className="text-xs font-semibold text-destructive">
-                    Reject
-                  </Text>
+                  <Text className="text-xs font-semibold text-destructive">Reject</Text>
                 </>
               )}
             </Button>
@@ -230,9 +196,7 @@ export const HrApplicationCard = ({
               ) : (
                 <>
                   <Check size={14} color="#ffffff" className="mr-1" />
-                  <Text className="text-xs font-semibold text-white">
-                    Invite to Interview
-                  </Text>
+                  <Text className="text-xs font-semibold text-white">Invite to Interview</Text>
                 </>
               )}
             </TouchableOpacity>
@@ -256,9 +220,7 @@ export const HrApplicationCard = ({
               ) : (
                 <>
                   <RotateCcw size={12} color="#6b7280" />
-                  <Text className="text-xs font-medium text-foreground">
-                    Change
-                  </Text>
+                  <Text className="text-xs font-medium text-foreground">Change</Text>
                 </>
               )}
             </TouchableOpacity>

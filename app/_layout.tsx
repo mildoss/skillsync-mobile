@@ -13,10 +13,7 @@ import { ToastContainer } from "@/components/ui/toast";
 import { lightThemeVars, darkThemeVars } from "@/lib/theme";
 export { ErrorBoundary } from "expo-router";
 
-LogBox.ignoreLogs([
-  "[Reanimated]",
-  "Cannot connect to Expo CLI",
-]);
+LogBox.ignoreLogs(["[Reanimated]", "Cannot connect to Expo CLI"]);
 
 const queryClient = new QueryClient();
 

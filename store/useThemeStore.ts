@@ -25,8 +25,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
     await SecureStore.setItemAsync("theme-mode", mode);
     set({
       themeMode: mode,
-      resolvedTheme:
-        mode === "system" ? resolveSystemTheme() : mode,
+      resolvedTheme: mode === "system" ? resolveSystemTheme() : mode,
     });
   },
 
@@ -37,8 +36,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
         const mode = stored as ThemeMode;
         set({
           themeMode: mode,
-          resolvedTheme:
-            mode === "system" ? resolveSystemTheme() : mode,
+          resolvedTheme: mode === "system" ? resolveSystemTheme() : mode,
           isHydrated: true,
         });
       } else {

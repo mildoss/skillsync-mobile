@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useFocusEffect } from "expo-router";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -54,7 +61,7 @@ export default function ProfileScreen() {
   useFocusEffect(
     useCallback(() => {
       fetchUserProfile();
-    }, [fetchUserProfile])
+    }, [fetchUserProfile]),
   );
 
   useEffect(() => {
@@ -81,7 +88,7 @@ export default function ProfileScreen() {
             setLanguages(l);
           }
         })
-        .catch(() => { })
+        .catch(() => {})
         .finally(() => {
           if (isMounted) setIsFetchingDictionaries(false);
         });
@@ -105,7 +112,10 @@ export default function ProfileScreen() {
 
   if (!user || !user.role) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background" edges={["top", "left", "right"]}>
+      <SafeAreaView
+        className="flex-1 items-center justify-center bg-background"
+        edges={["top", "left", "right"]}
+      >
         <ActivityIndicator size="large" className="text-primary" />
       </SafeAreaView>
     );

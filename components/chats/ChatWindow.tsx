@@ -1,11 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  KeyboardAvoidingView,
-  Platform,
-} from "react-native";
+import { View, Text, FlatList, KeyboardAvoidingView, Platform } from "react-native";
 import { Message } from "@/types/chat";
 import { ApplicationStatus } from "@/types/application";
 import { useChatSocket } from "@/hooks/useChatSocket";
@@ -41,13 +35,7 @@ export const ChatWindow = ({
   const readMessageIdsRef = useRef<Set<string>>(new Set());
   const { decrementUnreadCount } = useChatStore();
 
-  const {
-    messages,
-    sendMessage,
-    isConnected,
-    markAsRead,
-    chatStatus,
-  } = useChatSocket({
+  const { messages, sendMessage, isConnected, markAsRead, chatStatus } = useChatSocket({
     user: currentUser,
     applicationId,
     initialMessages,
@@ -102,11 +90,7 @@ export const ChatWindow = ({
 
   const renderItem = useCallback(
     ({ item }: { item: Message }) => (
-      <ChatMessageBubble
-        message={item}
-        currentUserId={currentUser.id}
-        isDark={isDark}
-      />
+      <ChatMessageBubble message={item} currentUserId={currentUser.id} isDark={isDark} />
     ),
     [currentUser.id, isDark],
   );

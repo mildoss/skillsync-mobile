@@ -21,17 +21,8 @@ import { FormSelect } from "@/components/ui/FormSelect";
 import { FormTextarea } from "@/components/ui/FormTextarea";
 import { toast } from "@/store/useToastStore";
 import { ArrowLeft, Sparkles, History } from "lucide-react-native";
-import {
-  WORK_FORMATS,
-  EXPERIENCE_OPTIONS,
-  LOCATION_OPTIONS,
-  mapToOptions,
-} from "@/lib/utils";
-import {
-  vacancySchema,
-  VacancyFormValues,
-  VacancyInput,
-} from "@/lib/validation/vacancy";
+import { WORK_FORMATS, EXPERIENCE_OPTIONS, LOCATION_OPTIONS, mapToOptions } from "@/lib/utils";
+import { vacancySchema, VacancyFormValues, VacancyInput } from "@/lib/validation/vacancy";
 
 interface VacancyFormProps {
   initialData?: Vacancy;
@@ -64,13 +55,13 @@ const MultiSelectGrid = ({
           <TouchableOpacity
             key={item.value}
             onPress={() => toggle(item.value)}
-            className={`flex-row items-center gap-2 rounded-full border px-3 py-1.5 ${isSelected ? "border-primary bg-primary/10" : "border-border bg-card"
-              }`}
+            className={`flex-row items-center gap-2 rounded-full border px-3 py-1.5 ${
+              isSelected ? "border-primary bg-primary/10" : "border-border bg-card"
+            }`}
           >
             <Checkbox checked={isSelected} onCheckedChange={() => toggle(item.value)} />
             <Text
-              className={`text-xs font-medium ${isSelected ? "text-primary" : "text-foreground"
-                }`}
+              className={`text-xs font-medium ${isSelected ? "text-primary" : "text-foreground"}`}
             >
               {item.label}
             </Text>
@@ -81,11 +72,7 @@ const MultiSelectGrid = ({
   );
 };
 
-export const VacancyForm = ({
-  initialData,
-  onBack,
-  onSuccess,
-}: VacancyFormProps) => {
+export const VacancyForm = ({ initialData, onBack, onSuccess }: VacancyFormProps) => {
   const isEditing = !!initialData;
   const storageKey = "new_vacancy_description";
   const [categories, setCategories] = useState<Dictionaries[]>([]);
@@ -138,8 +125,12 @@ export const VacancyForm = ({
       location: initialData?.location || undefined,
       salaryMin: initialData?.salaryMin != null ? Number(initialData.salaryMin) : undefined,
       salaryMax: initialData?.salaryMax != null ? Number(initialData.salaryMax) : undefined,
-      skills: initialData?.skills ? initialData.skills.map((s: any) => (typeof s === "string" ? s : s.id)) : [],
-      languages: initialData?.languages ? initialData.languages.map((l: any) => (typeof l === "string" ? l : l.id)) : [],
+      skills: initialData?.skills
+        ? initialData.skills.map((s: any) => (typeof s === "string" ? s : s.id))
+        : [],
+      languages: initialData?.languages
+        ? initialData.languages.map((l: any) => (typeof l === "string" ? l : l.id))
+        : [],
       isActive: initialData?.isActive ?? true,
     },
   });
@@ -156,8 +147,12 @@ export const VacancyForm = ({
         location: initialData.location || undefined,
         salaryMin: initialData.salaryMin != null ? Number(initialData.salaryMin) : undefined,
         salaryMax: initialData.salaryMax != null ? Number(initialData.salaryMax) : undefined,
-        skills: initialData.skills ? initialData.skills.map((s: any) => (typeof s === "string" ? s : s.id)) : [],
-        languages: initialData.languages ? initialData.languages.map((l: any) => (typeof l === "string" ? l : l.id)) : [],
+        skills: initialData.skills
+          ? initialData.skills.map((s: any) => (typeof s === "string" ? s : s.id))
+          : [],
+        languages: initialData.languages
+          ? initialData.languages.map((l: any) => (typeof l === "string" ? l : l.id))
+          : [],
         isActive: initialData.isActive ?? true,
       });
     }
@@ -210,8 +205,7 @@ export const VacancyForm = ({
   const onInvalid = (formErrors: any) => {
     const errorKeys = Object.keys(formErrors);
     if (errorKeys.length > 0) {
-      const firstError =
-        formErrors[errorKeys[0]]?.message || "Please check the form for errors";
+      const firstError = formErrors[errorKeys[0]]?.message || "Please check the form for errors";
       toast.error("Validation error", firstError);
     }
   };
@@ -239,7 +233,7 @@ export const VacancyForm = ({
     } catch (error: any) {
       toast.error(
         isEditing ? "Failed to update vacancy" : "Failed to create vacancy",
-        error.message || "An error occurred"
+        error.message || "An error occurred",
       );
     } finally {
       setIsSubmitting(false);
@@ -255,7 +249,7 @@ export const VacancyForm = ({
     setIsGenerating(true);
     try {
       const selectedSkillLabels = values.skills.map((skillId: string) => {
-        const found = skills.find(s => s.id === skillId);
+        const found = skills.find((s) => s.id === skillId);
         return found ? found.name : skillId;
       });
       const res = await generateVacancyDescription({
@@ -295,7 +289,9 @@ export const VacancyForm = ({
         {isLoadingDicts ? (
           <View className="items-center justify-center py-12">
             <ActivityIndicator size="large" color="#3b82f6" />
-            <Text className="mt-3 text-xs text-muted-foreground">Loading categories & skills...</Text>
+            <Text className="mt-3 text-xs text-muted-foreground">
+              Loading categories & skills...
+            </Text>
           </View>
         ) : (
           <View className="gap-5">
@@ -383,9 +379,7 @@ export const VacancyForm = ({
             </View>
 
             <View className="gap-2">
-              <Text className="text-sm font-medium text-foreground">
-                Languages
-              </Text>
+              <Text className="text-sm font-medium text-foreground">Languages</Text>
               <Controller
                 control={control}
                 name="languages"
@@ -426,9 +420,7 @@ export const VacancyForm = ({
               {isDraftLoaded && (
                 <View className="flex-row items-center gap-1">
                   <History size={12} color="#f59e0b" />
-                  <Text className="text-xs font-medium text-amber-500">
-                    Restored from draft
-                  </Text>
+                  <Text className="text-xs font-medium text-amber-500">Restored from draft</Text>
                 </View>
               )}
               <FormTextarea
@@ -474,12 +466,7 @@ export const VacancyForm = ({
             </View>
 
             <View className="mt-2 flex-row gap-3">
-              <Button
-                variant="outline"
-                className="flex-1"
-                onPress={onBack}
-                disabled={isSubmitting}
-              >
+              <Button variant="outline" className="flex-1" onPress={onBack} disabled={isSubmitting}>
                 <Text className="font-medium text-foreground">Cancel</Text>
               </Button>
               <Button

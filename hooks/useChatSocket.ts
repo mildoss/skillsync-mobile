@@ -64,20 +64,13 @@ export const useChatSocket = ({
       });
     });
 
-    socket.on(
-      "messagesRead",
-      (data: { readBy: string; messageIds: string[] }) => {
-        if (data.readBy !== user.id) {
-          setMessages((prev) =>
-            prev.map((msg) =>
-              data.messageIds.includes(msg.id)
-                ? { ...msg, isRead: true }
-                : msg,
-            ),
-          );
-        }
-      },
-    );
+    socket.on("messagesRead", (data: { readBy: string; messageIds: string[] }) => {
+      if (data.readBy !== user.id) {
+        setMessages((prev) =>
+          prev.map((msg) => (data.messageIds.includes(msg.id) ? { ...msg, isRead: true } : msg)),
+        );
+      }
+    });
 
     socket.on(
       "applicationStatusChanged",
@@ -131,9 +124,7 @@ export const useChatSocket = ({
       socketRef.current.emit("markAsRead", { applicationId, messageIds });
 
       setMessages((prev) =>
-        prev.map((msg) =>
-          messageIds.includes(msg.id) ? { ...msg, isRead: true } : msg,
-        ),
+        prev.map((msg) => (messageIds.includes(msg.id) ? { ...msg, isRead: true } : msg)),
       );
     },
     [applicationId],

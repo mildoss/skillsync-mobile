@@ -65,10 +65,7 @@ export default function ChatsScreen() {
         : `${chat.applicant?.name || ""} ${chat.applicant?.surname || ""}`;
       const subtitle = chat.vacancy?.title || "";
 
-      return (
-        name.toLowerCase().includes(query) ||
-        subtitle.toLowerCase().includes(query)
-      );
+      return name.toLowerCase().includes(query) || subtitle.toLowerCase().includes(query);
     });
   }, [chats, searchQuery, user?.role]);
 
@@ -84,10 +81,7 @@ export default function ChatsScreen() {
   );
 
   return (
-    <SafeAreaView
-      className="flex-1 bg-background"
-      edges={["top", "left", "right"]}
-    >
+    <SafeAreaView className="flex-1 bg-background" edges={["top", "left", "right"]}>
       <View className="border-b border-border/40 px-4 pb-3 pt-2">
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
@@ -99,9 +93,7 @@ export default function ChatsScreen() {
             >
               <ArrowLeft size={20} color={isDark ? "#ffffff" : "#09090b"} />
             </TouchableOpacity>
-            <Text className="text-2xl font-black tracking-tight text-foreground">
-              Messages
-            </Text>
+            <Text className="text-2xl font-black tracking-tight text-foreground">Messages</Text>
           </View>
         </View>
 
@@ -146,20 +138,13 @@ export default function ChatsScreen() {
             className="rounded-xl bg-primary px-6 py-3"
             activeOpacity={0.7}
           >
-            <Text className="font-semibold text-primary-foreground">
-              Go to Profile
-            </Text>
+            <Text className="font-semibold text-primary-foreground">Go to Profile</Text>
           </TouchableOpacity>
         </View>
       ) : isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator
-            size="large"
-            color={isDark ? "#818cf8" : "#4f46e5"}
-          />
-          <Text className="mt-3 text-sm text-muted-foreground">
-            Loading conversations...
-          </Text>
+          <ActivityIndicator size="large" color={isDark ? "#818cf8" : "#4f46e5"} />
+          <Text className="mt-3 text-sm text-muted-foreground">Loading conversations...</Text>
         </View>
       ) : (
         <FlatList
@@ -176,15 +161,10 @@ export default function ChatsScreen() {
           ListEmptyComponent={
             <View className="items-center justify-center px-6 py-20">
               <View className="mb-4 rounded-full bg-secondary p-6">
-                <MessageSquare
-                  size={40}
-                  color={isDark ? "#52525b" : "#a1a1aa"}
-                />
+                <MessageSquare size={40} color={isDark ? "#52525b" : "#a1a1aa"} />
               </View>
               <Text className="mb-1 text-center text-lg font-bold text-foreground">
-                {searchQuery
-                  ? "No conversations found"
-                  : "No conversations yet"}
+                {searchQuery ? "No conversations found" : "No conversations yet"}
               </Text>
               <Text className="text-center text-sm text-muted-foreground">
                 {searchQuery

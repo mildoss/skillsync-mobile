@@ -1,12 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-} from "react-native";
+import { View, Text, FlatList, ActivityIndicator, RefreshControl, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useVacancies } from "@/hooks/useVacancies";
@@ -72,7 +65,10 @@ export default function VacanciesScreen() {
       />
 
       {isLoading && vacancies.length === 0 ? (
-        <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 110 }} keyboardShouldPersistTaps="handled">
+        <ScrollView
+          contentContainerStyle={{ padding: 16, paddingBottom: 110 }}
+          keyboardShouldPersistTaps="handled"
+        >
           {Array.from({ length: 5 }).map((_, i) => (
             <VacancySkeleton key={i} />
           ))}

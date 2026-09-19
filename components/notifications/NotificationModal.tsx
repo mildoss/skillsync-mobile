@@ -100,9 +100,7 @@ export const NotificationModal = () => {
           {isLoading && notifications.length === 0 ? (
             <View className="flex-1 items-center justify-center py-16">
               <ActivityIndicator size="large" color="#3b82f6" />
-              <Text className="mt-3 text-xs text-muted-foreground">
-                Loading notifications...
-              </Text>
+              <Text className="mt-3 text-xs text-muted-foreground">Loading notifications...</Text>
             </View>
           ) : notifications.length === 0 ? (
             <View className="flex-1 items-center justify-center px-6 py-16">
@@ -126,20 +124,20 @@ export const NotificationModal = () => {
                     key={n.id}
                     onPress={() => handleNotificationPress(n)}
                     activeOpacity={hasLink ? 0.7 : 1}
-                    className={`border-b border-border/60 px-5 py-4 ${!n.isRead ? "bg-primary/5" : "bg-card"
-                      }`}
+                    className={`border-b border-border/60 px-5 py-4 ${
+                      !n.isRead ? "bg-primary/5" : "bg-card"
+                    }`}
                   >
                     <View className="flex-row items-start justify-between gap-3">
                       <View className="flex-1">
                         <View className="flex-row items-center gap-2">
-                          {!n.isRead && (
-                            <View className="h-2 w-2 rounded-full bg-primary" />
-                          )}
+                          {!n.isRead && <View className="h-2 w-2 rounded-full bg-primary" />}
                           <Text
-                            className={`text-sm ${!n.isRead
-                              ? "font-bold text-foreground"
-                              : "font-semibold text-foreground/90"
-                              }`}
+                            className={`text-sm ${
+                              !n.isRead
+                                ? "font-bold text-foreground"
+                                : "font-semibold text-foreground/90"
+                            }`}
                           >
                             {n.title}
                           </Text>
@@ -149,9 +147,7 @@ export const NotificationModal = () => {
                         </Text>
                         {hasLink && (
                           <View className="mt-2 flex-row items-center gap-1">
-                            <Text className="text-xs font-semibold text-primary">
-                              View details
-                            </Text>
+                            <Text className="text-xs font-semibold text-primary">View details</Text>
                             <ChevronRight className="text-primary" size={13} />
                           </View>
                         )}

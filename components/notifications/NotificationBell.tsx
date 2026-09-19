@@ -36,8 +36,9 @@ export const NotificationBell = ({ className }: NotificationBellProps) => {
     <>
       <TouchableOpacity
         onPress={() => setIsOpen(true)}
-        className={`relative h-10 w-10 items-center justify-center rounded-xl bg-secondary ${className || ""
-          }`}
+        className={`relative h-10 w-10 items-center justify-center rounded-xl bg-secondary ${
+          className || ""
+        }`}
         accessibilityLabel={`Notifications (${unreadCount} unread)`}
         activeOpacity={0.7}
       >

@@ -158,11 +158,7 @@ export default function CandidateDetailsScreen() {
           style={{ paddingBottom: Math.max(insets.bottom, 16) }}
           className="border-t border-border bg-background px-6 pt-4"
         >
-          <Button
-            size="lg"
-            className="w-full"
-            onPress={() => setIsInviteModalOpen(true)}
-          >
+          <Button size="lg" className="w-full" onPress={() => setIsInviteModalOpen(true)}>
             Invite to vacancy
           </Button>
         </View>

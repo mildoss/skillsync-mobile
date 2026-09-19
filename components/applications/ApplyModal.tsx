@@ -40,7 +40,7 @@ export const ApplyModal = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
   const [isFetchingDraft, setIsFetchingDraft] = useState(false);
-  const user = useAuthStore(state => state.user);
+  const user = useAuthStore((state) => state.user);
 
   const storageKey = `draft_${vacancyId}`;
 
@@ -95,10 +95,7 @@ export const ApplyModal = ({
       onSuccess(res?.data);
       onClose();
     } catch (error: any) {
-      toast.error(
-        "Failed to submit application",
-        error.message || "An unexpected error occurred",
-      );
+      toast.error("Failed to submit application", error.message || "An unexpected error occurred");
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +110,7 @@ export const ApplyModal = ({
     try {
       const vacancy = await getVacancy(vacancyId);
       if (!vacancy) throw new Error("Vacancy not found");
-      
+
       const payload = {
         vacancyId,
         vacancyTitle: vacancy.title,
@@ -146,17 +143,10 @@ export const ApplyModal = ({
   };
 
   return (
-    <Modal
-      visible={isOpen}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
+    <Modal visible={isOpen} transparent animationType="fade" onRequestClose={onClose}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View className="flex-1 justify-end bg-black/50 p-3 pb-8 sm:justify-center sm:p-6">
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
-          >
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
             <View className="overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
               <View className="border-b border-border/70 p-5">
                 <View className="flex-row items-center justify-between">
@@ -168,10 +158,7 @@ export const ApplyModal = ({
                       <Text className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Job Application
                       </Text>
-                      <Text
-                        className="text-lg font-bold text-foreground"
-                        numberOfLines={1}
-                      >
+                      <Text className="text-lg font-bold text-foreground" numberOfLines={1}>
                         {vacancyTitle}
                       </Text>
                     </View>
@@ -195,9 +182,7 @@ export const ApplyModal = ({
                   <View className="flex-1 pr-2">
                     <Text className="text-sm font-semibold text-foreground">
                       Cover Letter{" "}
-                      <Text className="text-xs font-normal text-muted-foreground">
-                        (optional)
-                      </Text>
+                      <Text className="text-xs font-normal text-muted-foreground">(optional)</Text>
                     </Text>
                     {isDraftLoaded && (
                       <View className="mt-1 flex-row items-center gap-1">
@@ -257,19 +242,13 @@ export const ApplyModal = ({
                     <Text className="font-semibold text-foreground">Cancel</Text>
                   </Button>
 
-                  <Button
-                    className="flex-1"
-                    onPress={handleSubmit}
-                    disabled={isSubmitting}
-                  >
+                  <Button className="flex-1" onPress={handleSubmit} disabled={isSubmitting}>
                     {isSubmitting ? (
                       <ActivityIndicator size="small" color="#ffffff" />
                     ) : (
                       <>
                         <Send size={15} color="#ffffff" className="mr-1.5" />
-                        <Text className="font-semibold text-primary-foreground">
-                          Submit
-                        </Text>
+                        <Text className="font-semibold text-primary-foreground">Submit</Text>
                       </>
                     )}
                   </Button>
