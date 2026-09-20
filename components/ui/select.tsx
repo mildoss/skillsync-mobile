@@ -41,8 +41,9 @@ export function Select({
         onPress={() => !disabled && setModalVisible(true)}
         disabled={disabled}
         activeOpacity={0.7}
-        className={`h-10 flex-row items-center justify-between rounded-lg border border-input bg-transparent px-3 ${disabled ? "opacity-50" : ""
-          }`}
+        className={`h-10 flex-row items-center justify-between rounded-lg border border-input bg-transparent px-3 ${
+          disabled ? "opacity-50" : ""
+        }`}
       >
         <Text
           numberOfLines={1}
@@ -51,8 +52,9 @@ export function Select({
               ? { includeFontPadding: false, textAlignVertical: "center" }
               : undefined
           }
-          className={`mr-2 flex-1 text-base lg:text-sm ${selectedOption ? "font-medium text-foreground" : "text-muted-foreground"
-            }`}
+          className={`mr-2 flex-1 text-base lg:text-sm ${
+            selectedOption ? "font-medium text-foreground" : "text-muted-foreground"
+          }`}
         >
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
@@ -98,8 +100,9 @@ export function Select({
                   >
                     <Text
                       style={Platform.OS === "android" ? { includeFontPadding: false } : undefined}
-                      className={`text-base ${isSelected ? "font-bold text-primary" : "font-normal text-foreground"
-                        }`}
+                      className={`text-base ${
+                        isSelected ? "font-bold text-primary" : "font-normal text-foreground"
+                      }`}
                     >
                       {item.label}
                     </Text>

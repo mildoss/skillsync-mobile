@@ -8,8 +8,6 @@ import {
   updateApplicantProfileSchema,
 } from "@/lib/validation/user";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormInput } from "@/components/ui/FormInput";
 import { FormSelect } from "@/components/ui/FormSelect";
@@ -46,14 +44,11 @@ export const ApplicantProfileForm = ({ user, categories, skills, languages }: Pr
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [hasAvatarChanged, setHasAvatarChanged] = useState(false);
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<ApplicantProfileFormValues, any, UpdateApplicantProfileInput>({
+  const { control, handleSubmit, watch, setValue, reset } = useForm<
+    ApplicantProfileFormValues,
+    any,
+    UpdateApplicantProfileInput
+  >({
     resolver: zodResolver(updateApplicantProfileSchema),
     defaultValues: {
       name: user.name ?? "",

@@ -41,7 +41,7 @@ export const MyApplicationsTab = () => {
       <View className="mb-4">
         <Text className="text-2xl font-bold tracking-tight text-foreground">My Applications</Text>
         <Text className="text-sm text-muted-foreground">
-          Track the status of jobs you've applied for.
+          Track the status of jobs you&apos;ve applied for.
         </Text>
       </View>
 

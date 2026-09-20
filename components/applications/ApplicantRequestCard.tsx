@@ -65,7 +65,7 @@ export const ApplicantRequestCard = ({ application }: { application: Application
               <Text className="text-[11px] font-semibold text-foreground">Your Cover Letter</Text>
             </View>
             <Text className="text-xs italic text-muted-foreground" numberOfLines={2}>
-              "{application.coverLetter}"
+              &quot;{application.coverLetter}&quot;
             </Text>
           </View>
         ) : null}

@@ -18,9 +18,9 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, InputProps>(
         style={[
           Platform.OS === "android"
             ? {
-              includeFontPadding: false,
-              ...(multiline ? {} : { paddingVertical: 0 }),
-            }
+                includeFontPadding: false,
+                ...(multiline ? {} : { paddingVertical: 0 }),
+              }
             : null,
           style,
         ]}

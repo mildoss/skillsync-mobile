@@ -115,7 +115,7 @@ export const MyVacanciesTab = ({ user }: MyVacanciesTabProps) => {
         <View className="flex-1 pr-2">
           <Text className="text-2xl font-bold tracking-tight text-foreground">My Vacancies</Text>
           <Text className="text-sm text-muted-foreground">
-            Manage your company's active job postings.
+            Manage your company&apos;s active job postings.
           </Text>
         </View>
         <Button size="sm" className="h-10 px-4" onPress={() => setIsCreating(true)}>

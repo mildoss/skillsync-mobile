@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { getCompanies, joinCompany, getMe } from "@/lib/api";

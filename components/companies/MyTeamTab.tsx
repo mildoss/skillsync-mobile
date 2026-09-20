@@ -203,7 +203,7 @@ export const MyTeamTab = ({ user }: MyTeamTabProps) => {
         {activeEmployees.length === 0 ? (
           <View className="items-center justify-center rounded-xl border border-dashed border-border py-8">
             <Text className="text-center text-muted-foreground">
-              You don't have any recruiters in your team yet.
+              You don&apos;t have any recruiters in your team yet.
             </Text>
           </View>
         ) : (
