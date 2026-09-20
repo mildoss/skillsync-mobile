@@ -1,7 +1,15 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity, Modal, FlatList, Pressable } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Modal,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import { ChevronDown, X } from "lucide-react-native";
-import Animated, { SlideInDown, FadeIn } from "react-native-reanimated";
 
 export interface SelectOption {
   label: string;
@@ -32,11 +40,20 @@ export function Select({
       <TouchableOpacity
         onPress={() => !disabled && setModalVisible(true)}
         disabled={disabled}
-        className={`h-10 flex-row items-center justify-between rounded-lg border border-input bg-transparent px-3 ${
-          disabled ? "opacity-50" : ""
-        }`}
+        activeOpacity={0.7}
+        className={`h-10 flex-row items-center justify-between rounded-lg border border-input bg-transparent px-3 ${disabled ? "opacity-50" : ""
+          }`}
       >
-        <Text className={selectedOption ? "text-foreground" : "text-muted-foreground"}>
+        <Text
+          numberOfLines={1}
+          style={
+            Platform.OS === "android"
+              ? { includeFontPadding: false, textAlignVertical: "center" }
+              : undefined
+          }
+          className={`mr-2 flex-1 text-base lg:text-sm ${selectedOption ? "font-medium text-foreground" : "text-muted-foreground"
+            }`}
+        >
           {selectedOption ? selectedOption.label : placeholder}
         </Text>
         <ChevronDown size={16} className="text-muted-foreground" color="#a1a1aa" />
@@ -45,44 +62,69 @@ export function Select({
       <Modal
         visible={modalVisible}
         transparent
-        animationType="none"
+        animationType="fade"
+        statusBarTranslucent
         onRequestClose={() => setModalVisible(false)}
       >
-        <Animated.View entering={FadeIn.duration(250)} className="flex-1 justify-end bg-black/60">
-          <Pressable className="flex-1" onPress={() => setModalVisible(false)} />
-          <Animated.View
-            entering={SlideInDown.duration(250)}
-            className="max-h-[60%] min-h-[40%] rounded-t-3xl border-t border-border bg-card p-5 shadow-2xl"
-          >
+        <View style={styles.modalContainer}>
+          <Pressable style={styles.backdrop} onPress={() => setModalVisible(false)} />
+          <View className="max-h-[65%] min-h-[35%] rounded-t-3xl border-t border-border bg-card p-5 shadow-2xl">
             <View className="mb-4 flex-row items-center justify-between border-b border-border/50 pb-3">
               <Text className="text-lg font-bold text-foreground">{placeholder}</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)} className="rounded-full p-1">
+              <Pressable
+                onPress={() => setModalVisible(false)}
+                hitSlop={12}
+                className="rounded-full p-1.5"
+              >
                 <X size={20} className="text-foreground" color="#a1a1aa" />
-              </TouchableOpacity>
+              </Pressable>
             </View>
             <FlatList
               data={options}
               keyExtractor={(item) => item.value}
+              keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  className="border-b border-border/50 py-3.5"
-                  onPress={() => {
-                    onValueChange(item.value);
-                    setModalVisible(false);
-                  }}
-                >
-                  <Text
-                    className={item.value === value ? "font-bold text-primary" : "text-foreground"}
+              renderItem={({ item }) => {
+                const isSelected = item.value === value;
+                return (
+                  <Pressable
+                    android_ripple={{ color: "rgba(99, 102, 241, 0.12)" }}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+                    className="border-b border-border/50 px-1 py-3.5"
+                    onPress={() => {
+                      onValueChange(item.value);
+                      setModalVisible(false);
+                    }}
                   >
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              )}
+                    <Text
+                      style={Platform.OS === "android" ? { includeFontPadding: false } : undefined}
+                      className={`text-base ${isSelected ? "font-bold text-primary" : "font-normal text-foreground"
+                        }`}
+                    >
+                      {item.label}
+                    </Text>
+                  </Pressable>
+                );
+              }}
             />
-          </Animated.View>
-        </Animated.View>
+          </View>
+        </View>
       </Modal>
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+  },
+  backdrop: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+  },
+});
