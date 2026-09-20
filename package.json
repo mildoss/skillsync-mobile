@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Modern React Native mobile client for SkillSync Job Board Platform with real-time features and AI-powered tools",
   "author": "Vladislav Maslo",
+  "license": "MIT",
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
     "@tanstack/react-query": "^5.102.8",
