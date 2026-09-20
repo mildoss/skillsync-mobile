@@ -28,17 +28,8 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
   const [companies, setCompanies] = useState<Companies[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isJoining, setIsJoining] = useState<string | null>(null);
-  const [sentRequests, setSentRequests] = useState<Set<string>>(
-    new Set(user?.pendingCompanyIds || []),
-  );
+  const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    if (user?.pendingCompanyIds) {
-      setSentRequests(new Set(user.pendingCompanyIds));
-    }
-  }, [user?.pendingCompanyIds]);
-
-  // Debounce search
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -46,13 +37,9 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
     return () => clearTimeout(handler);
   }, [search]);
 
-  // Fetch companies when search changes
   useEffect(() => {
+    if (debouncedSearch.length < 2) return;
     let isMounted = true;
-    if (debouncedSearch.length < 2) {
-      setCompanies([]);
-      return;
-    }
 
     const fetchCompanies = async () => {
       setIsSearching(true);
@@ -106,6 +93,8 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
     }
   };
 
+  const displayedCompanies = debouncedSearch.length < 2 ? [] : companies;
+
   return (
     <View className="gap-6 rounded-2xl border border-border bg-card p-6 shadow-sm">
       <Text className="text-2xl font-bold tracking-tight text-foreground">Find your company</Text>
@@ -115,7 +104,12 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
         <Input
           placeholder="Search for companies..."
           value={search}
-          onChangeText={setSearch}
+          onChangeText={(text) => {
+            setSearch(text);
+            if (text.length < 2) {
+              setCompanies([]);
+            }
+          }}
           autoCapitalize="none"
         />
         <Text className="text-xs text-muted-foreground">Type at least 2 characters to search.</Text>
@@ -124,12 +118,12 @@ export const JoinCompanyForm = ({ onBack }: JoinCompanyFormProps) => {
       <View className="mt-4 gap-3">
         {isSearching ? (
           <ActivityIndicator size="small" className="my-4 text-primary" />
-        ) : search.length >= 2 && companies.length === 0 ? (
+        ) : search.length >= 2 && displayedCompanies.length === 0 ? (
           <Text className="my-4 text-center text-sm text-muted-foreground">
             No companies found. Try a different name.
           </Text>
         ) : (
-          companies.map((company) => {
+          displayedCompanies.map((company) => {
             const isSent =
               sentRequests.has(company.id) || user?.pendingCompanyIds?.includes(company.id);
 

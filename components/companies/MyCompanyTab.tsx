@@ -9,12 +9,20 @@ import { FormSelect } from "@/components/ui/FormSelect";
 import { FormTextarea } from "@/components/ui/FormTextarea";
 import { CompanyProfileHeader } from "./CompanyProfileHeader";
 import { CompanyDangerZone } from "./CompanyDangerZone";
-import { getCompany, updateCompany, uploadCompanyLogo, deleteCompany, getMe } from "@/lib/api";
+import {
+  getCompany,
+  updateCompany,
+  uploadCompanyLogo,
+  deleteCompany,
+  leaveCompany,
+  getMe,
+} from "@/lib/api";
 import { toast } from "@/store/useToastStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { User } from "@/types/users";
 import { CompanyDetail } from "@/types/companies";
 import { COMPANY_TYPES } from "@/lib/utils";
+import { Info, LogOut } from "lucide-react-native";
 
 interface MyCompanyTabProps {
   user: User;
@@ -26,6 +34,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPending, setIsPending] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isLeaving, setIsLeaving] = useState(false);
 
   const [selectedFile, setSelectedFile] = useState<{
     uri: string;
@@ -180,6 +189,37 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
     );
   };
 
+  const handleLeaveCompany = () => {
+    Alert.alert(
+      "Leave Company",
+      "Are you sure you want to leave this company? You will lose access to its vacancies and applications.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Leave",
+          style: "destructive",
+          onPress: async () => {
+            setIsLeaving(true);
+            try {
+              const res = await leaveCompany();
+              if (res?.success || res) {
+                toast.success("You have left the company");
+                const freshUser = await getMe();
+                if (freshUser) {
+                  setUser(freshUser);
+                }
+              }
+            } catch (error: any) {
+              toast.error("Failed to leave company", error?.message || "Something went wrong");
+            } finally {
+              setIsLeaving(false);
+            }
+          },
+        },
+      ],
+    );
+  };
+
   if (isLoading) {
     return (
       <View className="items-center justify-center py-10">
@@ -206,6 +246,29 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
             : "Manage your company identity, description and links."}
         </Text>
       </View>
+
+      {isReadOnly && (
+        <View className="gap-3 rounded-2xl border border-border bg-muted/40 p-4">
+          <View className="flex-row items-center gap-2.5">
+            <Info size={18} color="#6b7280" />
+            <Text className="flex-1 text-xs font-medium text-muted-foreground">
+              You are viewing this company as a Recruiter. Only the Owner can edit these details.
+            </Text>
+          </View>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-destructive/30 bg-destructive/10"
+            onPress={handleLeaveCompany}
+            disabled={isLeaving}
+          >
+            <LogOut size={14} color="#ef4444" className="mr-1.5" />
+            <Text className="text-xs font-semibold text-destructive">
+              {isLeaving ? "Leaving Company..." : "Leave Company"}
+            </Text>
+          </Button>
+        </View>
+      )}
 
       <View className="rounded-2xl border border-border bg-card p-6 shadow-sm">
         <CompanyProfileHeader
