@@ -21,8 +21,6 @@ interface MyCompanyTabProps {
 }
 
 export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
-  if (!user) return null;
-
   const { setUser } = useAuthStore();
   const [company, setCompany] = useState<CompanyDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +35,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
   const [previewUri, setPreviewUri] = useState<string | null>(null);
   const [hasLogoChanged, setHasLogoChanged] = useState(false);
 
-  const isReadOnly = user.companyRole !== "OWNER";
+  const isReadOnly = user?.companyRole !== "OWNER";
 
   const { control, handleSubmit, watch, setValue, reset, formState } = useForm<CreateCompanyInput>({
     resolver: zodResolver(createCompanySchema),
@@ -53,7 +51,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
   useEffect(() => {
     let isMounted = true;
     const fetchCompany = async () => {
-      if (!user.companyId) return;
+      if (!user?.companyId) return;
       try {
         const res = await getCompany(user.companyId);
         if (isMounted && res) {
@@ -140,7 +138,7 @@ export const MyCompanyTab = ({ user }: MyCompanyTabProps) => {
         setPreviewUri(null);
         setHasLogoChanged(false);
         setSelectedFile(null);
-        reset({ ...data, logoUrl: finalLogoUrl }); // reset dirty fields
+        reset({ ...data, logoUrl: finalLogoUrl });
         toast.success("Company updated successfully!");
       }
     } catch (error: any) {

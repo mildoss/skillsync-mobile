@@ -19,8 +19,6 @@ interface MyTeamTabProps {
 }
 
 export const MyTeamTab = ({ user }: MyTeamTabProps) => {
-  if (!user) return null;
-
   const [requests, setRequests] = useState<any[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +26,7 @@ export const MyTeamTab = ({ user }: MyTeamTabProps) => {
 
   useEffect(() => {
     let isMounted = true;
-    if (!user.companyId) return;
+    if (!user?.companyId) return;
 
     const fetchData = async () => {
       try {
@@ -52,7 +50,9 @@ export const MyTeamTab = ({ user }: MyTeamTabProps) => {
     return () => {
       isMounted = false;
     };
-  }, [user.companyId]);
+  }, [user?.companyId]);
+
+  if (!user) return null;
 
   const activeEmployees = employees.filter((emp) => emp.id !== user.id);
 
